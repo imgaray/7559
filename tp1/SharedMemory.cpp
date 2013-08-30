@@ -1,6 +1,6 @@
 #include "SharedMemory.h"
 
-SharedMemory::SharedMemory() {
+SharedMemory::SharedMemory(unsigned size, PERMISSIONS permissions) {
 
 }
 
