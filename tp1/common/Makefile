@@ -5,7 +5,7 @@ CXXFLAGS = -g
 CC = g++
 
 #EN ESTA VARIABLE VAN TODAS LAS DEPENDENCIAS QUE TENGAN UN MAIN Y SE QUIERAN COMPILAR
-TARGET = tp1
+TARGET = 
 
 TARGETFLAGS = -g 
 
@@ -13,19 +13,13 @@ archivos = $(wildcard *.cpp)
 
 # EN ESTA VARIABLE SE DEFINEN TODAS LAS CARPETAS QUE TENGAN .H
 # EXTERNOS QUE ESTEN USANDO
-INCLUDES = . torre controlador aviones common
-
-SUBSYSTEMS = torre controlador aviones common 
+INCLUDES = . 
 
 I-INCLUDES = $(addprefix -I, $(INCLUDES))
 
 bin = $(archivos:.cpp=.o)
 
 robjs = $(wildcard *.o $(TARGET))
-
-SUBSYS = $(addprefix SUBSYS, $(SUBSYSTEMS))
-
-CLEANSUB = $(addprefix CLEANSUB, $(SUBSYSTEMS))
 
 #######################################
 #verbose = si
@@ -49,7 +43,7 @@ CLEANSUB = $(addprefix CLEANSUB, $(SUBSYSTEMS))
 #########################################
 
 
-all: $(TARGET)
+all: binaries 
 
 binaries: $(bin)
 
@@ -59,16 +53,10 @@ binaries: $(bin)
 %.o: %.cpp
 	$(CC) $(CXXFLAGS) $(I-INCLUDES) -c $<
 
-SUBSYS%: % 
-	$(MAKE) -C $<
-
-CLEANSUB%: %
-	$(MAKE) clean -C $<
-
-$(TARGET): $(SUBSYS) binaries
+$(TARGET): binaries
 	$(CC) $(I-INCLUDES) $(bin) $(TARGETFLAGS) -o $(TARGET)
 
-clean: $(CLEANSUB)
+clean:
 	$(LIMPIAR) rm -f $(robjs)
 
 .PHONY: clean all binaries
