@@ -6,13 +6,12 @@
 namespace Utilities {
 	class Key {
 		public:
-			Key();
-			Key(std::string file_name);
-			Key(char* file_name);
+			Key(std::string file_name, char id);
+			Key(char* file_name, char id);
 			key_t getKey();
 			virtual ~Key();
 		private:
-			void buildKey(char* filename);
+			void buildKey(char* filename, char key);
 			std::string filename;
 			key_t key;
 	};

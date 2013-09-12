@@ -11,16 +11,18 @@
 namespace Utilities {
 	class Process {
 		public:
+			Process(const Process& proc);
 			Process(std::string file);
 			Process(char* file);
 			pid_t getId();
 			int getExitStatus();
-			void start();
 			void wait();
 			void killProcess();
 			bool isRunning();
 			virtual ~Process();
+			
 		private:
+			void startProcess();
 			pid_t id;
 			int exitStatus;
 			std::string file;

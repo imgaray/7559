@@ -3,11 +3,15 @@
 namespace Utilities {
 
 	Process::Process(std::string file): id(0), exitStatus(0), file(file) {
-
+		startProcess();
 	}
 
 	Process::Process(char* file): id(0), exitStatus(0), file(std::string(file)) {
+		startProcess();
+	}
 
+	Process::Process(const Process& proc): id(0), exitStatus(0), file(proc.file) {
+		startProcess();
 	}
 
 	bool Process::isRunning() {
@@ -20,28 +24,39 @@ namespace Utilities {
 	}
 
 	int Process::getExitStatus() {
-		if (!isRunning()) throw("process not running");
+		if (isRunning()) throw("process running");
 		return exitStatus;
 	}
-
-	void Process::start() {
-		if (isRunning()) throw("process already running");
-		id = fork();
-		if (id == 0) {
-			execl(file.c_str(), file.c_str(), NULL);
-		}
+	
+	void Process::wait() {
+		if (isRunning()) {
+			if (waitpid(id, &exitStatus, 0) == -1) {
+				throw("process error, could not wait for child process");
+			}
+		} else throw("process error, process not running");
 	}
 
 	void Process::killProcess() {
 		if (!isRunning()) throw("process not running");
-		kill(id, SIGKILL);
+		if (kill(id, SIGKILL) == -1) throw("process error, could not kill process");
 		id = 0;
 		exitStatus = -1;
 	}	
 
+	void Process::startProcess() {
+		tmpid = fork();
+		if (tmpid == 0) {
+			int ret = execl(file.c_str(), file.c_str(), NULL);
+			if (ret == -1) throw("process error, could not replace process image");
+		} else if(tmpid > 0) {
+			id = tmpid;
+		} else {
+			throw("process error, could not fork child process");
+		}
+	}
+
 	Process::~Process() {
-		if (isRunning())
-			id = waitpid(id, &exitStatus, 0);
+		this->wait();
 	}
 
 };
