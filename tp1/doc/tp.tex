@@ -55,8 +55,30 @@ $2^{do}$ cuatrimestre de 2013}
 
 \footnotesize
 \section{Análisis}
+En el análisis del trabajo se identificaron las siguientes identidades del dominio:\\
+\begin{itemize}
+\item Aeropuerto
+\item Avion
+\item Torre
+\item Control
+\item Pista
+\end{itemize}
+
+El aeropuerto se podría entender como la clase que compone la torre y las pistas. El avion interactúa con el
+aeropuerto, solicitando un control. Entonces el aeropuerto deriva al avión a la torre de control.
+La torre de control posee varios controladores que trabajan independiente de cada uno, conectando los aviones
+con las pistas. Las pistas alojan el avión hasta que el mismo ejecuta la tarea que debe, despachándolo.\\
+
+En esta situación se puede apreciar que vamos a necesitar de algun productor de aviones
+que vaya generando los aviones correspondientes. El aeropuerto, por caso, haría de consumidor.
+El mismo debe derivar los aviones a la torre de control, junto con sus pistas.\\
+En esta estructura vemos que se vuelve a repetir el patrón consumidor productor, donde el aeropuerto
+viene a ser el productor (asignando el ingreso de aviones), mientras que el consumidor vendría a ser la torre de control.\\
+
+
 \newpage
 \section{Diseño}
+
 \newpage
 \section{Integración}
 

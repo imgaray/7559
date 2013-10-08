@@ -71,4 +71,10 @@ $(TARGET): $(SUBSYS) binaries
 clean: $(CLEANSUB)
 	$(LIMPIAR) rm -f $(robjs)
 
-.PHONY: clean all binaries
+doc:
+	cd doc/ &&  rm -f *.aux *log && pdflatex tp.tex
+
+clean-doc:
+	rm -f *.aux *.log *.toc tp.pdf
+
+.PHONY: clean all binaries doc clean-doc
