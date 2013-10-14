@@ -13,7 +13,7 @@ archivos = $(wildcard *.cpp)
 
 # EN ESTA VARIABLE SE DEFINEN TODAS LAS CARPETAS QUE TENGAN .H
 # EXTERNOS QUE ESTEN USANDO
-INCLUDES = . torre controlador aviones common
+INCLUDES = common
 
 SUBSYSTEMS = torre controlador aviones common 
 
@@ -26,6 +26,8 @@ robjs = $(wildcard *.o $(TARGET))
 SUBSYS = $(addprefix SUBSYS, $(SUBSYSTEMS))
 
 CLEANSUB = $(addprefix CLEANSUB, $(SUBSYSTEMS))
+
+SUBSYS-BINS = $($(wildcard common/*.cpp):.cpp=.o)
 
 #######################################
 #verbose = si
@@ -66,7 +68,7 @@ CLEANSUB%: %
 	$(MAKE) clean -C $<
 
 $(TARGET): $(SUBSYS) binaries
-	$(CC) $(I-INCLUDES) $(bin) $(TARGETFLAGS) -o $(TARGET)
+	$(CC) $(I-INCLUDES) $(bin) $(SUBSYS-BINS) $(TARGETFLAGS) -o $(TARGET)
 
 clean: $(CLEANSUB)
 	$(LIMPIAR) rm -f $(robjs)

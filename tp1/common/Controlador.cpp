@@ -6,7 +6,7 @@ void Controlador::manejar(Avion* avion, Pista* pista) {
 	pista->liberar();
 }
  
-Controlador::Controlador() {
+Controlador::Controlador(unsigned numero): numero(numero) {
 	
 }
 

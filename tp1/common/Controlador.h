@@ -8,8 +8,10 @@
 class Controlador {
 public:
 	void manejar(Avion* avion, Pista* pista); 
-	Controlador();
+	Controlador(unsigned numero);
 	virtual ~Controlador();
+private:
+	unsigned numero;
 };
 
 #endif
