@@ -1,13 +1,19 @@
 #include "Avion.h"
 
 void Avion::accionar() {
-	this->estrategia->operar();
+	this->estrategia.operar();
 }
 
-Avion::Avion(EstrategiaAvion* estrategia) {
-	this->estrategia = estrategia;
+Avion::Avion(const Avion& avion): estrategia(avion.estrategia) {
+}
+
+
+Avion::Avion(const EstrategiaAvion& estrategia): estrategia(estrategia) {
 }
 
 Avion::~Avion() {
-	delete this->estrategia;
+}
+
+bool Avion::operator<(const Avion& avion) const {
+	return this->estrategia < avion.estrategia;
 }

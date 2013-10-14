@@ -1,9 +1,9 @@
 #ifndef FACTORYELEMENTOS_H
 #define FACTORYELEMENTOS_H
 
-#include "IAvion.h"
-#include "IControlador.h"
-#include "IPista.h"
+#include "Avion.h"
+#include "Controlador.h"
+#include "Pista.h"
 
 enum ModoFactory {
 NORMAL, DEBUG
@@ -11,9 +11,9 @@ NORMAL, DEBUG
 
 class FactoryElementos {
 public:
-	IAvion* crearAvion(int numero);
-	IPista* crearPista(int numero);
-	IControlador* crearControlador(int numero);
+	Avion* crearAvion(int numero);
+	Pista* crearPista(int numero);
+	Controlador* crearControlador(int numero);
 	static FactoryElementos& instance();
 	virtual ~FactoryElementos();
 	static void setPerfil(ModoFactory modo); 

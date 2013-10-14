@@ -1,6 +1,6 @@
 #include "Controlador.h"
 
-void Controlador::manejar(IAvion* avion, IPista* pista) {
+void Controlador::manejar(Avion* avion, Pista* pista) {
 	pista->tomar();
 	avion->accionar();
 	pista->liberar();

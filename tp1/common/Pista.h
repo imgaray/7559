@@ -1,11 +1,12 @@
 #ifndef PISTA_H
 #define PISTA_H
 
-#include "IPista.h"
 #include "LockFile.h"
 
-class Pista: public IPista {
+class Pista {
 public:
+	void tomar();
+	void liberar();
 	Pista();
 	virtual ~Pista();
 private:

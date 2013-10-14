@@ -5,7 +5,7 @@ CXXFLAGS = -g
 CC = g++
 
 #EN ESTA VARIABLE VAN TODAS LAS DEPENDENCIAS QUE TENGAN UN MAIN Y SE QUIERAN COMPILAR
-TARGET = tp1
+TARGET = tests
 
 TARGETFLAGS = -g 
 
@@ -13,13 +13,21 @@ archivos = $(wildcard *.cpp)
 
 # EN ESTA VARIABLE SE DEFINEN TODAS LAS CARPETAS QUE TENGAN .H
 # EXTERNOS QUE ESTEN USANDO
-INCLUDES = ../common 
+INCLUDES = ../common
+
+SUBSYSTEMS = ../common 
+
+SUBSYS-BIN = $(foreach dir,$(SUBSYSTEMS), $(wildcard $(dir)/*.cpp))
 
 I-INCLUDES = $(addprefix -I, $(INCLUDES))
 
 bin = $(archivos:.cpp=.o)
 
 robjs = $(wildcard *.o $(TARGET))
+
+SUBSYS = $(addprefix SUBSYS, $(SUBSYSTEMS))
+
+CLEANSUB = $(SUBSYSTEMS)
 
 #######################################
 #verbose = si
@@ -43,7 +51,7 @@ robjs = $(wildcard *.o $(TARGET))
 #########################################
 
 
-all: $(TARGET)
+all: $(SUBSYSTEMS) $(TARGET)
 
 binaries: $(bin)
 
@@ -53,10 +61,16 @@ binaries: $(bin)
 %.o: %.cpp
 	$(CC) $(CXXFLAGS) $(I-INCLUDES) -c $<
 
-$(TARGET): binaries
-	$(CC) $(I-INCLUDES) $(bin) $(TARGETFLAGS) -o $(TARGET)
+$(SUBSYSTEMS):
+	$(MAKE) -C $(SUBSYSTEMS)
 
-clean:
+$(CLEANSUB):
+	$(MAKE) clean -C $(CLEANSUB)
+
+$(TARGET): $(SUBSYSTEMS) binaries
+	$(CC) $(I-INCLUDES) $(bin) $(TARGETFLAGS) $(SUBSYS-BIN) -o $(TARGET)
+
+clean: $(CLEANSUB)
 	$(LIMPIAR) rm -f $(robjs)
 
 .PHONY: clean all binaries

@@ -1,13 +1,13 @@
 #ifndef CONTROLADOR_H
 #define CONTROLADOR_H
 
-#include "IAvion.h"
-#include "IPista.h"
-#include "IControlador.h"
+#include "Avion.h"
+#include "Pista.h"
+#include "Controlador.h"
 
-class Controlador: public IControlador {
+class Controlador {
 public:
-	void manejar(IAvion* avion, IPista* pista); 
+	void manejar(Avion* avion, Pista* pista); 
 	Controlador();
 	virtual ~Controlador();
 };
