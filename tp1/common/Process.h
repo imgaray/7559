@@ -7,26 +7,23 @@
 #include <signal.h>
 #include <sys/wait.h>
 #include <string>
-
-namespace Utilities {
-	class Process {
-		public:
-			Process(const Process& proc);
-			Process(std::string file);
-			Process(char* file);
-			pid_t getId();
-			int getExitStatus();
-			void wait();
-			void killProcess();
-			bool isRunning();
-			virtual ~Process();
-			
-		private:
-			void startProcess();
-			pid_t id;
-			int exitStatus;
-			std::string file;
-	};
-}
+class Process {
+	public:
+		Process(const Process& proc);
+		Process(std::string file);
+		Process(char* file);
+		pid_t getId();
+		int getExitStatus();
+		void wait();
+		void killProcess();
+		bool isRunning();
+		virtual ~Process();
+		
+	private:
+		void startProcess();
+		pid_t id;
+		int exitStatus;
+		std::string file;
+};
 
 #endif
