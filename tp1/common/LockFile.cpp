@@ -33,3 +33,7 @@ LockFile :: ~LockFile () {
 	if (close ( this->fd ) == -1)
 		std::cerr << "imposible cerrar el lock" << std::endl;
 }
+
+std::string LockFile :: getNombre(){
+	return this->nombre;
+}

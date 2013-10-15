@@ -2,12 +2,17 @@
 #define AVION_H
 
 #include "EstrategiaAvion.h"
+#include "Utilitario.h"
+#include <string>
 
 class Avion {
 public:
 	void accionar();
 	Avion(const EstrategiaAvion& estrategia);
 	Avion(const Avion& avion);
+	Avion(const std::string& s, const EstrategiaAvion& estrategia);
+	std::string serializar();
+	void deserializar (const std::string& s);
 	virtual ~Avion();
 	bool operator<(const Avion& avion) const;
 private:

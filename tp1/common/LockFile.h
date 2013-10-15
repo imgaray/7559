@@ -19,6 +19,7 @@ public:
 	int tomarLock ();
 	int liberarLock ();
 	ssize_t escribir ( const void* buffer,const ssize_t buffsize ) const;
+	std::string getNombre();
 };
 
 #endif /* LOCKFILE_H_ */
