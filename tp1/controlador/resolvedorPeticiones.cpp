@@ -10,7 +10,7 @@ int main(int argc, char** argv) {
 	do {
 		char* ptr = new char[33];
 		ptr[32] = '\0';
-		resultado = fifo.leer(ptr, 32);
+		resultado = fifo.leer(ptr, (ssize_t) 32);
 		if (resultado != 0) {
 			std::string serial = ptr;
 			Avion* avioneta = new Avion(serial);

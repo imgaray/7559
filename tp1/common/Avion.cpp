@@ -29,7 +29,7 @@ const char* Avion::serializar(){
 	static char serial[32];
 	std::stringstream ss;
 	
-	ss << "AVION" << SEP ;
+	ss << "AVION" << SEP << determinarPrioridad();
 	ss >> serial ;
 	
 	return serial;
@@ -37,4 +37,8 @@ const char* Avion::serializar(){
 
 void Avion::deserializar (const std::string& s){
 	
+}
+
+int Avion::determinarPrioridad(){
+	return this->estrategia.determinarPrioridad();
 }

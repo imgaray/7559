@@ -28,3 +28,10 @@ EstrategiaAvion& EstrategiaAvion::operator=(const EstrategiaAvion& rhs) {
 	this->prioridad = rhs.prioridad;
 	return *this;
 }
+
+int EstrategiaAvion::determinarPrioridad(){
+	if (this->prioridad == AIRE)
+		return 1;
+	else if (this->prioridad == TIERRA)
+		return 0;	
+}

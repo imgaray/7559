@@ -11,7 +11,7 @@ NORMAL, DEBUG
 
 class FactoryElementos {
 public:
-	Avion* crearAvion(int numero);
+	Avion* crearAvion(PRIORIDAD_AVION prioridad);
 	Pista* crearPista(int numero);
 	Controlador* crearControlador(int numero);
 	static FactoryElementos& instance();

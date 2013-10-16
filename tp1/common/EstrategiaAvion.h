@@ -10,6 +10,7 @@ public:
 	EstrategiaAvion();
 	EstrategiaAvion(const EstrategiaAvion& copia);
 	EstrategiaAvion(PRIORIDAD_AVION prioridad);
+	int determinarPrioridad();	
 	void operar();
 	bool operator<(const EstrategiaAvion& otra) const;
 	virtual ~EstrategiaAvion();

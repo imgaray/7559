@@ -1,10 +1,19 @@
-#ifndef GENERADOR_AVIONES_H
-#define GENERADOR_AVIONES_H
+#ifndef GENERADOR_AVIONES
+#define GENERADOR_AVIONES
 
 #include "FifoEscritura.h"
 #include "Avion.h"
 #include "FactoryElementos.h"
 #include <iostream>
+#include <stdlib.h>
+
+PRIORIDAD_AVION generarPrioridad(){
+	int aux = (rand() % 2) ;
+	if (aux == 1)
+		return AIRE;
+	else if (aux == 0)
+		return TIERRA;	
+}
 
 int main(int argc, char** argv) {
 	
@@ -15,12 +24,11 @@ int main(int argc, char** argv) {
 	// probamos con 20 aviones al principio
 	int i = 20;
 	while(i) {
-		Avion* avioneta = FactoryElementos::instance().crearAvion(i);
+		Avion* avioneta = FactoryElementos::instance().crearAvion(generarPrioridad());
 		std::string serializacion = avioneta->serializar();
 		
 		std::cout << "SERIALIZO:" << serializacion << std::endl;
 		
-		//fifo.escribir((const void*)serializacion.c_str(), (ssize_t) serializacion.size());
 		fifo.escribir((const void*)serializacion.c_str(), (ssize_t) 32);
 		delete avioneta;
 		i--;
