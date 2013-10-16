@@ -7,6 +7,7 @@ enum PRIORIDAD_AVION {
 
 class EstrategiaAvion {
 public:
+	EstrategiaAvion();
 	EstrategiaAvion(const EstrategiaAvion& copia);
 	EstrategiaAvion(PRIORIDAD_AVION prioridad);
 	void operar();

@@ -1,4 +1,5 @@
 #include "Pista.h"
+#include <string.h>
 
 #define SEP ';'
 
@@ -18,15 +19,15 @@ Pista::Pista(const std::string& s) {
 Pista::~Pista() {
 }
 
-std::string Pista::serializar(){
+const char* Pista::serializar(){
 	Utilitario utilitario;
-	std::string serial = "PISTA";
-	serial += SEP;
-	serial += utilitario.convertirAString(numero);
-	serial += SEP;
-	serial += this->lock->getNombre();
-	serial += SEP;
 	
+	static char serial[32];
+	std::stringstream ss;
+	
+	ss << "PISTA" << SEP << utilitario.convertirAString(numero) << SEP << this->lock->getNombre();
+	ss >> serial ;
+
 	return serial;
 }
 

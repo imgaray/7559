@@ -15,7 +15,7 @@ archivos = $(wildcard *.cpp)
 # EXTERNOS QUE ESTEN USANDO
 INCLUDES = common
 
-SUBSYSTEMS = torre controlador aviones common 
+SUBSYSTEMS = common torre controlador aviones  
 
 I-INCLUDES = $(addprefix -I, $(INCLUDES))
 

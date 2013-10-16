@@ -1,4 +1,8 @@
+#ifndef CONTROLADOR
+#define CONTROLADOR
 
+#include "FifoLectura.h"
+#include "Avion.h"
 
 int main(int argc, char** argv) {
 	FifoLectura fifo(argv[1]);
@@ -10,7 +14,7 @@ int main(int argc, char** argv) {
 		if (resultado != 0) {
 			std::string serial = ptr;
 			Avion* avioneta = new Avion(serial);
-			avioneta->operar();
+			avioneta->accionar();
 			delete avioneta;
 		}
 		delete ptr;
@@ -18,3 +22,5 @@ int main(int argc, char** argv) {
 	
 	return 0;
 }
+
+#endif

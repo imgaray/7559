@@ -1,5 +1,9 @@
 #include "EstrategiaAvion.h"
 
+EstrategiaAvion::EstrategiaAvion() {
+
+}
+
 EstrategiaAvion::EstrategiaAvion(const EstrategiaAvion& copia) {
 	this->prioridad = copia.prioridad;
 }

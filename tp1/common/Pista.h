@@ -9,7 +9,7 @@ class Pista {
 public:
 	void tomar();
 	void liberar();
-	std::string serializar();
+	const char* serializar();
 	void deserializar (const std::string& s);
 	Pista(unsigned numero);
 	Pista(const std::string& s);

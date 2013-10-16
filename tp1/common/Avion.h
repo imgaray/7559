@@ -8,11 +8,11 @@
 class Avion {
 public:
 	void accionar();
+	const char* serializar();
+	void deserializar (const std::string& s);
 	Avion(const EstrategiaAvion& estrategia);
 	Avion(const Avion& avion);
-	Avion(const std::string& s, const EstrategiaAvion& estrategia);
-	std::string serializar();
-	void deserializar (const std::string& s);
+	Avion(const std::string& s);	
 	virtual ~Avion();
 	bool operator<(const Avion& avion) const;
 private:

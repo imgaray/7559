@@ -17,7 +17,7 @@ INCLUDES = ../common
 
 I-INCLUDES = $(addprefix -I, $(INCLUDES))
 
-bin = $(archivos:.cpp=.o)
+bin = ../common/*.o $(archivos:.cpp=.o)
 
 robjs = $(wildcard *.o $(TARGET))
 

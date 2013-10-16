@@ -5,7 +5,7 @@ CXXFLAGS = -g
 CC = g++
 
 #EN ESTA VARIABLE VAN TODAS LAS DEPENDENCIAS QUE TENGAN UN MAIN Y SE QUIERAN COMPILAR
-TARGET = avion 
+TARGET = avion
 
 TARGETFLAGS = -g 
 
@@ -17,7 +17,7 @@ INCLUDES = ../common
 
 I-INCLUDES = $(addprefix -I, $(INCLUDES))
 
-bin = $(archivos:.cpp=.o)
+bin = ../common/*.o $(archivos:.cpp=.o)
 
 robjs = $(wildcard *.o $(TARGET))
 
