@@ -5,7 +5,7 @@ CXXFLAGS = -g
 CC = g++
 
 #EN ESTA VARIABLE VAN TODAS LAS DEPENDENCIAS QUE TENGAN UN MAIN Y SE QUIERAN COMPILAR
-TARGET = tp1
+TARGET = 
 
 TARGETFLAGS = -g 
 
@@ -13,9 +13,7 @@ archivos = $(wildcard *.cpp)
 
 # EN ESTA VARIABLE SE DEFINEN TODAS LAS CARPETAS QUE TENGAN .H
 # EXTERNOS QUE ESTEN USANDO
-INCLUDES = common
-
-SUBSYSTEMS = logger common torre controlador aviones
+INCLUDES = ../common 
 
 I-INCLUDES = $(addprefix -I, $(INCLUDES))
 
@@ -23,11 +21,8 @@ bin = $(archivos:.cpp=.o)
 
 robjs = $(wildcard *.o $(TARGET))
 
-SUBSYS = $(addprefix SUBSYS, $(SUBSYSTEMS))
-
-CLEANSUB = $(addprefix CLEANSUB, $(SUBSYSTEMS))
-
-SUBSYS-BINS = $($(wildcard common/*.cpp):.cpp=.o)
+EXTERNOBJ =  $(filter-out $(TARGET), $(foreach path, ., $(wildcard $(path)/*.cpp)))
+OBJS = $(EXTERNOBJ:.cpp=.o)
 
 #######################################
 #verbose = si
@@ -51,7 +46,7 @@ SUBSYS-BINS = $($(wildcard common/*.cpp):.cpp=.o)
 #########################################
 
 
-all: $(TARGET)
+all: main
 
 binaries: $(bin)
 
@@ -61,22 +56,12 @@ binaries: $(bin)
 %.o: %.cpp
 	$(CC) $(CXXFLAGS) $(I-INCLUDES) -c $<
 
-SUBSYS%: % 
-	$(MAKE) -C $<
+$(TARGET): binaries
+	$(CC) $(I-INCLUDES) $(bin) $(TARGETFLAGS) -o $(TARGET)
 
-CLEANSUB%: %
-	$(MAKE) clean -C $<
+main: $(OBJS)
 
-$(TARGET): $(SUBSYS) binaries
-	$(CC) $(I-INCLUDES) $(bin) $(SUBSYS-BINS) $(TARGETFLAGS) -o $(TARGET)
-
-clean: $(CLEANSUB)
+clean:
 	$(LIMPIAR) rm -f $(robjs)
 
-doc:
-	cd doc/ &&  rm -f *.aux *log && pdflatex tp.tex
-
-clean-doc:
-	rm -f *.aux *.log *.toc tp.pdf
-
-.PHONY: clean all binaries doc clean-doc
+.PHONY: clean all binaries

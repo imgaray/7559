@@ -5,7 +5,11 @@
 #include "Avion.h"
 
 int main(int argc, char** argv) {
-	FifoLectura fifo(argv[1]);
+	
+	static const std::string FIFO_RESOLVEDOR = "/tmp/fifo_resolvedor";
+	
+	FifoLectura fifo(FIFO_RESOLVEDOR);
+	
 	int resultado = 1;
 	do {
 		char* ptr = new char[33];
@@ -20,6 +24,8 @@ int main(int argc, char** argv) {
 		delete ptr;
 	} while(resultado != 0);
 	
+	fifo.cerrar();
+	fifo.eliminar();
 	return 0;
 }
 

@@ -13,11 +13,11 @@ archivos = $(wildcard *.cpp)
 
 # EN ESTA VARIABLE SE DEFINEN TODAS LAS CARPETAS QUE TENGAN .H
 # EXTERNOS QUE ESTEN USANDO
-INCLUDES = ../common
+INCLUDES = ../common ../logger
 
 I-INCLUDES = $(addprefix -I, $(INCLUDES))
 
-bin = ../common/*.o $(archivos:.cpp=.o)
+bin = ../common/*.o ../logger/*.o $(archivos:.cpp=.o)
 
 robjs = $(wildcard *.o $(TARGET))
 

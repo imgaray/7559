@@ -4,8 +4,11 @@
 #include "FifoEscritura.h"
 #include "Avion.h"
 #include "FactoryElementos.h"
+#include "Logger.h"
 #include <iostream>
 #include <stdlib.h>
+
+const string TAG = "generadorAviones";
 
 PRIORIDAD_AVION generarPrioridad(){
 	int aux = (rand() % 2) ;
@@ -28,10 +31,12 @@ int main(int argc, char** argv) {
 		std::string serializacion = avioneta->serializar();
 		
 		std::cout << "SERIALIZO:" << serializacion << std::endl;
+		Logger::info (TAG, "Serializo avion" + serializacion);
 		
 		fifo.escribir((const void*)serializacion.c_str(), (ssize_t) 32);
 		delete avioneta;
 		i--;
+		sleep();
 	}
 	
 	fifo.cerrar();
