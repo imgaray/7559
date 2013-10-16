@@ -1,5 +1,6 @@
 #include "Avion.h"
 #include <string.h>
+#include <iostream>
 
 #define SEP ';'
 
@@ -36,7 +37,13 @@ const char* Avion::serializar(){
 }
 
 void Avion::deserializar (const std::string& s){
-	
+	Utilitario utilitario;
+	int codEstrategia = utilitario.convertirAEntero( utilitario.separar(s, SEP, 1) );
+	if (codEstrategia == 0)
+		this->estrategia = EstrategiaAvion (TIERRA);
+	else if (codEstrategia == 1)
+		this->estrategia = EstrategiaAvion (AIRE);
+
 }
 
 int Avion::determinarPrioridad(){
