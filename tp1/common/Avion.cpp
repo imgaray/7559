@@ -27,12 +27,20 @@ bool Avion::operator<(const Avion& avion) const {
 
 const char* Avion::serializar(){
 	
-	static char serial[32];
+	char serial[32];
 	std::stringstream ss;
+	std::string output;
 	
 	ss << "AVION" << SEP << determinarPrioridad();
-	ss >> serial ;
-	
+	ss >> output;
+	int i = 0;
+	for (; i < output.size(); i++) {
+		serial[i] = output[i];
+	}
+	for (; i < 30; i++) {
+		*(serial + i) = 1;
+	}
+	serial[31] = 0;
 	return serial;
 }
 

@@ -47,6 +47,8 @@ int main(int argc, char** argv) {
 			Avion avioneta2 = prioridadAviones.top();
 			prioridadAviones.pop();
 			resultado &= fifoConsumer.escribir(avioneta2.serializar(), (ssize_t) 32) > 0;
+		} else {
+			LOG("leido EOF del resolvedor");
 		}
 		delete ptr;
 	} while(resultado > 0);
