@@ -1,31 +1,63 @@
 #include "Logger.h"
 #include <sstream>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
-ofstream Logger::archivoLog;
-int Logger::nivelDeLog = NIVEL_GLOBAL;
+
+Logger* Logger::logger_instance = NULL;
+
+Logger::Logger(): nivelDeLog(LOG_DEBUG) {
+	string timeStamp = "logger/output.log";
+	struct stat buffer;
+	if (stat(timeStamp.c_str(), &buffer)) {
+		archivoLog.open( timeStamp.c_str() );
+		archivoLog << "  Fecha y  hora\t\t" << " Tipo\t\t" << "Lugar del mensaje\t\t\t" << "Mensaje" << endl ;
+	} else {
+		archivoLog.open(timeStamp.c_str(), std::ofstream::app);
+	}
+	lock = new LockFile(timeStamp.c_str());
+}
+
+Logger& Logger::instance() {
+	if (!logger_instance) {
+		logger_instance = new Logger();
+	}
+	return *logger_instance;
+}
+
+void Logger::close() {
+	if (logger_instance)
+		delete logger_instance;
+	logger_instance = NULL;
+}
+
+Logger::~Logger() {
+	delete lock;
+}
 
 void Logger::warn(const string& tag, const string& msg){
-	if ((Logger::nivelDeLog & LOG_WARN) == 0)
+	if ((nivelDeLog & LOG_WARN) == 0)
 		return;
 
 	log(tag, msg, LOG_WARN);
 }
 
 void Logger::error(const string& tag, const string& msg) {
-	if ((Logger::nivelDeLog & LOG_ERROR) == 0)
+	if ((nivelDeLog & LOG_ERROR) == 0)
 		return;
 
 	log(tag, msg, LOG_ERROR);
 }
 
 void Logger::debug(const string& tag, const string& msg) {
-	if (Logger::nivelDeLog != LOG_DEBUG)
+	if (nivelDeLog != LOG_DEBUG)
 		return;
 	log(tag, msg, LOG_DEBUG);
 }
 
 void Logger::info(const string& tag, const string& msg) {
-	if ((Logger::nivelDeLog & LOG_INFO) == 0)
+	if ((nivelDeLog & LOG_INFO) == 0)
 		return;	
 	
 	log(tag, msg, LOG_INFO);
@@ -33,30 +65,17 @@ void Logger::info(const string& tag, const string& msg) {
 
 
 void Logger::fatal(const string& tag, const string& msg) {
-	if ((Logger::nivelDeLog & LOG_FATAL) == 0)
+	if ((nivelDeLog & LOG_FATAL) == 0)
 		return;
 	log(tag, msg, LOG_FATAL);
 }
 
 void Logger::log(const string& tag, const string& msg, int level) {
-	static int i = 0;
+	lock->tomarLock();
 	struct tm *p_local_t;
 	time_t t = time(NULL);
 	p_local_t = localtime(&t);
-	stringstream out; 
-	
-	out << 	"[" << p_local_t->tm_mday << "-" << 1 + p_local_t->tm_mon 
-			<< "-" << 1900 + p_local_t->tm_year << " " 
-			<< p_local_t->tm_hour << ":" << p_local_t->tm_min 
-			<< ":" << p_local_t->tm_sec << "]" ;
-	
-	string timeStamp = "logger/log " + out.str() + ".txt";
-	if (i == 0){
-		Logger::archivoLog.open( timeStamp.c_str() );
-		archivoLog << "  Fecha y  hora\t\t" << " Tipo\t\t" << "Lugar del mensaje\t\t\t" << "Mensaje" << endl ;
-		i++;
-	}
-	
+
 	string sNivel("[INFO]\t");
 	switch (level) {
 	case LOG_FATAL:
@@ -93,8 +112,11 @@ void Logger::log(const string& tag, const string& msg, int level) {
 			<< p_local_t->tm_hour << ":" << p_local_t->tm_min 
 			<< ":" << p_local_t->tm_sec << "]" << "\t" << sNivel << "\t" << tag << sep << msg
 			<< endl;
+	lock->liberarLock();
 }
 
 void Logger::setLogLevel(int nivelLog){
-	Logger::nivelDeLog = nivelLog;
+	lock->tomarLock();
+	nivelDeLog = nivelLog;
+	lock->liberarLock();
 }

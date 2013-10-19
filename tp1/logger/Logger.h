@@ -28,20 +28,23 @@ class Logger {
 
 private:
 	Logger();
-	static ofstream archivoLog;
+	~Logger();
+	ofstream archivoLog;
 	// nivel de log con el que logeamos. Por defecto, DEBUG.
-	static int nivelDeLog;
-	static void log(const string& tag, const string& msg, int level);
-	static LockFile lock;
+	int nivelDeLog;
+	void log(const string& tag, const string& msg, int level);
+	LockFile* lock;
+	static Logger* logger_instance;
 	
 public:
-	static void fatal(const string&, const string&);
-	static void error(const string&, const string&);
-	static void warn(const string&, const string&);
-	static void debug(const string&, const string&);
-	static void info(const string&, const string&);
-	
-	static void setLogLevel(int);
+	void fatal(const string&, const string&);
+	void error(const string&, const string&);
+	void warn(const string&, const string&);
+	void debug(const string&, const string&);
+	void info(const string&, const string&);
+	void setLogLevel(int);
+	static Logger& instance();
+	static void close();
 };
 
 #endif /* LOGGER_H_ */

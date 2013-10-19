@@ -1,23 +1,29 @@
 #include "Process.h"
 #include <iostream>
 #include <string>
+#include "Logger.h"
+
+#define TAG "MAIN PROCESS"
 
 int main(int argc, char** argv) {
 	Process* generadorAviones = NULL;
 	Process* consumerAviones = NULL;
+	Logger::instance().info(TAG, "comenzando la simulacion");
 	try {
-		std::cout << "comenzando simulacion" << std::endl;
 		std::string favion("aviones/avion");
+		Logger::instance().info(TAG, "comenzando generador de aviones");
 		generadorAviones = new Process(favion);
-		std::cout << "generador de aviones iniciado" << std::endl;
+		Logger::instance().info(TAG, "generador de aviones iniciado");
 		std::string fconsumer("torre/torr");
+		Logger::instance().info(TAG, "comenzando consumer de aviones");
 		consumerAviones = new Process(fconsumer);
-		std::cout << "consumer de aviones iniciado" << std::endl;
+		Logger::instance().info(TAG, "consumer de aviones iniciado");
 	} catch(char const* mensaje) {
-		std::cout << "excepcion agarrada! " << mensaje << std::endl;
+		Logger::instance().fatal(TAG, "generador de aviones iniciado");
 	}
 	if (generadorAviones)
 		delete generadorAviones;
 	if (consumerAviones)
 		delete consumerAviones;
+	Logger::close();
 }

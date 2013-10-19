@@ -13,7 +13,7 @@ archivos = $(wildcard *.cpp)
 
 # EN ESTA VARIABLE SE DEFINEN TODAS LAS CARPETAS QUE TENGAN .H
 # EXTERNOS QUE ESTEN USANDO
-INCLUDES = common
+INCLUDES = common logger
 
 SUBSYSTEMS = logger common torre controlador aviones
 
@@ -27,7 +27,7 @@ SUBSYS = $(addprefix SUBSYS, $(SUBSYSTEMS))
 
 CLEANSUB = $(addprefix CLEANSUB, $(SUBSYSTEMS))
 
-EXBINS = $(wildcard common/*.cpp)
+EXBINS = $(wildcard common/*.cpp logger/*.cpp)
 
 SUBSYS-BINS = $(EXBINS:.cpp=.o)
 

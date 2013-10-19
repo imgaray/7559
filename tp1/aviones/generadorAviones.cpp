@@ -6,7 +6,7 @@
 #include "FactoryElementos.h"
 #include "Logger.h"
 #include <iostream>
-#include <stdlib.h>
+#include <cstdlib>
 #include "Utilitario.h"
 #include "ArchivoConfiguracion.h"
 
@@ -27,14 +27,13 @@ int main(int argc, char** argv) {
 	FifoEscritura fifo(FIFO_GENERADOR);
 	ArchivoConfiguracion archivo(".cnfg");
 	fifo.abrir();
-	// probamos con 20 aviones al principio
 	int i = u.convertirAEntero(archivo.obtenerAtributo("aviones-tierra"));
 	std::cout << "cantidad de aviones = " << i << std::endl;
 	while(i) {
 		Avion* avioneta = FactoryElementos::instance().crearAvion(generarPrioridad());
 		std::string serializacion = avioneta->serializar();
 		//std::cout << "SERIALIZO:" << serializacion << std::endl;
-		Logger::info (TAG, "Serializo avion" + serializacion);
+		Logger::instance().info (TAG, "Serializo avion" + serializacion);
 		
 		if (fifo.escribir((const void*)serializacion.c_str(), (ssize_t) 32) == -1)
 			break;

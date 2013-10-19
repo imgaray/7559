@@ -46,12 +46,12 @@ int main(int argc, char** argv) {
 		}
 		delete ptr;
 	} while(resultado > 0);
-	Logger::info(TAG, "saliendo del resolvedor de peticiones");
+	Logger::instance().info(TAG, "saliendo del resolvedor de peticiones");
 	fifoConsumer.cerrar();
-	Logger::info(TAG, "fifo consumer cerrado");
+	Logger::instance().info(TAG, "fifo consumer cerrado");
 	fifo.cerrar();
 	consumidor.wait();
-	Logger::info(TAG, "fifo entrada cerrado");
+	Logger::instance().info(TAG, "fifo entrada cerrado");
 	fifo.eliminar();
 	return 0;
 }

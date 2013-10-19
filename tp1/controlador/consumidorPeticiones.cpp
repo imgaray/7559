@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
 	fifo.abrir();
 	std::cout << "abierta  la fifo en el consumidorpeticiones" << std::endl;
 	std::string ruta = FIFO_CONTROLADOR;
-	Logger::info(TAG, ruta);
+	Logger::instance().info(TAG, ruta);
 	Controlador c(u.convertirAEntero(numero));
 	int resultado = 1;
 	do {
