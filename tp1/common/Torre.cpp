@@ -49,7 +49,10 @@ Torre::~Torre() {
 void Torre::ingresarAvion(Avion& avion) {
 	FifoEscritura* fifo = procesosConsumidores[0].first;
 	std::string serial = avion.serializar();
-	if (fifo->escribir((const void*)serial.c_str(), serial.size()) == -1)
+	Logger::instance().info(TAG, "por despachar el avion");
+	if (fifo->escribir((const void*)serial.c_str(), serial.size()) == -1) {
+		Logger::instance().fatal(TAG, "no se pudo escribir en el fifo correspondiente");
 		throw "no se pudo escribir en el fifo correspondiente";
+	}
 
 }

@@ -13,7 +13,7 @@ archivos = $(wildcard *.cpp)
 
 # EN ESTA VARIABLE SE DEFINEN TODAS LAS CARPETAS QUE TENGAN .H
 # EXTERNOS QUE ESTEN USANDO
-INCLUDES = ../common 
+INCLUDES = ../common ../logger
 
 I-INCLUDES = $(addprefix -I, $(INCLUDES))
 

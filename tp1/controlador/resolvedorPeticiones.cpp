@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
 			prioridadAviones.push(avioneta);
 			Avion avioneta2 = prioridadAviones.top();
 			prioridadAviones.pop();
-			resultado = fifoConsumer.escribir(avioneta2.serializar(), (ssize_t) 32) > 0;
+			resultado &= fifoConsumer.escribir(avioneta2.serializar(), (ssize_t) 32) > 0;
 		}
 		delete ptr;
 	} while(resultado > 0);

@@ -7,6 +7,9 @@
 #include "Torre.h"
 #include <iostream>
 #include <sys/types.h>
+#include "Logger.h"
+
+#define TAG "consumerAviones"
 
 int main(int argc, char** argv) {
 	
@@ -24,20 +27,23 @@ int main(int argc, char** argv) {
 		status = fifoGen.leer(buffer, (ssize_t) 32);
 		if (status > 0) {
 			std::string serializacion = buffer;
-			//std::cout << "RECIBO:" << serializacion << std::endl;
+			Logger::instance().info(TAG, "avion recibido, procediendo a ingresarlo");
+			Logger::instance().debug(TAG, "RECIBO:" +serializacion);
 			Avion* avioneta = new Avion(serializacion);
 			torre->ingresarAvion(*avioneta);
 			delete avioneta;
+		} else {
+			Logger::instance().debug(TAG, "leido el end of file");
 		}
 		delete buffer;
 		
 	} while(status > 0);
 	fifoGen.cerrar();
-	std::cout << "cerrada la fifo del generador" << std::endl;
+	Logger::instance().debug(TAG,"cerrada la fifo del generador");
 	fifoGen.eliminar();
-	std::cout << "eliminada la fifo del generador" << std::endl;
+	Logger::instance().debug(TAG, "eliminada la fifo del generador");
 	delete torre;
-	std::cout << "saliendo del scheduler" << std::endl;
+	Logger::instance().debug(TAG, "saliendo del scheduler");
 	return 0;
 }
 

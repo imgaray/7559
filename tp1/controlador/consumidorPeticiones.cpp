@@ -40,6 +40,8 @@ int main(int argc, char** argv) {
 			c.manejar(avioneta, pista);
 			delete avioneta;
 			delete pista;
+		} else {
+			logger.debug(TAG + numero, "leido EOF de la fifo");
 		}
 		delete ptr;
 	} while(resultado > 0);
