@@ -7,8 +7,6 @@
 
 Fifo::Fifo(const std::string nombre) : nombre(nombre), fd(-1) {
 	if (mknod ( static_cast<const char*>(nombre.c_str()),S_IFIFO|0666,0 ) == -1){
-		printf ("Error no is : %d\n", errno);
-        printf("Error description is : %s\n",strerror(errno));
 		//throw("no se pudo crear el archivo del fifo");
 	}
 }

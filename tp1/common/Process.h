@@ -9,6 +9,7 @@
 #include <string>
 class Process {
 	public:
+		Process(std::string file, int a);
 		Process(const Process& proc);
 		Process(std::string file);
 		Process(char* file);

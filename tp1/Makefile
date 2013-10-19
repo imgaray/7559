@@ -27,7 +27,9 @@ SUBSYS = $(addprefix SUBSYS, $(SUBSYSTEMS))
 
 CLEANSUB = $(addprefix CLEANSUB, $(SUBSYSTEMS))
 
-SUBSYS-BINS = $($(wildcard common/*.cpp):.cpp=.o)
+EXBINS = $(wildcard common/*.cpp)
+
+SUBSYS-BINS = $(EXBINS:.cpp=.o)
 
 #######################################
 #verbose = si

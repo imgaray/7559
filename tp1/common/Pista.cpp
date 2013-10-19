@@ -1,12 +1,15 @@
 #include "Pista.h"
 #include <string.h>
+#include <iostream>
 
 #define SEP ';'
 
 void Pista::tomar() {
+	std::cout << "PISTA " << numero << " TOMADA" << std::endl;
 }
 
 void Pista::liberar() {
+	std::cout << "PISTA " << numero << " LIBERADA" << std::endl;
 }
 
 Pista::Pista(unsigned numero): numero(numero) {

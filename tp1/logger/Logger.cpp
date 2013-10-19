@@ -5,47 +5,37 @@ ofstream Logger::archivoLog;
 int Logger::nivelDeLog = NIVEL_GLOBAL;
 
 void Logger::warn(const string& tag, const string& msg){
-	//Logger::mutex.lock();
 	if ((Logger::nivelDeLog & LOG_WARN) == 0)
 		return;
 
 	log(tag, msg, LOG_WARN);
-	//Logger::mutex.unlock();
 }
 
 void Logger::error(const string& tag, const string& msg) {
-	//Logger::mutex.lock();
 	if ((Logger::nivelDeLog & LOG_ERROR) == 0)
 		return;
 
 	log(tag, msg, LOG_ERROR);
-	//Logger::mutex.unlock();
 }
 
 void Logger::debug(const string& tag, const string& msg) {
-	//Logger::mutex.lock();
 	if (Logger::nivelDeLog != LOG_DEBUG)
 		return;
 	log(tag, msg, LOG_DEBUG);
-	//Logger::mutex.unlock();
 }
 
 void Logger::info(const string& tag, const string& msg) {
-	//Logger::mutex.lock();
 	if ((Logger::nivelDeLog & LOG_INFO) == 0)
 		return;	
 	
 	log(tag, msg, LOG_INFO);
-	//Logger::mutex.unlock();
 }
 
 
 void Logger::fatal(const string& tag, const string& msg) {
-	//Logger::mutex.lock();
 	if ((Logger::nivelDeLog & LOG_FATAL) == 0)
 		return;
 	log(tag, msg, LOG_FATAL);
-	//Logger::mutex.unlock();
 }
 
 void Logger::log(const string& tag, const string& msg, int level) {

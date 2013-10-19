@@ -7,6 +7,7 @@
 #include <vector>
 #include <ctime>
 #include <time.h>
+#include "LockFile.h"
 
 using namespace std;
 
@@ -31,6 +32,7 @@ private:
 	// nivel de log con el que logeamos. Por defecto, DEBUG.
 	static int nivelDeLog;
 	static void log(const string& tag, const string& msg, int level);
+	static LockFile lock;
 	
 public:
 	static void fatal(const string&, const string&);

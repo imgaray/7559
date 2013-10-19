@@ -2,8 +2,11 @@
 #define TORRE_H
 
 #include "Avion.h"
-#include <queue>
-#include "Pipe.h"
+#include "Process.h"
+#include "FifoEscritura.h"
+#include <utility>
+#include <vector>
+#include "LockFile.h"
 
 class Torre {
 public:
@@ -11,8 +14,7 @@ public:
 	virtual ~Torre();
 	void ingresarAvion(Avion& avion);
 private:
-	Pipe* pipe;
-	std::priority_queue<Avion> avion;
+	std::vector<std::pair<FifoEscritura*, Process*> > procesosConsumidores;
 };
 
 #endif

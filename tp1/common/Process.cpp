@@ -1,4 +1,6 @@
 #include "Process.h"
+#include "Utilitario.h"
+#include <iostream>
 
 Process::Process(std::string file): id(0), exitStatus(0), file(file) {
 	startProcess();
@@ -12,6 +14,20 @@ Process::Process(const Process& proc): id(0), exitStatus(0), file(proc.file) {
 	startProcess();
 }
 
+Process::Process(std::string file, int arg): id(0), exitStatus(0), file(file) {
+	int tmpid = fork();
+	Utilitario u;
+	char* argumentos[] = {(char*) file.c_str(), (char*)u.convertirAString(arg).c_str(), (char*)NULL};
+	if (tmpid == 0) {
+		std::cout << "proceso hijo, parametro" << arg << std::endl;
+		int ret = execv(file.c_str(), argumentos);
+		if (ret == -1) throw("process error, could not replace process image");
+	} else if(tmpid > 0) {
+		id = tmpid;
+	} else {
+		throw("process error, could not fork child process");
+	}
+}
 bool Process::isRunning() {
 	return kill(id, 0) == 0;
 }
