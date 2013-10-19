@@ -3,22 +3,33 @@
 #include "ArchivoConfiguracion.h"
 #include <string>
 #include <iostream>
+#include "Semaforo.h"
+#include "Logger.h"
+#define TAG "Torre"
+
+#define LOG(X) Logger::instance().info(TAG, X)
 
 Torre::Torre() {
 	ArchivoConfiguracion arch(".cnfg");
 	Utilitario u;
 	std::string basename = "/tmp/fifo_controlador_";
+	LOG("iniciando torre");
 	int cantidadControles = u.convertirAEntero(arch.obtenerAtributo("controladores"));
+	LOG("cantidad de controles" + arch.obtenerAtributo("controladores"));
 	while (cantidadControles) {
-		std::cout << "nombre fifo controlador = " << basename + u.convertirAString(cantidadControles) << std::endl;
+		LOG("nombre fifo controlador = " + basename + u.convertirAString(cantidadControles));
 		FifoEscritura* fifo = new FifoEscritura(basename + u.convertirAString(cantidadControles));
+		LOG("por inciar el proceso de resolvedor numero " + u.convertirAString(cantidadControles));
 		Process* proc = new Process("controlador/resolvedorPeticiones", cantidadControles);
-		std::cout << "proceso de resolvedor de peticiones creado " << std::endl;
+		LOG("iniciado proceso de resolvedor de peticiones " + u.convertirAString(cantidadControles));
+		LOG("por abrir la fifo " + basename + u.convertirAString(cantidadControles));
 		fifo->abrir();
 		std::pair<FifoEscritura*, Process*> parcito(fifo, proc);
 		procesosConsumidores.push_back(parcito);
+		LOG("creado el consumidor numero " + u.convertirAString(cantidadControles));
 		cantidadControles--;
 	}
+	LOG("creacion terminada satisfactoriamente");
 }
 
 Torre::~Torre() {

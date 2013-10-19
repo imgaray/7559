@@ -54,7 +54,7 @@ binaries: $(bin)
 	$(CC) $(CXXFLAGS) $(I-INCLUDES) -c $<
 
 $(TARGET): binaries
-	$(CC) $(I-INCLUDES) $(bin) $(TARGETFLAGS) -o $(TARGET)
+	$(CC) $(I-INCLUDES) $(bin) ../logger/Logger.o $(TARGETFLAGS) -o $(TARGET)
 
 clean:
 	$(LIMPIAR) rm -f $(robjs)

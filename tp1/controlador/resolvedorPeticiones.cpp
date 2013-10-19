@@ -13,7 +13,7 @@
 
 #define TAG "ResolvedorPeticiones"
 
-#define LOG(X) Logger::instance().debug(TAG, X)
+#define LOG(X) Logger::instance().debug(TAG + numero, X)
 
 int main(int argc, char** argv) {
 	
@@ -24,19 +24,18 @@ int main(int argc, char** argv) {
 	static const std::string FIFO_CONSUMIDOR = "/tmp/fifo_controladorc_" + numero;
 	
 	std::priority_queue<Avion> prioridadAviones;
-
-	FifoLectura fifo(FIFO_RESOLVEDOR);
-	LOG("por abrir la fifo lectura");
-	fifo.abrir();
-	LOG("abierta la fifo en resolvedor peticiones");
-	LOG("por lanzar el consumidor");
+	LOG("por lanzar el consumidor " + numero);
 	Process consumidor("controlador/consumidorPeticiones", u.convertirAEntero(numero));
-	LOG("consumidor iniciado");
-	LOG("Por abrir fifo consumer");
+	LOG("consumidor "+numero+" iniciado");
+	LOG("Por abrir fifo consumer " + numero);
 	FifoEscritura fifoConsumer(FIFO_CONSUMIDOR);
 	fifoConsumer.abrir();
-	LOG("abierta la fifo del consumer");
+	LOG("abierta la fifo del consumer " + numero);
 	int resultado = 1;
+	FifoLectura fifo(FIFO_RESOLVEDOR);
+	LOG("por abrir la fifo lectura " + numero);
+	fifo.abrir();
+	LOG("abierta la fifo en resolvedor peticiones " + numero);
 	do {
 		char* ptr = new char[33];
 		ptr[32] = '\0';

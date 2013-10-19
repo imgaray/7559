@@ -26,5 +26,6 @@ int main(int argc, char** argv) {
 		delete generadorAviones;
 	if (consumerAviones)
 		delete consumerAviones;
+	Logger::instance().info(TAG, "finalizado correctamente");
 	Logger::close();
 }
