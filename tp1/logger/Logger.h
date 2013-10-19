@@ -43,6 +43,7 @@ public:
 	void debug(const string&, const string&);
 	void info(const string&, const string&);
 	void setLogLevel(int);
+	void clear();
 	static Logger& instance();
 	static void close();
 };

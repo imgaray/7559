@@ -8,6 +8,7 @@
 int main(int argc, char** argv) {
 	Process* generadorAviones = NULL;
 	Process* consumerAviones = NULL;
+	Logger::instance().clear();
 	Logger::instance().info(TAG, "comenzando la simulacion");
 	try {
 		std::string favion("aviones/avion");

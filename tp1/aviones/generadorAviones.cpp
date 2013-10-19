@@ -28,20 +28,22 @@ int main(int argc, char** argv) {
 	ArchivoConfiguracion archivo(".cnfg");
 	fifo.abrir();
 	int i = u.convertirAEntero(archivo.obtenerAtributo("aviones-tierra"));
-	std::cout << "cantidad de aviones = " << i << std::endl;
+	Logger::instance().info(TAG, "cantidad de aviones = "+ u.convertirAString(i));
 	while(i) {
 		Avion* avioneta = FactoryElementos::instance().crearAvion(generarPrioridad());
 		std::string serializacion = avioneta->serializar();
-		//std::cout << "SERIALIZO:" << serializacion << std::endl;
-		Logger::instance().info (TAG, "Serializo avion" + serializacion);
+		Logger::instance().debug(TAG, "Serializo avion " + serializacion);
 		
-		if (fifo.escribir((const void*)serializacion.c_str(), (ssize_t) 32) == -1)
+		if (fifo.escribir((const void*)serializacion.c_str(), (ssize_t) 32) == -1) {
+			Logger::instance().error(TAG, "no se pudo escribir en fifo");
 			break;
+		}
 		delete avioneta;
 		i--;
 	}
-	std::cout << TAG << "PROCESS OUT" << std::endl;
+	Logger::instance().info(TAG, "Por cerrar fifo de escritura");
 	fifo.cerrar();
+	Logger::instance().info(TAG, "Finalizado correctamente");
 	return 0;
 }
 

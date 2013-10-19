@@ -115,6 +115,15 @@ void Logger::log(const string& tag, const string& msg, int level) {
 	lock->liberarLock();
 }
 
+void Logger::clear() {
+	lock->tomarLock();
+	string timeStamp = "logger/output.log";
+	archivoLog.close();
+	archivoLog.open(timeStamp.c_str());
+	archivoLog << "  Fecha y  hora\t\t" << " Tipo\t\t" << "Lugar del mensaje\t\t\t" << "Mensaje" << endl ;
+	lock->liberarLock();
+}
+
 void Logger::setLogLevel(int nivelLog){
 	lock->tomarLock();
 	nivelDeLog = nivelLog;
