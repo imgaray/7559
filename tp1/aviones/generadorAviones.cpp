@@ -31,13 +31,14 @@ int main(int argc, char** argv) {
 	Logger::instance().info(TAG, "cantidad de aviones = "+ u.convertirAString(i));
 	while(i) {
 		Avion* avioneta = FactoryElementos::instance().crearAvion(generarPrioridad());
-		std::string serializacion = avioneta->serializar();
-		Logger::instance().debug(TAG, "Serializo avion " + serializacion);
+		const char* serializacion = avioneta->serializar();
+		Logger::instance().debug(TAG, "Serializo avion " + std::string(serializacion));
 		
-		if (fifo.escribir((const void*)serializacion.c_str(), (ssize_t) 32) == -1) {
+		if (fifo.escribir((const void*)serializacion, (ssize_t) 32) == -1) {
 			Logger::instance().error(TAG, "no se pudo escribir en fifo");
 			break;
 		}
+		delete[] serializacion;
 		delete avioneta;
 		i--;
 	}

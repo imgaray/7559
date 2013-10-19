@@ -27,7 +27,7 @@ bool Avion::operator<(const Avion& avion) const {
 
 const char* Avion::serializar(){
 	
-	char serial[32];
+	char* serial = new char[32];
 	std::stringstream ss;
 	std::string output;
 	
@@ -38,15 +38,15 @@ const char* Avion::serializar(){
 		serial[i] = output[i];
 	}
 	for (; i < 30; i++) {
-		*(serial + i) = 1;
+		*(serial + i) = 'X';
 	}
-	serial[31] = 0;
+	serial[31] = '\0';
 	return serial;
 }
 
 void Avion::deserializar (const std::string& s){
 	Utilitario utilitario;
-	int codEstrategia = utilitario.convertirAEntero( utilitario.separar(s, SEP, 1) );
+	int codEstrategia = utilitario.convertirAEntero( utilitario.separar(s, SEP, 0) );
 	if (codEstrategia == 0)
 		this->estrategia = EstrategiaAvion (TIERRA);
 	else if (codEstrategia == 1)

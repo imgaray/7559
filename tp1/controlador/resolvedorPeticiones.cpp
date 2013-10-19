@@ -46,18 +46,20 @@ int main(int argc, char** argv) {
 			prioridadAviones.push(avioneta);
 			Avion avioneta2 = prioridadAviones.top();
 			prioridadAviones.pop();
-			resultado &= fifoConsumer.escribir(avioneta2.serializar(), (ssize_t) 32) > 0;
+			const char* serial = avioneta2.serializar();
+			resultado &= fifoConsumer.escribir(serial, (ssize_t) 32) > 0;
+			delete[] serial;
 		} else {
 			LOG("leido EOF del resolvedor");
 		}
 		delete ptr;
 	} while(resultado > 0);
-	Logger::instance().info(TAG, "saliendo del resolvedor de peticiones");
+	Logger::instance().info(TAG + numero, "saliendo del resolvedor de peticiones");
 	fifoConsumer.cerrar();
-	Logger::instance().info(TAG, "fifo consumer cerrado");
+	Logger::instance().info(TAG + numero, "fifo consumer cerrado");
 	fifo.cerrar();
 	consumidor.wait();
-	Logger::instance().info(TAG, "fifo entrada cerrado");
+	Logger::instance().info(TAG + numero, "fifo entrada cerrado");
 	fifo.eliminar();
 	return 0;
 }
