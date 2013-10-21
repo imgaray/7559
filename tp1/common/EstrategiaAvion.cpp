@@ -35,3 +35,7 @@ int EstrategiaAvion::determinarPrioridad(){
 	else if (this->prioridad == TIERRA)
 		return 0;	
 }
+
+bool EstrategiaAvion::operator==(const EstrategiaAvion& otra) const {
+	return (this->prioridad == otra.prioridad);
+}

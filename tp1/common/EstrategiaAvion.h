@@ -13,8 +13,10 @@ public:
 	int determinarPrioridad();	
 	void operar();
 	bool operator<(const EstrategiaAvion& otra) const;
+	bool operator==(const EstrategiaAvion& otra) const;
 	virtual ~EstrategiaAvion();
 	EstrategiaAvion& operator=(const EstrategiaAvion& rhs);
+	
 
 private:
 	PRIORIDAD_AVION prioridad;

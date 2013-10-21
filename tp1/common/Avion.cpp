@@ -59,3 +59,7 @@ void Avion::deserializar (const std::string& s){
 int Avion::determinarPrioridad(){
 	return this->estrategia.determinarPrioridad();
 }
+
+EstrategiaAvion Avion::getEstrategia() {
+	return this->estrategia;
+}
