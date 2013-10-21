@@ -27,11 +27,11 @@ int main(int argc, char** argv) {
 	Controlador c(u.convertirAEntero(numero));
 	int resultado = 1;
 	do {
-		char* ptr = new char[33];
-		ptr[32] = '\0';
+		char* ptr = new char[32];
 		resultado = fifo.leer(ptr, (ssize_t) 32);
-		logger.debug(TAG + numero, "resultado de lectura de fifo " + u.convertirAString(resultado));
+		ptr[31] = '\0';
 		if (resultado > 0 ) {
+			logger.debug(TAG + numero, "resultado de lectura de fifo " + u.convertirAString(resultado));
 			std::string serial = ptr;
 			logger.debug(TAG + numero, "serializacion " + serial);
 			Avion* avioneta = new Avion(serial);

@@ -19,7 +19,6 @@ Process::Process(std::string file, int arg): id(0), exitStatus(0), file(file) {
 	Utilitario u;
 	char* argumentos[] = {(char*) file.c_str(), (char*)u.convertirAString(arg).c_str(), (char*)NULL};
 	if (tmpid == 0) {
-		std::cout << "proceso hijo, parametro" << arg << std::endl;
 		int ret = execv(file.c_str(), argumentos);
 		if (ret == -1) throw("process error, could not replace process image");
 	} else if(tmpid > 0) {
