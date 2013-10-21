@@ -37,7 +37,7 @@ const char* Avion::serializar(){
 	for (; i < output.size(); i++) {
 		serial[i] = output[i];
 	}
-	for (; i < 30; i++) {
+	for (; i < 31; i++) {
 		*(serial + i) = 'X';
 	}
 	serial[31] = '\0';
@@ -46,7 +46,9 @@ const char* Avion::serializar(){
 
 void Avion::deserializar (const std::string& s){
 	Utilitario utilitario;
-	int codEstrategia = utilitario.convertirAEntero( utilitario.separar(s, SEP, 0) );
+	std::string serial = s;
+	utilitario.borrarCaracter(serial, 'X');
+	int codEstrategia = utilitario.convertirAEntero( utilitario.separar(serial, SEP, 1) );
 	if (codEstrategia == 0)
 		this->estrategia = EstrategiaAvion (TIERRA);
 	else if (codEstrategia == 1)
