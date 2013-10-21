@@ -42,7 +42,7 @@ void test_serializacion() {
 	
 	Avion nuevoAvion(stream);
 	
-	TestHelper::instance().eval_test(prioridad == nuevoAvion.determinarPrioridad(), "La prioridad del avion no se serializo correctamente");	
+	TestHelper::instance().eval_test(prioridad == nuevoAvion.determinarPrioridad(), "Avion conserva la prioridad al serializar");	
 }
 
 void PruebasAvion() {
