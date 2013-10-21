@@ -22,20 +22,20 @@ int main(int argc, char** argv) {
 	ssize_t status = 1;
 
 	do {
-		char* buffer = new char[33];
-		buffer[32] = '\0';
+		char* buffer = new char[32];
 		status = fifoGen.leer(buffer, (ssize_t) 32);
+		buffer[31] = '\0';
 		if (status > 0) {
 			std::string serializacion = buffer;
-			Logger::instance().info(TAG, "avion recibido, procediendo a ingresarlo");
 			Logger::instance().debug(TAG, "RECIBO:" +serializacion);
 			Avion* avioneta = new Avion(serializacion);
+			Logger::instance().info(TAG, "avion recibido, procediendo a ingresarlo");
 			torre->ingresarAvion(*avioneta);
 			delete avioneta;
 		} else {
 			Logger::instance().debug(TAG, "leido el end of file");
 		}
-		delete buffer;
+		delete[] buffer;
 		
 	} while(status > 0);
 	fifoGen.cerrar();

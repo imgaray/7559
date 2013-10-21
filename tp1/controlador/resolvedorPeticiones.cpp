@@ -37,16 +37,17 @@ int main(int argc, char** argv) {
 	fifo.abrir();
 	LOG("abierta la fifo en resolvedor peticiones " + numero);
 	do {
-		char* ptr = new char[33];
-		ptr[32] = '\0';
+		char* ptr = new char[32];
 		resultado = fifo.leer(ptr, (ssize_t) 32);
-		LOG("leido " + std::string(ptr));
+		ptr[31] = '\0';
 		if (resultado > 0) {
+			LOG("leido " + std::string(ptr));
 			Avion avioneta(ptr);
 			prioridadAviones.push(avioneta);
 			Avion avioneta2 = prioridadAviones.top();
 			prioridadAviones.pop();
 			const char* serial = avioneta2.serializar();
+			LOG("por recepcionar " + std::string(serial));
 			resultado &= fifoConsumer.escribir(serial, (ssize_t) 32) > 0;
 			delete[] serial;
 		} else {
@@ -54,6 +55,14 @@ int main(int argc, char** argv) {
 		}
 		delete ptr;
 	} while(resultado > 0);
+	while(prioridadAviones.size() > 0) {
+		Avion avioneta2 = prioridadAviones.top();
+		prioridadAviones.pop();
+		const char* serial = avioneta2.serializar();
+		LOG("por recepcionar " + std::string(serial));
+		resultado &= fifoConsumer.escribir(serial, (ssize_t) 32) > 0;
+		delete[] serial;
+	}
 	Logger::instance().info(TAG + numero, "saliendo del resolvedor de peticiones");
 	fifoConsumer.cerrar();
 	Logger::instance().info(TAG + numero, "fifo consumer cerrado");

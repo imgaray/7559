@@ -1,15 +1,20 @@
 #include "Pista.h"
 #include <string.h>
 #include <iostream>
+#include "Logger.h"
 
 #define SEP ';'
 
+#define TAG "Pista"
+
 void Pista::tomar() {
-	std::cout << "PISTA " << numero << " TOMADA" << std::endl;
+	Utilitario u;
+	Logger::instance().info(TAG,"pista " + u.convertirAString(numero) + " tomada");
 }
 
 void Pista::liberar() {
-	std::cout << "PISTA " << numero << " LIBERADA" << std::endl;
+	Utilitario u;
+	Logger::instance().info(TAG,"pista " + u.convertirAString(numero) + " liberada");
 }
 
 Pista::Pista(unsigned numero): numero(numero) {
@@ -25,12 +30,20 @@ Pista::~Pista() {
 const char* Pista::serializar(){
 	Utilitario utilitario;
 	
-	static char serial[32];
+	char* serial = new char[32];
 	std::stringstream ss;
-	
+	std::string out;
 	ss << "PISTA" << SEP << utilitario.convertirAString(numero) << SEP << this->lock->getNombre();
-	ss >> serial ;
-
+	ss >> out;
+	int i = 0;
+	for (;i < out.size(); i++) {
+		serial[i] = out[i];
+	}
+	
+	for (;i < 32; i ++) {
+		serial[i] = 'X';
+	}
+	serial[31] = '\0';
 	return serial;
 }
 
