@@ -3,5 +3,7 @@
 
 void PruebasAvion();
 
+void test_serializacion();
+
 #endif
 

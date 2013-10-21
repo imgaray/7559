@@ -1,6 +1,7 @@
 #include "Avion.h"
 #include <assert.h>
 #include "test_helper.h"
+#include "test_avion.h"
 
 void PruebaComparacionAvion() {
 	EstrategiaAvion eaire(AIRE);
@@ -25,9 +26,30 @@ void PruebaAccionAvion() {
 	TestHelper::instance().eval_test(true, "acciones realizables");
 }
 
+
+
+void test_serializacion() {
+	
+	TestHelper::instance().eval_test(true, "Test de serializacion Avion.");	
+	
+	EstrategiaAvion est(TIERRA);
+	Avion avion(est);
+	int prioridad;
+	
+	prioridad = avion.determinarPrioridad();
+		
+	const char* stream = avion.serializar();
+	
+	Avion nuevoAvion(stream);
+	
+	TestHelper::instance().eval_test(prioridad == nuevoAvion.determinarPrioridad(), "La prioridad del avion no se serializo correctamente");	
+}
+
 void PruebasAvion() {
 	TestHelper::instance();
 	PruebaComparacionAvion();
 	PruebaAccionAvion();
+	test_serializacion();
 	TestHelper::cerrar();
 }
+
