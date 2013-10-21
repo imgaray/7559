@@ -13,9 +13,9 @@ archivos = $(wildcard *.cpp)
 
 # EN ESTA VARIABLE SE DEFINEN TODAS LAS CARPETAS QUE TENGAN .H
 # EXTERNOS QUE ESTEN USANDO
-INCLUDES = ../common
+INCLUDES = ../common ../logger
 
-SUBSYSTEMS = ../common 
+SUBSYSTEMS = ../common ../logger
 
 SUBSYS-BIN = $(foreach dir,$(SUBSYSTEMS), $(wildcard $(dir)/*.cpp))
 
