@@ -37,10 +37,10 @@ public:
 	T leer() const;
 };
 
-template <class T> MemoriaCompartida2<T>::MemoriaCompartida2 ():shmId(0),ptrDatos(NULL) {
+template <class T> MemoriaCompartida<T>::MemoriaCompartida ():shmId(0),ptrDatos(NULL) {
 }
 
-template <class T> void MemoriaCompartida2<T>::crear ( const std::string& archivo,const char letra ) {
+template <class T> void MemoriaCompartida<T>::crear ( const std::string& archivo,const char letra ) {
 	key_t clave = ftok ( archivo.c_str(),letra );
 
 	if ( clave > 0 ) {
@@ -64,7 +64,7 @@ template <class T> void MemoriaCompartida2<T>::crear ( const std::string& archiv
 	}
 }
 
-template <class T> void MemoriaCompartida2<T>::liberar() {
+template <class T> void MemoriaCompartida<T>::liberar() {
 	int errorDt = shmdt ( (void *) this->ptrDatos );
 
 	if ( errorDt != -1 ) {
@@ -78,7 +78,7 @@ template <class T> void MemoriaCompartida2<T>::liberar() {
 	}
 }
 
-template <class T> MemoriaCompartida2<T>::MemoriaCompartida2 ( const std::string& archivo,const char letra ):shmId(0),ptrDatos(NULL) {
+template <class T> MemoriaCompartida<T>::MemoriaCompartida ( const std::string& archivo,const char letra ):shmId(0),ptrDatos(NULL) {
 	key_t clave = ftok ( archivo.c_str(),letra );
 
 	if ( clave > 0 ) {
@@ -102,7 +102,7 @@ template <class T> MemoriaCompartida2<T>::MemoriaCompartida2 ( const std::string
 	}
 }
 
-template <class T> MemoriaCompartida2<T>::MemoriaCompartida2 ( const MemoriaCompartida2& origen ):shmId(origen.shmId) {
+template <class T> MemoriaCompartida<T>::MemoriaCompartida ( const MemoriaCompartida& origen ):shmId(origen.shmId) {
 	void* tmpPtr = shmat ( origen.shmId,NULL,0 );
 
 	if ( tmpPtr != (void*) -1 ) {
@@ -113,7 +113,7 @@ template <class T> MemoriaCompartida2<T>::MemoriaCompartida2 ( const MemoriaComp
 	}
 }
 
-template <class T> MemoriaCompartida2<T>::~MemoriaCompartida2 () {
+template <class T> MemoriaCompartida<T>::~MemoriaCompartida () {
 	int errorDt = shmdt ( static_cast<void*> (this->ptrDatos) );
 
 	if ( errorDt != -1 ) {
@@ -126,7 +126,7 @@ template <class T> MemoriaCompartida2<T>::~MemoriaCompartida2 () {
 	}
 }
 
-template <class T> MemoriaCompartida2<T>& MemoriaCompartida2<T>::operator= ( const MemoriaCompartida2& origen ) {
+template <class T> MemoriaCompartida<T>& MemoriaCompartida<T>::operator= ( const MemoriaCompartida& origen ) {
 	this->shmId = origen.shmId;
 	void* tmpPtr = shmat ( this->shmId,NULL,0 );
 
@@ -140,15 +140,15 @@ template <class T> MemoriaCompartida2<T>& MemoriaCompartida2<T>::operator= ( con
 	return *this;
 }
 
-template <class T> void MemoriaCompartida2<T>::escribir ( const T& dato ) {
+template <class T> void MemoriaCompartida<T>::escribir ( const T& dato ) {
 	*(this->ptrDatos) = dato;
 }
 
-template <class T> T MemoriaCompartida2<T>::leer() const {
+template <class T> T MemoriaCompartida<T>::leer() const {
 	return *(this->ptrDatos);
 }
 
-template <class T> int MemoriaCompartida2<T> :: cantidadProcesosAdosados () const {
+template <class T> int MemoriaCompartida<T> :: cantidadProcesosAdosados () const {
 	shmid_ds estado;
 	shmctl ( this->shmId,IPC_STAT,&estado );
 	return estado.shm_nattch;

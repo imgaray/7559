@@ -12,6 +12,9 @@ void Avion::accionar() {
 	Logger::instance().info(TAG, "realiza accion " + std::string(nameInfo[estrategia]));
 }
 
+Avion::Avion(): estrategia(TIERRA) {
+}
+
 Avion::Avion(const Avion& avion): estrategia(avion.estrategia) {
 }
 

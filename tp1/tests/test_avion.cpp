@@ -3,6 +3,8 @@
 #include "test_helper.h"
 #include "test_avion.h"
 
+#include <iostream>
+
 void PruebaComparacionAvion() {
 	EstrategiaAvion eaire(AIRE);
 	EstrategiaAvion etierra(TIERRA);
@@ -17,11 +19,9 @@ void PruebaComparacionAvion() {
 }
 
 void PruebaAccionAvion() {
-	EstrategiaAvion eaire(AIRE);
-	Avion avion1(eaire);
+	Avion avion1(AIRE);
 	avion1.accionar();
-	EstrategiaAvion etierra(TIERRA);
-	Avion avion2(etierra);
+	Avion avion2(TIERRA);
 	avion2.accionar();
 	TestHelper::instance().eval_test(true, "acciones realizables");
 }
@@ -31,9 +31,7 @@ void PruebaAccionAvion() {
 void test_serializacion() {
 	
 	TestHelper::instance().eval_test(true, "Test de serializacion Avion.");	
-	
-	EstrategiaAvion est(TIERRA);
-	Avion avion(est);
+	Avion avion(TIERRA);
 	int prioridad;
 	
 	prioridad = avion.determinarPrioridad();
@@ -47,10 +45,14 @@ void test_serializacion() {
 }
 
 void PruebasAvion() {
-	TestHelper::instance();
-	PruebaComparacionAvion();
-	PruebaAccionAvion();
-	test_serializacion();
-	TestHelper::cerrar();
+	try {
+		TestHelper::instance();
+		PruebaComparacionAvion();
+		PruebaAccionAvion();
+		test_serializacion();
+		TestHelper::cerrar();
+	} catch(char const* ex) {
+		std::cout << "error, exepcion levantada " << ex << std::endl;
+	}
 }
 

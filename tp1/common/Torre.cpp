@@ -10,6 +10,7 @@
 #define LOG(X) Logger::instance().info(TAG, X)
 
 Torre::Torre() {
+	colaCompartida.crear("/tmp/memoria_compartida_cola_compartida", 'a');
 	ArchivoConfiguracion arch(".cnfg");
 	Utilitario u;
 	std::string basename = "/tmp/fifo_controlador_";
@@ -54,5 +55,4 @@ void Torre::ingresarAvion(Avion& avion) {
 		Logger::instance().fatal(TAG, "no se pudo escribir en el fifo correspondiente");
 		throw "no se pudo escribir en el fifo correspondiente";
 	}
-
 }

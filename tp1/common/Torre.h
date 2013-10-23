@@ -7,6 +7,8 @@
 #include <utility>
 #include <vector>
 #include "LockFile.h"
+#include "MemoriaCompartida.h"
+#include "ColaPrioridadCompartida.h"
 
 class Torre {
 public:
@@ -15,6 +17,8 @@ public:
 	void ingresarAvion(Avion& avion);
 private:
 	std::vector<std::pair<FifoEscritura*, Process*> > procesosConsumidores;
+	MemoriaCompartida<ColaPrioridadCompartida> colaCompartida;
+	Process* consumidor;
 };
 
 #endif

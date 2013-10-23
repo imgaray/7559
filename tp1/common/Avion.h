@@ -11,6 +11,7 @@ enum EstrategiaAvion {
 class Avion {
 public:
 	void accionar();
+	Avion();
 	const char* serializar();
 	void deserializar (const std::string& s);
 	int determinarPrioridad();

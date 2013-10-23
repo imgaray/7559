@@ -5,9 +5,8 @@ FactoryElementos* FactoryElementos::factory = NULL;
 FactoryElementos::FactoryElementos() {
 }
 
-Avion* FactoryElementos::crearAvion(PRIORIDAD_AVION prioridad) {
-	EstrategiaAvion estrat(prioridad);
-	return new Avion(estrat);
+Avion* FactoryElementos::crearAvion(EstrategiaAvion prioridad) {
+	return new Avion(prioridad);
 }
 
 Pista* FactoryElementos::crearPista(int numero) {

@@ -12,7 +12,7 @@
 
 const string TAG = "generadorAviones";
 
-PRIORIDAD_AVION generarPrioridad(){
+EstrategiaAvion generarPrioridad(){
 	int aux = (rand() % 2) ;
 	if (aux == 1)
 		return AIRE;

@@ -3,7 +3,6 @@
 
 #include <string>
 #include "FifoLectura.h"
-#include "FifoEscritura.h"
 #include "Torre.h"
 #include <iostream>
 #include <sys/types.h>

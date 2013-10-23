@@ -8,7 +8,7 @@
 Logger* Logger::logger_instance = NULL;
 
 Logger::Logger(): nivelDeLog(LOG_DEBUG) {
-	string timeStamp = "logger/output.log";
+	string timeStamp = "output.log";
 	struct stat buffer;
 	if (stat(timeStamp.c_str(), &buffer)) {
 		archivoLog.open( timeStamp.c_str() );
