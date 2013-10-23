@@ -15,12 +15,13 @@ int main(int argc, char** argv) {
 		Logger::instance().info(TAG, "comenzando generador de aviones");
 		generadorAviones = new Process(favion);
 		Logger::instance().info(TAG, "generador de aviones iniciado");
-		std::string fconsumer("torre/torr");
+		std::string fconsumer("torre/consumerAviones");
 		Logger::instance().info(TAG, "comenzando consumer de aviones");
 		consumerAviones = new Process(fconsumer);
 		Logger::instance().info(TAG, "consumer de aviones iniciado");
 	} catch(char const* mensaje) {
-		Logger::instance().fatal(TAG, "generador de aviones iniciado");
+		//Logger::instance().fatal(TAG, "generador de aviones iniciado");
+		std::cout << "Excepcion catcheada: " << mensaje << std::endl;
 	}
 	if (generadorAviones)
 		delete generadorAviones;

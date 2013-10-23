@@ -10,9 +10,13 @@
 #define LOG(X) Logger::instance().info(TAG, X)
 
 Torre::Torre() {
-	colaCompartida.crear("/tmp/memoria_compartida_cola_compartida", 'a');
-	consumidor = new Process("/tmp/dispatcherAviones");
-	LOG("creacion terminada satisfactoriamente");
+	try{
+		colaCompartida.crear("/tmp/memoria_compartida_cola_compartida", 'a');
+		consumidor = new Process("torre/dispatcherAviones");
+		LOG("creacion terminada satisfactoriamente");
+	} catch (char const* mensaje){
+		std::cout << "Excepcion catcheada: " << mensaje << std::endl;
+	}
 }
 
 Torre::~Torre() {

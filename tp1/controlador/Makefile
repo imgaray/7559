@@ -5,7 +5,7 @@ CXXFLAGS = -g
 CC = g++
 
 #EN ESTA VARIABLE VAN TODAS LAS DEPENDENCIAS QUE TENGAN UN MAIN Y SE QUIERAN COMPILAR
-TARGET = consumidorPeticiones resolvedorPeticiones
+TARGET = consumidorPeticiones 
 
 TARGETFLAGS = -g 
 
@@ -53,8 +53,8 @@ binaries: $(bin)
 %.o: %.cpp
 	$(CC) $(CXXFLAGS) $(I-INCLUDES) -c $<
 
-controlador: consumidorPeticiones.cpp binaries
-	$(CC) $(I-INCLUDES) $(bin) $(TARGETFLAGS) consumidorPeticiones.cpp -o controlador
+consumidorPeticiones: consumidorPeticiones.cpp binaries
+	$(CC) $(I-INCLUDES) $(bin) $(TARGETFLAGS) consumidorPeticiones.cpp -o consumidorPeticiones
 
 clean:
 	$(LIMPIAR) rm -f $(robjs)

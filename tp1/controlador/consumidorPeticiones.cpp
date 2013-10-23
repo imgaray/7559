@@ -8,6 +8,7 @@
 #include <iostream>
 #include "Logger.h"
 #include "Semaforo.h"
+#include "Utilitario.h"
 
 #define TAG "consumidorPeticiones"
 

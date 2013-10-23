@@ -5,11 +5,11 @@ CXXFLAGS = -g
 CC = g++
 
 #EN ESTA VARIABLE VAN TODAS LAS DEPENDENCIAS QUE TENGAN UN MAIN Y SE QUIERAN COMPILAR
-TARGET = torr
+TARGET = consumerAviones dispatcherAviones
 
 TARGETFLAGS = -g 
 
-archivos = $(wildcard *.cpp)
+archivos = $(filter-out $(addsuffix .cpp, $(TARGET)), $(wildcard *.cpp))
 
 # EN ESTA VARIABLE SE DEFINEN TODAS LAS CARPETAS QUE TENGAN .H
 # EXTERNOS QUE ESTEN USANDO
@@ -17,7 +17,7 @@ INCLUDES = ../common ../logger
 
 I-INCLUDES = $(addprefix -I, $(INCLUDES))
 
-bin = ../common/*.o $(archivos:.cpp=.o)
+bin = ../common/*.o ../logger/Logger.o $(archivos:.cpp=.o)
 
 robjs = $(wildcard *.o $(TARGET))
 
@@ -54,11 +54,11 @@ binaries: $(bin)
 	$(CC) $(CXXFLAGS) $(I-INCLUDES) -c $<
 
 consumerAviones: consumerAviones.cpp binaries
-	$(CC) $(I-INCLUDES) $(bin) ../logger/Logger.o $(TARGETFLAGS) consumerAviones.cpp -o consumerAviones
+	$(CC) $(I-INCLUDES) $(bin) $(TARGETFLAGS) consumerAviones.cpp -o consumerAviones
 
 
 dispatcherAviones: dispatcherAviones.cpp binaries
-	$(CC) $(I-INCLUDES) $(bin) ../logger/Logger.o $(TARGETFLAGS) dispatcherAviones.cpp -o dispatcherAviones
+	$(CC) $(I-INCLUDES) $(bin) $(TARGETFLAGS) dispatcherAviones.cpp -o dispatcherAviones
 
 clean:
 	$(LIMPIAR) rm -f $(robjs)
