@@ -6,8 +6,10 @@
 #define SEP ';'
 #define TAG "Avion"
 
+static char* nameInfo[2] = {"despegar", "aterrizar"};
+
 void Avion::accionar() {
-	this->estrategia.operar();
+	Logger::instance().info(TAG, "realiza accion " + std::string(nameInfo[estrategia]));
 }
 
 Avion::Avion(const Avion& avion): estrategia(avion.estrategia) {
@@ -54,14 +56,14 @@ void Avion::deserializar (const std::string& s){
 	Logger::instance().debug(TAG, "tipo obtenido " + utilitario.convertirAEntero(utilitario.separar(serial, SEP, 1)));
 	int codEstrategia = utilitario.convertirAEntero( utilitario.separar(serial, SEP, 1) );
 	if (codEstrategia == 0)
-		this->estrategia = EstrategiaAvion (TIERRA);
+		this->estrategia = TIERRA;
 	else if (codEstrategia == 1)
-		this->estrategia = EstrategiaAvion (AIRE);
+		this->estrategia = AIRE;
 
 }
 
 int Avion::determinarPrioridad(){
-	return this->estrategia.determinarPrioridad();
+	return this->estrategia;
 }
 
 EstrategiaAvion Avion::getEstrategia() {

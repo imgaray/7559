@@ -1,9 +1,12 @@
 #ifndef AVION_H
 #define AVION_H
 
-#include "EstrategiaAvion.h"
 #include "Utilitario.h"
 #include <string>
+
+enum EstrategiaAvion {
+	TIERRA = 0, AIRE = 1
+};
 
 class Avion {
 public:
