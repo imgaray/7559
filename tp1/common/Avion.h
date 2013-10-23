@@ -16,6 +16,8 @@ public:
 	Avion(const std::string& s);	
 	virtual ~Avion();
 	bool operator<(const Avion& avion) const;
+	EstrategiaAvion getEstrategia();
+	
 private:
 	EstrategiaAvion estrategia;
 };
