@@ -1,8 +1,10 @@
 #include "Avion.h"
 #include <string.h>
 #include <iostream>
+#include "Logger.h"
 
 #define SEP ';'
+#define TAG "Avion"
 
 void Avion::accionar() {
 	this->estrategia.operar();
@@ -48,6 +50,8 @@ void Avion::deserializar (const std::string& s){
 	Utilitario utilitario;
 	std::string serial = s;
 	utilitario.borrarCaracter(serial, 'X');
+	Logger::instance().debug(TAG, "serializacion sin padding " + serial);
+	Logger::instance().debug(TAG, "tipo obtenido " + utilitario.convertirAEntero(utilitario.separar(serial, SEP, 1)));
 	int codEstrategia = utilitario.convertirAEntero( utilitario.separar(serial, SEP, 1) );
 	if (codEstrategia == 0)
 		this->estrategia = EstrategiaAvion (TIERRA);
