@@ -16,7 +16,6 @@ public:
 	virtual ~Torre();
 	void ingresarAvion(Avion& avion);
 private:
-	std::vector<std::pair<FifoEscritura*, Process*> > procesosConsumidores;
 	MemoriaCompartida<ColaPrioridadCompartida> colaCompartida;
 	Process* consumidor;
 };
