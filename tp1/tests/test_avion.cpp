@@ -42,6 +42,7 @@ void test_serializacion() {
 	
 	TestHelper::instance().eval_test(avion.getEstrategia() == nuevoAvion.getEstrategia(), "Estrategia se conserva al serializar");
 	TestHelper::instance().eval_test(prioridad == nuevoAvion.determinarPrioridad(), "Avion conserva la prioridad al serializar");	
+	delete[] stream;
 }
 
 void PruebasAvion() {

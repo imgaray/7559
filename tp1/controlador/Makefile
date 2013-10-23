@@ -43,7 +43,7 @@ robjs = $(wildcard *.o $(TARGET))
 #########################################
 
 
-all: consumidorPeticiones resolvedorPeticiones
+all: consumidorPeticiones
 
 binaries: $(bin)
 
@@ -53,12 +53,8 @@ binaries: $(bin)
 %.o: %.cpp
 	$(CC) $(CXXFLAGS) $(I-INCLUDES) -c $<
 
-consumidorPeticiones: consumidorPeticiones.cpp binaries
-	$(CC) $(I-INCLUDES) $(bin) $(TARGETFLAGS) consumidorPeticiones.cpp -o consumidorPeticiones
-
-
-resolvedorPeticiones: resolvedorPeticiones.cpp binaries
-	$(CC) $(I-INCLUDES) $(bin) $(TARGETFLAGS) resolvedorPeticiones.cpp -o resolvedorPeticiones
+controlador: consumidorPeticiones.cpp binaries
+	$(CC) $(I-INCLUDES) $(bin) $(TARGETFLAGS) consumidorPeticiones.cpp -o controlador
 
 clean:
 	$(LIMPIAR) rm -f $(robjs)

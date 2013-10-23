@@ -43,7 +43,7 @@ robjs = $(wildcard *.o $(TARGET))
 #########################################
 
 
-all: $(TARGET)
+all: consumerAviones dispatcherAviones
 
 binaries: $(bin)
 
@@ -53,8 +53,12 @@ binaries: $(bin)
 %.o: %.cpp
 	$(CC) $(CXXFLAGS) $(I-INCLUDES) -c $<
 
-$(TARGET): binaries
-	$(CC) $(I-INCLUDES) $(bin) ../logger/Logger.o $(TARGETFLAGS) -o $(TARGET)
+consumerAviones: consumerAviones.cpp binaries
+	$(CC) $(I-INCLUDES) $(bin) ../logger/Logger.o $(TARGETFLAGS) consumerAviones.cpp -o consumerAviones
+
+
+dispatcherAviones: dispatcherAviones.cpp binaries
+	$(CC) $(I-INCLUDES) $(bin) ../logger/Logger.o $(TARGETFLAGS) dispatcherAviones.cpp -o dispatcherAviones
 
 clean:
 	$(LIMPIAR) rm -f $(robjs)
