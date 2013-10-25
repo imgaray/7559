@@ -40,7 +40,7 @@
 \begin{flushright}
 {\large
 Montoya, Diego -- 91939\\
-Torres, Miguel -- (padron)\\
+Torres, Miguel -- 91396\\
 Garay, Ignacio -- 92265\\
 \vspace{2cm}
 $2^{do}$ cuatrimestre de 2013}
@@ -79,9 +79,48 @@ viene a ser el productor (asignando el ingreso de aviones), mientras que el cons
 \newpage
 \section{Diseño}
 
+Para la resolucion de la concurrencia en la aplicacion se implemenetaron varias herramienstas como Fifo, Pipe, Lock , Memoria Compartida y Proceso (representa un hilo de ejecucion).
+
+Se crearon los siguientes procesos, uno encargardo de la generacion de aviones, llamado generadorAviones, uno que recibe los aviones creados, llamado consumerAviones, que los coloca en una cola con prioridad, y con otro que se comunica con otro encargado de distribuir los aviones (llamado 
+dispatcherAviones).\\
+
+Existe un proceso principal que dispara 2 procesos secundarios, el referido a la generacion de aviones (segun la
+cantidad de los mismos en el archivo de configuracion) que luego de crearlos envia estos al proceso que los
+coloca dentro de la cola con prioridad.\\
+
+Se decidio realizar un proceso por cada controlador que se necesite, cada avion es entregado por dispatcherAviones a un controlador segun un algoritmo de seleccion, donde luego cada controlador se encarga de elegir alguna Pista que adecuada para completar la accion del avion.\\
+
+Se implemento un sistema de log para hacer un seguimientos de los pasos que vayan haciendo los distintos procesos durante la ejecucion de la aplicacion donde existen distintos niveles de registros para representar distintas situaciones, estos son:
+\begin{itemize}
+\item Info: informacion corriente de los pasos de la ejecucion.
+\item Debug: informacion de debug.
+\item Fatal: indica una excepcion lanzada.
+\item Warning: informacion de advertencia sobre algun comportamiento anormal.
+\item Error: indica un error critico en la aplicacion
+\end{itemize}
+El archivo de salida de Log esta resguardado por un Lock para su correcta escritura por los distintos procesos que vuelcan su informacion.
+
+\newpage
+\section{Diagramas}
+
+--Diagrama de procesos--
+
+--Diagramas de estados de procesos--
+
+
 \newpage
 \section{Integración}
 
+
+Los procesos que ''generan'' y ''consumen'' aviones interactuan entre si mediante el usos de Fifos. La comunicacion entre el generadorAviones y el dispatcherAviones se hace mediante el uso de una Memoria Compartida donde en esta se localiza la cola con prioridad de aviones. 
+
+Los aviones que se colocan en la cola de prioridad son representaciones hechas de un avion mediandte por un objeto sencillo que mantiene principalmente su estado(si se encuentra volado o en tierra).
+
+El dispatcher obtiene un avion de la cola, ubicada en la memoria compartida, si es que no esta vacia, y selecciona un proceso controlador al cual asignarle ese avion mediante un algoritmo particular de seleccion.
+Luego de el controlador consigue el avion obtiene un pista vacia para resolver la situacion del mismo, luego libera la pista y se pone a la espera de otra asignacion de alguno avion. Si no no hubiera pista vacias cuando el proceso la solicita se bloquea esperando hasta que alguna se libere.\\
+
+
+Dentro de un archivo de configuracion se establece las cantidades correspondientes a cada entidad del modelo(aviones, controladores y pistas). El archivo se crea mediante un script desarrolado en python, donde se pide el ingreso de las cantidades de objetos a simular.
 
 
 \end{document}
