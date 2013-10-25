@@ -27,7 +27,7 @@ public:
 	MemoriaCompartida(const std::string& archivo, const char letra);
 	
 	MemoriaCompartida(const MemoriaCompartida& origen);
-	
+
 	virtual ~MemoriaCompartida ();
 	
 	MemoriaCompartida<T>& operator=(const MemoriaCompartida& origen);

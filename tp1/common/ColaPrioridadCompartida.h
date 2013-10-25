@@ -10,6 +10,7 @@
 #include "Semaforo.h"
 #include "Avion.h"
 #include "LockFile.h"
+#include "MemoriaCompartida.h"
 
 class ColaPrioridadCompartida {
 public:
@@ -19,12 +20,16 @@ public:
 	Avion pop();
 	void cerrar();
 private:
+	struct ElementosCompartidos {
+		EstrategiaAvion memoria[33];
+		char index;
+		bool abierta;
+	};
+	static char const* rutaMemoria;
 	Semaforo semaforoPush;
 	Semaforo semaforoPop;
 	LockFile lock;
-	Avion memoria[33];
-	char index;
-	bool abierta;
+	MemoriaCompartida<struct ElementosCompartidos> memoria;
 };
 
 #endif /* COLAPRIORIDADCOMPARTIDA_H_ */

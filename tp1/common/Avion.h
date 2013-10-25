@@ -5,7 +5,7 @@
 #include <string>
 
 enum EstrategiaAvion {
-	TIERRA = 0, AIRE = 1
+	INEXISTENTE = -1, TIERRA = 0, AIRE = 1
 };
 
 class Avion {

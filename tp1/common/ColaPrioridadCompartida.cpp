@@ -7,67 +7,90 @@
 
 #include "ColaPrioridadCompartida.h"
 
+char const* ColaPrioridadCompartida::rutaMemoria = "/tmp/cola_prioridad_elementos";
+
+void swap(EstrategiaAvion* a, EstrategiaAvion* b) {
+	EstrategiaAvion aux = *a;
+	*a = *b;
+	*b = aux;
+}
+
 ColaPrioridadCompartida::ColaPrioridadCompartida():
 	semaforoPush("/tmp/semaforo_push_cola_prioridad", 32),
 	semaforoPop("/tmp/semaforo_pop_cola_prioridad", 0),
 	lock("/tmp/lock_cola_prioridad"),
-	index(1),
-	abierta(1){
+	memoria(rutaMemoria, 'a'){
+	struct ElementosCompartidos elementos;
+	for (int i = 0; i < 33; i++) {
+		elementos.memoria[i] = INEXISTENTE;
+	}
+	elementos.abierta = true;
+	elementos.index = 1;
+	memoria.escribir(elementos);
 }
 
 ColaPrioridadCompartida::~ColaPrioridadCompartida() {
+
 }
 
 void ColaPrioridadCompartida::push(Avion& avion) {
-	if (!abierta)
+	struct ElementosCompartidos elementos = memoria.leer();
+	if (!elementos.abierta)
 		throw "cerrada la cola";
 	semaforoPush.p();
-	if (!abierta)
-		throw "cerrada la cola";
+	elementos = memoria.leer();
 	lock.tomarLock();
-	memoria[index] = avion;
-	char pos = index++;
-	while(pos > 0 && memoria[pos/2] < memoria[pos])
+	if (!elementos.abierta) {
+		lock.liberarLock();
+		throw "cerrada la cola";
+	}
+	elementos.memoria[elementos.index] = avion.getEstrategia();
+	char pos = elementos.index++;
+	while(pos > 0 && elementos.memoria[pos/2] < elementos.memoria[pos])
 	{
-		memoria[pos/2] < memoria[pos];
+		swap(&elementos.memoria[pos/2], &elementos.memoria[pos]);
 		pos /= 2;
 	}
-	semaforoPop.v();
+	memoria.escribir(elementos);
 	lock.liberarLock();
+	semaforoPop.v();
 }
 
 Avion ColaPrioridadCompartida::pop() {
-	if (!abierta)
+	struct ElementosCompartidos elementos = memoria.leer();
+	if (!elementos.abierta)
 		throw "cerrada la cola";
 	semaforoPop.p();
-	if (!abierta)
-		throw "cerrada la cola";
-
+	elementos = memoria.leer();
 	lock.tomarLock();
-	Avion aux = memoria[0];
-	memoria[1] = memoria[index--];
+	if (!elementos.abierta) {
+		lock.liberarLock();
+		throw "cerrada la cola";
+	}
+	Avion aux (elementos.memoria[1]);
+	elementos.memoria[1] = elementos.memoria[--elementos.index];
 	char pos = 1;
-	while (2 * pos < index) {
+	while (2 * pos < elementos.index) {
 		char pos1 = 2*pos;
 		char pos2 = 2*pos + 1;
 		char posaux = pos1;
-		if (pos2 < index) {
-			posaux = memoria[pos1] < memoria[pos2]? pos2 : pos1;
+		if (pos2 < elementos.index) {
+			posaux = elementos.memoria[pos1] < elementos.memoria[pos2]? pos2 : pos1;
 		}
-		if (memoria[posaux] < memoria[pos])
+		if (elementos.memoria[posaux] < elementos.memoria[pos])
 			break;
-		Avion aux = memoria[posaux];
-		memoria[posaux] = memoria[pos];
-		memoria[pos] = aux;
+		swap(&elementos.memoria[posaux], &elementos.memoria[pos]);
 		pos = posaux;
 	}
-	semaforoPush.v();
+	memoria.escribir(elementos);
 	lock.liberarLock();
+	semaforoPush.v();
 	return aux;
 }
 
 void ColaPrioridadCompartida::cerrar() {
-	abierta = false;
+	struct ElementosCompartidos elem = memoria.leer();
+
 	semaforoPop.v();
 	semaforoPush.v();
 }
