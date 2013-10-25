@@ -10,8 +10,7 @@
 #define LOG(X) Logger::instance().info(TAG, X)
 
 Torre::Torre() {
-	try{
-		colaCompartida.crear("/tmp/memoria_compartida_cola_compartida", 'a');
+	try {
 		consumidor = new Process("torre/dispatcherAviones");
 		LOG("creacion terminada satisfactoriamente");
 	} catch (char const* mensaje){
@@ -20,10 +19,10 @@ Torre::Torre() {
 }
 
 Torre::~Torre() {
-	colaCompartida.leer().cerrar();
+	colaCompartida.cerrar();
 	delete consumidor;
 }
 
 void Torre::ingresarAvion(Avion& avion) {
-	colaCompartida.leer().push(avion);
+	colaCompartida.push(avion);
 }

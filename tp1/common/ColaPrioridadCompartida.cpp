@@ -58,12 +58,12 @@ void ColaPrioridadCompartida::push(Avion& avion) {
 
 Avion ColaPrioridadCompartida::pop() {
 	struct ElementosCompartidos elementos = memoria.leer();
-	if (!elementos.abierta)
+	if (elementos.index == 1 && !elementos.abierta)
 		throw "cerrada la cola";
 	semaforoPop.p();
 	elementos = memoria.leer();
 	lock.tomarLock();
-	if (!elementos.abierta) {
+	if (elementos.index == 1 && !elementos.abierta) {
 		lock.liberarLock();
 		throw "cerrada la cola";
 	}
@@ -89,9 +89,13 @@ Avion ColaPrioridadCompartida::pop() {
 }
 
 void ColaPrioridadCompartida::cerrar() {
+	lock.tomarLock();
 	struct ElementosCompartidos elem = memoria.leer();
-
+	elem.abierta = false;
+	memoria.escribir(elem);
+	lock.liberarLock();
 	semaforoPop.v();
 	semaforoPush.v();
+
 }
 

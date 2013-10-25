@@ -16,7 +16,7 @@ public:
 	virtual ~Torre();
 	void ingresarAvion(Avion& avion);
 private:
-	MemoriaCompartida<ColaPrioridadCompartida> colaCompartida;
+	ColaPrioridadCompartida colaCompartida;
 	Process* consumidor;
 };
 
