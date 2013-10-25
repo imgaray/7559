@@ -11,7 +11,7 @@
 #define TAG "consumerAviones"
 
 int main(int argc, char** argv) {
-	
+	try {
 
 	static const std::string FIFO_GENERADOR = "/tmp/fifo_generador";
 	
@@ -44,6 +44,9 @@ int main(int argc, char** argv) {
 	delete torre;
 	Logger::instance().debug(TAG, "saliendo del scheduler");
 	return 0;
+	} catch (char const* e) {
+		Logger::instance().fatal(TAG, e);
+	}
 }
 
 #endif

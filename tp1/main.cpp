@@ -2,10 +2,17 @@
 #include <iostream>
 #include <string>
 #include "Logger.h"
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 #define TAG "MAIN PROCESS"
 
 int main(int argc, char** argv) {
+	mknod("/tmp/cola_prioridad_elementos", 0666, 0);
+	mknod("/tmp/semaforo_push_cola_prioridad", 0666, 0);
+	mknod("/tmp/semaforo_pop_cola_prioridad", 0666, 0);
 	Process* generadorAviones = NULL;
 	Process* consumerAviones = NULL;
 	Logger::instance().clear();
@@ -27,6 +34,9 @@ int main(int argc, char** argv) {
 		delete generadorAviones;
 	if (consumerAviones)
 		delete consumerAviones;
+	unlink("/tmp/cola_prioridad_elementos");
+	unlink("/tmp/semaforo_push_cola_prioridad");
+	unlink("/tmp/semaforo_pop_cola_prioridad");
 	Logger::instance().info(TAG, "finalizado correctamente");
 	Logger::close();
 }

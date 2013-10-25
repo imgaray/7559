@@ -22,14 +22,13 @@ int determinarConsumidor(int indice, int cantidadControles){
 }
 
 int main(int argc, char** argv) {
-	
+	try {
 	LOG("iniciando dispatcher");	
 	ArchivoConfiguracion arch(".cnfg");
 	Utilitario u;
 	static const std::string FIFO_CONTROLADOR = "/tmp/fifo_controladorc_";
 	
-	MemoriaCompartida<ColaPrioridadCompartida> colaCompartida;
-	colaCompartida.crear("/tmp/memoria_compartida_cola_compartida", 'a');
+	ColaPrioridadCompartida colaCompartida;
 	
 	std::vector<std::pair<FifoEscritura*, Process*> > procesosConsumidores;
 	int cantidadControles = u.convertirAEntero(arch.obtenerAtributo("controladores"));
@@ -57,12 +56,10 @@ int main(int argc, char** argv) {
 	int status = 1;
 	int indice = 0;
 	do {
-		//Avion* avioneta = colaCompartida.leer().pop();
-		Avion avioneta (colaCompartida.leer().pop());
-		//if (! avioneta){
-		//	 status = 0;
-		//	 break;
-		//}
+		Avion avioneta (colaCompartida.pop());
+		const char* aux = avioneta.serializar();
+		Logger::instance().info(TAG, "avion recibido " + std::string(aux));
+		delete[] aux;
 		FifoEscritura* fifo = procesosConsumidores[determinarConsumidor(indice, cantidadControles)].first;
 		std::string serial = avioneta.serializar();
 		Logger::instance().info(TAG, "por despachar el avion " + serial);
@@ -74,6 +71,9 @@ int main(int argc, char** argv) {
 	} while(status != 0);
 	
 	return 0;
+	} catch (char const* e) {
+		Logger::instance().fatal(TAG, e);
+	}
 }
 
 #endif

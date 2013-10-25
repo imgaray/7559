@@ -21,7 +21,7 @@ EstrategiaAvion generarPrioridad(){
 }
 
 int main(int argc, char** argv) {
-	
+	try {
 	static const std::string FIFO_GENERADOR = "/tmp/fifo_generador";
 	Utilitario u;
 	FifoEscritura fifo(FIFO_GENERADOR);
@@ -46,6 +46,9 @@ int main(int argc, char** argv) {
 	fifo.cerrar();
 	Logger::instance().info(TAG, "Finalizado correctamente");
 	return 0;
+	} catch (char const* aux) {
+		Logger::instance().fatal(TAG, aux);
+	}
 }
 
 #endif

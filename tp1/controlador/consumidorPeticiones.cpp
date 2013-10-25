@@ -13,7 +13,7 @@
 #define TAG "consumidorPeticiones"
 
 int main(int argc, char** argv) {
-	
+	try {
 	Utilitario u;
 	std::string numero(argv[1]);
 	static const std::string FIFO_CONTROLADOR = "/tmp/fifo_controladorc_" + numero;
@@ -58,6 +58,9 @@ int main(int argc, char** argv) {
 	}
 	logger.info(TAG + numero, "saliendo del controlador");
 	return 0;
+	} catch (const char* e) {
+		Logger::instance().fatal(TAG, e);
+	}
 }
 
 #endif

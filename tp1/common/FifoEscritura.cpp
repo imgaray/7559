@@ -5,6 +5,7 @@
 #include <string.h>
 
 FifoEscritura::FifoEscritura(const std::string nombre) : Fifo(nombre) {
+
 }
 
 FifoEscritura::~FifoEscritura() {
