@@ -56,6 +56,7 @@ int main(int argc, char** argv) {
 	int status = 1;
 	int indice = 0;
 	do {
+		try {
 		Avion avioneta (colaCompartida.pop());
 		const char* aux = avioneta.serializar();
 		Logger::instance().info(TAG, "avion recibido " + std::string(aux));
@@ -67,9 +68,18 @@ int main(int argc, char** argv) {
 			Logger::instance().fatal(TAG, "no se pudo escribir en el fifo correspondiente");
 			throw "no se pudo escribir en el fifo correspondiente";
 		}
+		} catch (char const* ex) {
+			status = 0;
+			Logger::instance().debug(TAG, "cola de prioridad cerrada");
+		}
 		//delete avioneta;
 	} while(status != 0);
-	
+	std::vector<std::pair<FifoEscritura*, Process*> >::iterator iter = procesosConsumidores.begin();
+	for(; iter != procesosConsumidores.end(); iter++) {
+		iter->first->cerrar();
+		delete iter->second;
+		delete iter->first;
+	}
 	return 0;
 	} catch (char const* e) {
 		Logger::instance().fatal(TAG, e);

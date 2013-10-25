@@ -19,7 +19,9 @@ Torre::Torre() {
 }
 
 Torre::~Torre() {
+	Logger::instance().debug(TAG, "por cerrar la cola de prioridad");
 	colaCompartida.cerrar();
+	Logger::instance().debug(TAG, "cola de prioridad cerrada");
 	delete consumidor;
 }
 

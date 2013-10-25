@@ -80,10 +80,14 @@ Avion ColaPrioridadCompartida::pop() {
 	Logger::instance().info(TAG, "tomado el lock estructural en pop");
 	if (elementos.index == 1 && !elementos.abierta) {
 		lock.liberarLock();
+		semaforoPop.v();
 		throw "cerrada la cola";
 	}
 	Avion aux (elementos.memoria[1]);
 	if (aux.determinarPrioridad() < TIERRA) {
+		elementos.abierta = false;
+		memoria.escribir(elementos);
+		semaforoPop.v();
 		lock.liberarLock();
 		throw "cerrada la cola";
 	}
@@ -122,6 +126,5 @@ void ColaPrioridadCompartida::cerrar() {
 	lock.liberarLock();
 	semaforoPop.v();
 	semaforoPush.v();
-
 }
 
