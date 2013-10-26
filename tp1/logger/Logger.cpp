@@ -97,7 +97,7 @@ void Logger::log(const string& tag, const string& msg, int level) {
 		break;
 	}
 	std::stringstream str;
-	str << "[" << p_local_t->tm_mday << "-" << 1 + p_local_t->tm_mon
+	str << p_local_t->tm_mday << "-" << 1 + p_local_t->tm_mon
 			<< "-" << 1900 + p_local_t->tm_year << " " 
 			<< p_local_t->tm_hour << ":" << p_local_t->tm_min 
 			<< ":" << p_local_t->tm_sec << "]";
@@ -124,8 +124,8 @@ void Logger::setLogLevel(int nivelLog){
 }
 
 void Logger::printHeader() {
-	archivoLog << "<table id=\"table1\" class=\"mytable\" cellspacing=\"2\" cellpadding=\"2\" >" << std::endl;
-	archivoLog << "<tr><th>Fecha y  hora</th><th>Tipo</th><th>Lugar del mensaje</th><th>Mensaje</th></tr>" << std::endl;
+	archivoLog << "<table id=\"table1\" class=\"mytable\" cellspacing=\"2\" cellpadding=\"10\" >" << std::endl;
+	archivoLog << "<tr><th>Fecha y  hora</th><th>Tipo</th><th>Lugar del mensaje</th><th align=\"left\">Mensaje</th></tr>" << std::endl;
 }
 
 void Logger::printMessageFormatted(const std::string& fecha, const std::string& level,
