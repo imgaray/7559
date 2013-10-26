@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
 	LOG("creacion terminada satisfactoriamente");
 	cantidadControles = u.convertirAEntero(arch.obtenerAtributo("controladores"));
 	
-	
+		
 	//Leo la memoria compartida para despachar los aviones 
 	int status = 1;
 	int indice = 0;
