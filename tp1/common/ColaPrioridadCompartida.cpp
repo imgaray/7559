@@ -35,6 +35,8 @@ ColaPrioridadCompartida::ColaPrioridadCompartida():
 
 ColaPrioridadCompartida::~ColaPrioridadCompartida() {
 	memoria.liberar();
+	semaforoPop.eliminar();
+	semaforoPush.eliminar();
 }
 
 void ColaPrioridadCompartida::push(Avion& avion) {
@@ -51,7 +53,7 @@ void ColaPrioridadCompartida::push(Avion& avion) {
 	}
 	elementos.memoria[elementos.index] = avion.getEstrategia();
 	char pos = elementos.index++;
-	while(pos > 0 && elementos.memoria[pos/2] < elementos.memoria[pos])
+	while(pos > 1 && elementos.memoria[pos/2] < elementos.memoria[pos])
 	{
 		swap(&elementos.memoria[pos/2], &elementos.memoria[pos]);
 		pos /= 2;

@@ -74,6 +74,9 @@ int main(int argc, char** argv) {
 	std::vector<std::pair<FifoEscritura*, Process*> >::iterator iter = procesosConsumidores.begin();
 	for(; iter != procesosConsumidores.end(); iter++) {
 		iter->first->cerrar();
+	}
+	iter = procesosConsumidores.begin();
+	for(; iter != procesosConsumidores.end(); iter++) {
 		delete iter->second;
 		delete iter->first;
 	}

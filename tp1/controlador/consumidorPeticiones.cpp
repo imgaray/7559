@@ -21,12 +21,13 @@ int main(int argc, char** argv) {
 	FifoLectura fifo(FIFO_CONTROLADOR);
 	Logger& logger = Logger::instance();
 	fifo.abrir();
-	logger.debug(TAG + numero, "abierta  la fifo numero " + numero);
+	logger.debug(TAG + numero, "abierta la fifo numero " + numero);
 	std::string ruta = FIFO_CONTROLADOR;
 	Controlador c(u.convertirAEntero(numero));
 	int resultado = 1;
 	do {
 		char* ptr = new char[32];
+		logger.debug(TAG + numero, "esperando la lectura de la fifo");
 		resultado = fifo.leer(ptr, (ssize_t) 32);
 		ptr[31] = '\0';
 		if (resultado > 0 ) {
