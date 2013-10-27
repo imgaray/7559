@@ -72,10 +72,6 @@ void Logger::fatal(const string& tag, const string& msg) {
 
 void Logger::log(const string& tag, const string& msg, int level) {
 	lock->tomarLock();
-	struct tm *p_local_t;
-	time_t t = time(NULL);
-	p_local_t = localtime(&t);
-
 	string sNivel("[INFO]\t");
 	switch (level) {
 	case LOG_FATAL:
@@ -96,14 +92,7 @@ void Logger::log(const string& tag, const string& msg, int level) {
 	default:
 		break;
 	}
-	std::stringstream str;
-	str << p_local_t->tm_mday << "-" << 1 + p_local_t->tm_mon
-			<< "-" << 1900 + p_local_t->tm_year << " " 
-			<< p_local_t->tm_hour << ":" << p_local_t->tm_min 
-			<< ":" << p_local_t->tm_sec << "]";
-	std::string fecha;
-	str >> fecha;
-	printMessageFormatted(fecha, sNivel, tag, msg);
+	printMessageFormatted(sNivel, tag, msg);
 	archivoLog.flush();
 	lock->liberarLock();
 }
@@ -125,13 +114,12 @@ void Logger::setLogLevel(int nivelLog){
 
 void Logger::printHeader() {
 	archivoLog << "<table id=\"table1\" class=\"mytable\" cellspacing=\"2\" cellpadding=\"10\" >" << std::endl;
-	archivoLog << "<tr><th>Fecha y  hora</th><th>Tipo</th><th>Lugar del mensaje</th><th align=\"left\">Mensaje</th></tr>" << std::endl;
+	archivoLog << "<tr><th>Tipo</th><th>Lugar del mensaje</th><th align=\"left\">Mensaje</th></tr>" << std::endl;
 }
 
-void Logger::printMessageFormatted(const std::string& fecha, const std::string& level,
-		const std::string& tag, const std::string& message) {
+void Logger::printMessageFormatted(const std::string& level, const std::string& tag,
+										const std::string& message) {
 	archivoLog << "<tr>" << std::endl;
-	archivoLog << "<td>" << fecha << "</td>"<<std::endl;
 	archivoLog << "<td>" << level << "</td>"<<std::endl;
 	archivoLog << "<td>" << tag << "</td>" <<std::endl;
 	archivoLog << "<td>" << message << "</td>" <<std::endl;

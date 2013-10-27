@@ -32,17 +32,15 @@ int main(int argc, char** argv) {
 	
 	std::vector<std::pair<FifoEscritura*, Process*> > procesosConsumidores;
 	int cantidadControles = u.convertirAEntero(arch.obtenerAtributo("controladores"));
-	LOG("cantidad de controles" + arch.obtenerAtributo("controladores"));
+	LOG("cantidad de controles " + arch.obtenerAtributo("controladores"));
 	
 	//Se crean los procesos consumidores
 	while (cantidadControles) {
-			LOG("nombre fifo controlador = " + FIFO_CONTROLADOR + u.convertirAString(cantidadControles));
 			FifoEscritura* fifoConsumer = new FifoEscritura(FIFO_CONTROLADOR + u.convertirAString(cantidadControles));
-			LOG("por inciar el proceso de consumidor numero " + u.convertirAString(cantidadControles));
 			Process* consumidor = new Process("controlador/consumidorPeticiones", cantidadControles);
 			LOG("iniciado proceso de consumidor de peticiones " + u.convertirAString(cantidadControles));
-			LOG("por abrir la fifo " + FIFO_CONTROLADOR + u.convertirAString(cantidadControles));
 			fifoConsumer->abrir();			
+			LOG("abierta la fifo " + FIFO_CONTROLADOR + u.convertirAString(cantidadControles));
 			std::pair<FifoEscritura*, Process*> parcito(fifoConsumer, consumidor);
 			procesosConsumidores.push_back(parcito);
 			LOG("creado el consumidor numero " + u.convertirAString(cantidadControles));
@@ -50,7 +48,6 @@ int main(int argc, char** argv) {
 	}
 	LOG("creacion terminada satisfactoriamente");
 	cantidadControles = u.convertirAEntero(arch.obtenerAtributo("controladores"));
-	
 		
 	//Leo la memoria compartida para despachar los aviones 
 	int status = 1;

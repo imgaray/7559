@@ -36,8 +36,8 @@ private:
 	LockFile* lock;
 	static Logger* logger_instance;
 	void printHeader();
-	void printMessageFormatted(const std::string& fecha, const std::string& level,
-					const std::string& tag, const std::string& message);
+	void printMessageFormatted(const std::string& level, const std::string& tag,
+				const std::string& message);
 	
 public:
 	void fatal(const string&, const string&);

@@ -34,26 +34,21 @@ ColaPrioridadCompartida::ColaPrioridadCompartida():
 }
 
 ColaPrioridadCompartida::~ColaPrioridadCompartida() {
-
+	memoria.liberar();
 }
 
 void ColaPrioridadCompartida::push(Avion& avion) {
 	struct ElementosCompartidos elementos = memoria.leer();
-	Logger::instance().debug(TAG, "por ingresar al push");
+	Logger::instance().info(TAG, "ingresando al push");
 	if (!elementos.abierta)
 		throw "cerrada la cola";
 	semaforoPush.p();
-	Logger::instance().debug(TAG, "pasando el semaforo push");
-	const char* mierda = avion.serializar();
-	Logger::instance().debug(TAG, "ingresando un avion " + std::string(mierda));
-	delete[] mierda;
 	elementos = memoria.leer();
 	lock.tomarLock();
 	if (!elementos.abierta) {
 		lock.liberarLock();
 		throw "cerrada la cola";
 	}
-	Logger::instance().debug(TAG, "tomado el lock de la estructura");
 	elementos.memoria[elementos.index] = avion.getEstrategia();
 	char pos = elementos.index++;
 	while(pos > 0 && elementos.memoria[pos/2] < elementos.memoria[pos])
@@ -61,11 +56,10 @@ void ColaPrioridadCompartida::push(Avion& avion) {
 		swap(&elementos.memoria[pos/2], &elementos.memoria[pos]);
 		pos /= 2;
 	}
-	Logger::instance().debug(TAG, "terminada la operacion de heap");
 	memoria.escribir(elementos);
 	lock.liberarLock();
 	semaforoPop.v();
-	Logger::instance().debug(TAG, "terminado el push");
+	Logger::instance().info(TAG, "saliendo del push");
 }
 
 Avion ColaPrioridadCompartida::pop() {
@@ -74,10 +68,8 @@ Avion ColaPrioridadCompartida::pop() {
 	if (elementos.index == 1 && !elementos.abierta)
 		throw "cerrada la cola";
 	semaforoPop.p();
-	Logger::instance().info(TAG, "pasado el semaforo de pop");
 	elementos = memoria.leer();
 	lock.tomarLock();
-	Logger::instance().info(TAG, "tomado el lock estructural en pop");
 	if (elementos.index == 1 && !elementos.abierta) {
 		lock.liberarLock();
 		semaforoPop.v();
@@ -92,7 +84,6 @@ Avion ColaPrioridadCompartida::pop() {
 		throw "cerrada la cola";
 	}
 	const char* mierda = aux.serializar();
-	Logger::instance().info(TAG, "sacando el avion " + std::string(mierda));
 	delete[] mierda;
 	elementos.memoria[1] = elementos.memoria[--elementos.index];
 	char pos = 1;
@@ -108,7 +99,6 @@ Avion ColaPrioridadCompartida::pop() {
 		swap(&elementos.memoria[posaux], &elementos.memoria[pos]);
 		pos = posaux;
 	}
-	Logger::instance().info(TAG, "terminada operacion de heap");
 	memoria.escribir(elementos);
 	lock.liberarLock();
 	semaforoPush.v();

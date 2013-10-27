@@ -20,11 +20,9 @@ int main(int argc, char** argv) {
 
 	FifoLectura fifo(FIFO_CONTROLADOR);
 	Logger& logger = Logger::instance();
-	logger.debug(TAG + numero, "por abrir la fifo numero " + numero);
 	fifo.abrir();
 	logger.debug(TAG + numero, "abierta  la fifo numero " + numero);
 	std::string ruta = FIFO_CONTROLADOR;
-	Logger::instance().info(TAG + numero, "ruta de fifo: " + ruta);
 	Controlador c(u.convertirAEntero(numero));
 	int resultado = 1;
 	do {
@@ -34,9 +32,8 @@ int main(int argc, char** argv) {
 		if (resultado > 0 ) {
 			logger.debug(TAG + numero, "resultado de lectura de fifo " + u.convertirAString(resultado));
 			std::string serial = ptr;
-			logger.debug(TAG + numero, "serializacion " + serial);
 			Avion* avioneta = new Avion(serial);
-			//Esta pista deberia llegar de uns serializacion
+			// esta pista se deberia elegir segun algun algoritmo
 			Pista* pista = new Pista(1);
 			c.manejar(avioneta, pista);
 			delete avioneta;
@@ -47,16 +44,14 @@ int main(int argc, char** argv) {
 		delete ptr;
 	} while(resultado > 0);
 	try {
-		logger.debug(TAG + numero, "cerrando fifo");
 		fifo.cerrar();
 		logger.debug(TAG + numero, "fifo numero " + numero + " cerrada correctamente");
-		logger.debug(TAG + numero, "eliminando fifo");
 		fifo.eliminar();
 		logger.debug(TAG + numero, "fifo numero " + numero + " eliminada correctamente");
 	} catch (char const* mensaje) {
 		logger.error(TAG + numero, "excepcion catcheada: " + std::string(mensaje));
 	}
-	logger.info(TAG + numero, "saliendo del controlador");
+	logger.info(TAG + numero, "controlador finalizado");
 	return 0;
 	} catch (const char* e) {
 		Logger::instance().fatal(TAG, e);

@@ -5,6 +5,7 @@
 #include <iostream>
 #include "Semaforo.h"
 #include "Logger.h"
+#include "ArchivoConfiguracion.h"
 #define TAG "Torre"
 
 #define LOG(X) Logger::instance().info(TAG, X)
@@ -12,7 +13,7 @@
 Torre::Torre() {
 	try {
 		consumidor = new Process("torre/dispatcherAviones");
-		LOG("creacion terminada satisfactoriamente");
+		Logger::instance().debug(TAG,"creacion terminada satisfactoriamente");
 	} catch (char const* mensaje){
 		std::cout << "Excepcion catcheada: " << mensaje << std::endl;
 	}
@@ -26,5 +27,7 @@ Torre::~Torre() {
 }
 
 void Torre::ingresarAvion(Avion& avion) {
+	Utilitario u;
+	LOG("avion ingresado de prioridad " + u.convertirAString(avion.determinarPrioridad()));
 	colaCompartida.push(avion);
 }

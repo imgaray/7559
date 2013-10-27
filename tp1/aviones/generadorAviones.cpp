@@ -46,12 +46,12 @@ int main(int argc, char** argv) {
 		avionesTierra = u.convertirAEntero(archivo.obtenerAtributo("aviones-tierra"));
 		avionesAire = u.convertirAEntero(archivo.obtenerAtributo("aviones-aire"));
 		int i = avionesTierra + avionesAire;
-		Logger::instance().info(TAG, "cantidad de aviones = "+ u.convertirAString(i));
+		Logger::instance().info(TAG, "por enviar "+ u.convertirAString(i) + " aviones");
 		while(i) {
 			Avion* avioneta = FactoryElementos::instance().crearAvion(generarPrioridad());
 			const char* serializacion = avioneta->serializar();
-			Logger::instance().debug(TAG, "Serializo avion " + std::string(serializacion));
-			
+			Logger::instance().info(TAG, "Avion enviado de prioridad "
+					+ u.convertirAString(avioneta->determinarPrioridad()));
 			if (fifo.escribir((const void*)serializacion, (ssize_t) 32) == -1) {
 				Logger::instance().error(TAG, "no se pudo escribir en fifo");
 				break;
@@ -60,7 +60,7 @@ int main(int argc, char** argv) {
 			delete avioneta;
 			i--;
 		}
-		Logger::instance().info(TAG, "Por cerrar fifo de escritura");
+		Logger::instance().debug(TAG, "Por cerrar fifo de escritura");
 		fifo.cerrar();
 		Logger::instance().info(TAG, "Finalizado correctamente");
 		return 0;
