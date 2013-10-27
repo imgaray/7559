@@ -12,7 +12,7 @@ Logger::Logger(): nivelDeLog(LOG_DEBUG) {
 	struct stat buffer;
 	if (stat(timeStamp.c_str(), &buffer)) {
 		archivoLog.open( timeStamp.c_str() );
-		archivoLog << "  Fecha y  hora\t\t" << " Tipo\t\t" << "Lugar del mensaje\t\t\t" << "Mensaje" << endl ;
+		printHeader();
 	} else {
 		archivoLog.open(timeStamp.c_str(), std::ofstream::app);
 	}
@@ -33,6 +33,10 @@ void Logger::close() {
 }
 
 Logger::~Logger() {
+	if (archivoLog.is_open()) {
+		archivoLog << "</html>";
+		archivoLog.close();
+	}
 	delete lock;
 }
 
@@ -113,6 +117,9 @@ void Logger::setLogLevel(int nivelLog){
 }
 
 void Logger::printHeader() {
+	archivoLog << "<html>" << std::endl;
+	archivoLog << "<title>Log de simulacion de aeropuerto</title>" << std::endl;
+	archivoLog << "<header align=\"center\"><strong> Log de simulacion de aeropuerto </strong></header>" << std::endl;
 	archivoLog << "<table id=\"table1\" class=\"mytable\" cellspacing=\"2\" cellpadding=\"10\" >" << std::endl;
 	archivoLog << "<tr><th>Tipo</th><th>Lugar del mensaje</th><th align=\"left\">Mensaje</th></tr>" << std::endl;
 }
