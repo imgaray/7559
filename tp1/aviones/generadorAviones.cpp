@@ -15,7 +15,7 @@ static const std::string FIFO_GENERADOR = "/tmp/fifo_generador";
 int avionesTierra, avionesAire, contadorAvionesTierra, contadorAvionesAire;
 
 EstrategiaAvion obtenerRandom(){
-	int aux = (rand() % 2) ;
+	int aux = rand() % 2 ;
 	if (aux == 1)
 		return AIRE;
 	else if (aux == 0)
@@ -23,16 +23,23 @@ EstrategiaAvion obtenerRandom(){
 }
 
 EstrategiaAvion generarPrioridad(){
-	EstrategiaAvion resultado = obtenerRandom();
-	if (resultado == AIRE)
-		contadorAvionesAire++;
-	else contadorAvionesTierra++;
 	
+	EstrategiaAvion resultado = obtenerRandom();
+	
+	if (resultado == AIRE){
+		contadorAvionesAire++;
+		//Logger::instance().debug(TAG, " El random devuelve 1");
+	}
+	else if (resultado == TIERRA) {
+		contadorAvionesTierra++;
+		//Logger::instance().debug(TAG, " El random devuelve 0");
+	}
+
 	if (contadorAvionesAire > avionesAire)
 		resultado = TIERRA;
 	if (contadorAvionesTierra > avionesTierra)
 		resultado = AIRE; 
-	
+
 	return resultado;	
 }
 
@@ -46,7 +53,10 @@ int main(int argc, char** argv) {
 		avionesTierra = u.convertirAEntero(archivo.obtenerAtributo("aviones-tierra"));
 		avionesAire = u.convertirAEntero(archivo.obtenerAtributo("aviones-aire"));
 		int i = avionesTierra + avionesAire;
-		Logger::instance().info(TAG, "por enviar "+ u.convertirAString(i) + " aviones");
+		Logger::instance().info(TAG, "Por enviar "+ u.convertirAString(i) + " aviones");
+		Logger::instance().info(TAG, "Aviones a despegar: "+ u.convertirAString(avionesTierra));
+		Logger::instance().info(TAG, "Aviones a aterrizar: "+ u.convertirAString(avionesAire));
+		srand (time(0));
 		while(i) {
 			Avion* avioneta = FactoryElementos::instance().crearAvion(generarPrioridad());
 			const char* serializacion = avioneta->serializar();
