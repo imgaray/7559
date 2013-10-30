@@ -25,6 +25,7 @@ Torre::~Torre() {
 	colaCompartida.cerrar();
 	Logger::instance().debug(TAG, "cola de prioridad cerrada");
 	delete consumidor;
+	colaCompartida.liberarRecursos();
 }
 
 void Torre::ingresarAvion(Avion& avion) {

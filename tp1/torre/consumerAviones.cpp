@@ -33,17 +33,17 @@ int main(int argc, char** argv) {
 						+ ", procediendo a ingresarlo");
 				torre->ingresarAvion(avioneta);
 			} else {
-				Logger::instance().debug(TAG, "leido el end of file");
+				Logger::instance().debug(TAG, "Leido el EOF del FIFO");
 			}
 		} while(status > 0);
 		
 		fifoGen.cerrar();
-		Logger::instance().debug(TAG,"cerrada la fifo del generador");
+		Logger::instance().debug(TAG,"Cerrada la fifo del generador");
 		fifoGen.eliminar();
-		Logger::instance().debug(TAG, "eliminada la fifo del generador");
+		Logger::instance().debug(TAG, "Eliminada la fifo del generador");
 
 		delete torre;
-		Logger::instance().debug(TAG, "saliendo del consumer");
+		Logger::instance().debug(TAG, "Saliendo del Consumer");
 		return 0;
 		
 	} catch (char const* e) {

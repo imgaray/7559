@@ -35,7 +35,9 @@ ColaPrioridadCompartida::ColaPrioridadCompartida():
 }
 
 ColaPrioridadCompartida::~ColaPrioridadCompartida() {
-	memoria.liberar();
+}
+
+void ColaPrioridadCompartida::liberarRecursos() {
 	semaforoPop.eliminar();
 	semaforoPush.eliminar();
 }

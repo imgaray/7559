@@ -16,6 +16,7 @@ class ColaPrioridadCompartida {
 public:
 	ColaPrioridadCompartida();
 	virtual ~ColaPrioridadCompartida();
+	void liberarRecursos();
 	void inicializar();
 	void push(Avion& avion);
 	Avion pop();
