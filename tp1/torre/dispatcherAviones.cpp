@@ -15,9 +15,11 @@
 #define TAG "dispatcherAviones"
 #define LOG(X) Logger::instance().info(TAG, X)
 
-int determinarConsumidor(int indice, int cantidadControles){
+
+int determinarConsumidor(int &indice, int cantidadControles){
 	indice++;
-	if (indice >= cantidadControles) indice = 0;
+	if (indice >= cantidadControles) 
+		indice = 0;
 	return indice;
 }
 

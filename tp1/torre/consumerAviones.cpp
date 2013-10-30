@@ -41,6 +41,7 @@ int main(int argc, char** argv) {
 		Logger::instance().debug(TAG,"cerrada la fifo del generador");
 		fifoGen.eliminar();
 		Logger::instance().debug(TAG, "eliminada la fifo del generador");
+
 		delete torre;
 		Logger::instance().debug(TAG, "saliendo del consumer");
 		return 0;

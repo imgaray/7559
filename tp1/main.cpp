@@ -28,7 +28,7 @@ int main(int argc, char** argv) {
 		Logger::instance().info(TAG, "consumer de aviones iniciado");
 	} catch(char const* mensaje) {
 		//Logger::instance().fatal(TAG, "generador de aviones iniciado");
-		std::cout << "Excepcion catcheada: " << mensaje << std::endl;
+		std::cout << "Excepcion catcheada en main principal: " << mensaje << std::endl;
 	}
 	wait(NULL);
 	if (generadorAviones)

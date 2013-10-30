@@ -12,10 +12,11 @@
 
 Torre::Torre() {
 	try {
+		colaCompartida.inicializar();
 		consumidor = new Process("torre/dispatcherAviones");
 		Logger::instance().debug(TAG,"creacion terminada satisfactoriamente");
 	} catch (char const* mensaje){
-		std::cout << "Excepcion catcheada: " << mensaje << std::endl;
+		std::cout << "Excepcion catcheada en constructor de Torre: " << mensaje << std::endl;
 	}
 }
 
