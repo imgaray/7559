@@ -12,12 +12,12 @@ private:
 	int id;
 	int valorInicial;
 
-	int inicializar () const;
+	
 
 public:
 	Semaforo ( const std::string& nombre,const int valorInicial );
 	~Semaforo();
-
+	int inicializar () const;
 	int p () const; // decrementa
 	int v () const; // incrementa
 	void eliminar () const;

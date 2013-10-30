@@ -30,6 +30,7 @@ int main(int argc, char** argv) {
 		//Logger::instance().fatal(TAG, "generador de aviones iniciado");
 		std::cout << "Excepcion catcheada: " << mensaje << std::endl;
 	}
+	wait(NULL);
 	if (generadorAviones)
 		delete generadorAviones;
 	if (consumerAviones)
@@ -39,4 +40,6 @@ int main(int argc, char** argv) {
 	unlink("/tmp/semaforo_pop_cola_prioridad");
 	Logger::instance().info(TAG, "finalizado correctamente");
 	Logger::close();
+	
+	return 0;
 }

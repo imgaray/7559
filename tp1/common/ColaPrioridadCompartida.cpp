@@ -21,22 +21,36 @@ void swap(EstrategiaAvion* a, EstrategiaAvion* b) {
 ColaPrioridadCompartida::ColaPrioridadCompartida():
 	semaforoPush("/tmp/semaforo_push_cola_prioridad", 32),
 	semaforoPop("/tmp/semaforo_pop_cola_prioridad", 0),
-	lock("/tmp/lock_cola_prioridad"),
+	//lock("/tmp/lock_cola_prioridad"),
+	lock(rutaMemoria),
 	memoria(rutaMemoria, 'a'){
-	struct ElementosCompartidos elementos;
+	/*struct ElementosCompartidos elementos;
 	for (int i = 0; i < 33; i++) {
 		elementos.memoria[i] = INEXISTENTE;
 	}
 	elementos.abierta = true;
 	elementos.index = 1;
 	memoria.escribir(elementos);
-	Logger::instance().info(TAG, "creacion exitosa");
+	Logger::instance().info(TAG, "creacion exitosa");*/
 }
 
 ColaPrioridadCompartida::~ColaPrioridadCompartida() {
 	memoria.liberar();
 	semaforoPop.eliminar();
 	semaforoPush.eliminar();
+}
+
+void ColaPrioridadCompartida::inicializar(){
+	struct ElementosCompartidos elementos;
+	for (int i = 0; i < 33; i++) {
+		elementos.memoria[i] = INEXISTENTE;
+	}
+	semaforoPush.inicializar();
+	semaforoPop.inicializar();
+	elementos.abierta = true;
+	elementos.index = 1;
+	memoria.escribir(elementos);
+	Logger::instance().info(TAG, "creacion exitosa");
 }
 
 void ColaPrioridadCompartida::push(Avion& avion) {
@@ -74,7 +88,7 @@ Avion ColaPrioridadCompartida::pop() {
 	lock.tomarLock();
 	if (elementos.index == 1 && !elementos.abierta) {
 		lock.liberarLock();
-		semaforoPop.v();
+		semaforoPop.v(); 
 		throw "cerrada la cola";
 	}
 	Avion aux (elementos.memoria[1]);

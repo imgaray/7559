@@ -42,7 +42,7 @@ int main(int argc, char** argv) {
 		} else {
 			logger.debug(TAG + numero, "leido EOF de la fifo");
 		}
-		delete ptr;
+		delete[] ptr;
 	} while(resultado > 0);
 	try {
 		fifo.cerrar();

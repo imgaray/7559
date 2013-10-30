@@ -26,14 +26,10 @@ EstrategiaAvion generarPrioridad(){
 	
 	EstrategiaAvion resultado = obtenerRandom();
 	
-	if (resultado == AIRE){
+	if (resultado == AIRE)
 		contadorAvionesAire++;
-		//Logger::instance().debug(TAG, " El random devuelve 1");
-	}
-	else if (resultado == TIERRA) {
+	else if (resultado == TIERRA) 
 		contadorAvionesTierra++;
-		//Logger::instance().debug(TAG, " El random devuelve 0");
-	}
 
 	if (contadorAvionesAire > avionesAire)
 		resultado = TIERRA;

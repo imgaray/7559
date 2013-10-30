@@ -9,8 +9,7 @@ Semaforo :: Semaforo ( const std::string& nombre,const int valorInicial ):valorI
 	if (provid == -1)
 		throw "no se pudo obtener el semaforo";
 	id = provid;
-	if (this->inicializar() == -1)
-		throw "no se pudo inicializar el semaforo";
+
 }
 
 Semaforo::~Semaforo() {
@@ -27,6 +26,8 @@ int Semaforo :: inicializar () const {
 	semnum init;
 	init.val = this->valorInicial;
 	int resultado = semctl ( this->id,0,SETVAL,init );
+	if (resultado == -1)
+		throw "no se pudo inicializar el semaforo";
 	return resultado;
 }
 
