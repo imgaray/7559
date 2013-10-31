@@ -9,11 +9,14 @@
 #include "Logger.h"
 #include "Semaforo.h"
 #include "Utilitario.h"
+#include "GestorPistas.h"
 
 #define TAG "consumidorPeticiones"
 
 int main(int argc, char** argv) {
 	try {
+
+	GestorPistas gestor;
 	Utilitario u;
 	std::string numero(argv[1]);
 	static const std::string FIFO_CONTROLADOR = "/tmp/fifo_controladorc_" + numero;
@@ -35,10 +38,24 @@ int main(int argc, char** argv) {
 			std::string serial = ptr;
 			Avion* avioneta = new Avion(serial);
 			// esta pista se deberia elegir segun algun algoritmo
-			Pista* pista = new Pista(1);
+			//Pista* pista = new Pista(1);
+
+
+
+			int nroPista = gestor.obtenerPista();
+			logger.debug(TAG + numero, "Obtenida pista nro: " + u.convertirAString(nroPista));
+
+			Pista* pista = new Pista(nroPista);
 			c.manejar(avioneta, pista);
 			delete avioneta;
 			delete pista;
+
+			gestor.liberarPista(nroPista);
+			logger.debug(TAG + numero, "Liberada pista nro: " + u.convertirAString(nroPista));
+
+
+			logger.debug(TAG + numero, "leido EOF de la fifo");
+
 		} else {
 			logger.debug(TAG + numero, "leido EOF de la fifo");
 		}

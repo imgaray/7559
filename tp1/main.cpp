@@ -6,13 +6,54 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include "GestorPistas.h"
+#include "ArchivoConfiguracion.h"
+#include "Utilitario.h"
 
 #define TAG "MAIN PROCESS"
 
-int main(int argc, char** argv) {
+GestorPistas *gestorPistas;
+
+
+const char* ruta_mc_pistas = "/tmp/mc_pistas";
+const char* ruta_mc_pistas_libres = "/tmp/mc_pistas_libres";
+const char* ruta_sem_pistas = "/tmp/semaforo_pistas";
+
+
+void inicializarRecursos() {
 	mknod("/tmp/cola_prioridad_elementos", 0666, 0);
 	mknod("/tmp/semaforo_push_cola_prioridad", 0666, 0);
 	mknod("/tmp/semaforo_pop_cola_prioridad", 0666, 0);
+
+
+	// para el semaforo y la cola compartida del gestor de pistas
+	mknod(ruta_mc_pistas, 0666, 0);
+	mknod(ruta_mc_pistas_libres, 0666, 0);
+	mknod(ruta_sem_pistas, 0666, 0);
+
+	ArchivoConfiguracion archivo(".cnfg");
+	Utilitario u;
+	int cantPistas = u.convertirAEntero(archivo.obtenerAtributo("pistas"));
+
+	gestorPistas = new GestorPistas(cantPistas);
+	gestorPistas->incializar();
+}
+
+
+void liberarRecursos() {
+	unlink("/tmp/cola_prioridad_elementos");
+	unlink("/tmp/semaforo_push_cola_prioridad");
+	unlink("/tmp/semaforo_pop_cola_prioridad");
+
+	unlink(ruta_mc_pistas);
+	unlink(ruta_mc_pistas_libres);
+	unlink(ruta_sem_pistas);
+}
+
+int main(int argc, char** argv) {
+
+	inicializarRecursos();
+
 	Process* generadorAviones = NULL;
 	Process* consumerAviones = NULL;
 	Logger::instance().clear();
@@ -35,9 +76,10 @@ int main(int argc, char** argv) {
 		delete generadorAviones;
 	if (consumerAviones)
 		delete consumerAviones;
-	unlink("/tmp/cola_prioridad_elementos");
-	unlink("/tmp/semaforo_push_cola_prioridad");
-	unlink("/tmp/semaforo_pop_cola_prioridad");
+
+	liberarRecursos();
+
+
 	Logger::instance().info(TAG, "finalizado correctamente");
 	Logger::close();
 	
