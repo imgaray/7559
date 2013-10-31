@@ -9,7 +9,6 @@
 
 void mostrar(bool* pistas, int cant) {
 
-
 	std::cout << "Cantidad Pistas: " << cant << std::endl;
 	for ( int i = 0 ; i < cant ; i++) {
 		std::cout << "Pista " << i <<":";
@@ -30,7 +29,6 @@ void mostrar(bool* pistas, int cant) {
 GestorPistas::GestorPistas(int cantidadPistas) :
 	_semPistas ("/tmp/semaforo_pistas", cantidadPistas)
 	{
-	// guarda el valor en la memComp y en un int, para luego inicializarlo
 }
 
 void GestorPistas::incializar() {
@@ -47,6 +45,9 @@ void GestorPistas::incializar() {
 //		pistasLibres[i] = true;
 //
 //	_pistasLibre.escribir(pistasLibres);
+
+	// Se instancia el pool de pistas y se limpia
+	PoolPistas::instancia().limpiar();
 
 	if (_semPistas.inicializar() != 0)
 		throw "Error al inicilizar el semaforo";

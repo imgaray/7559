@@ -34,9 +34,6 @@ void inicializarRecursos() {
 	Utilitario u;
 	int cantPistas = u.convertirAEntero(archivo.obtenerAtributo("pistas"));
 
-	//PoolPistas::instancia().inicializar();
-	PoolPistas::instancia().limpiar();
-
 	gestorPistas = new GestorPistas(cantPistas);
 	gestorPistas->incializar();
 }
