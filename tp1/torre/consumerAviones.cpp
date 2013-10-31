@@ -44,7 +44,11 @@ int main(int argc, char** argv) {
 
 		delete torre;
 		Logger::instance().debug(TAG, "Saliendo del Consumer");
+
+		wait(NULL);
+
 		return 0;
+
 		
 	} catch (char const* e) {
 		Logger::instance().fatal(TAG, e);

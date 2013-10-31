@@ -71,14 +71,15 @@ int main(int argc, char** argv) {
 		//Logger::instance().fatal(TAG, "generador de aviones iniciado");
 		std::cout << "Excepcion catcheada en main principal: " << mensaje << std::endl;
 	}
+
 	wait(NULL);
+
 	if (generadorAviones)
 		delete generadorAviones;
 	if (consumerAviones)
 		delete consumerAviones;
 
 	liberarRecursos();
-
 
 	Logger::instance().info(TAG, "finalizado correctamente");
 	Logger::close();

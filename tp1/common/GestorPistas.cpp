@@ -5,6 +5,26 @@
 
 #define TAG "GestorPistas"
 
+void mostrar(bool* pistas, int cant) {
+
+
+	std::cout << "Cantidad Pistas: " << cant << std::endl;
+	for ( int i = 0 ; i < cant ; i++) {
+		std::cout << "Pista " << i <<":";
+		if (pistas[i] == true)
+			std::cout << "LIBRE";
+		else if (pistas[i] == false)
+			std::cout << "OCUPADA";
+		else
+			std::cout << "INDEFINIDO**";
+
+		std::cout << "\t" << std::endl;
+	}
+	std::cout << std::endl;
+
+}
+
+
 GestorPistas::GestorPistas(int cantidadPistas) :
 	_cantidadPistas ("/tmp/mc_pistas", 'a'),
 	_pistasLibre ("/tmp/semaforo_pistas", 'a'),
@@ -44,11 +64,15 @@ int GestorPistas::obtenerPista() {
 	bool encontrado = false;
 	int nroPista = 0;
 
+
+	mostrar(pistasLibres, cant);
+
 	// busca la primera pista libre
 	int i = 0;
 	while (i < cant && encontrado == false)  {
 		if (pistasLibres[i] == true) {
 			encontrado = true;
+			pistasLibres[i] = false;
 			nroPista = i+1;
 		}
 		i++;
@@ -61,6 +85,8 @@ int GestorPistas::obtenerPista() {
 
 	Logger::instance().debug(TAG,std::string("se obtubo la pista libre nro ") + u.convertirAString(nroPista));
 
+	std::cout << "Se obtuvo la pista: " << nroPista << std::endl;
+
 	return nroPista;
 }
 
@@ -70,19 +96,25 @@ void GestorPistas::liberarPista(int nroPista) {
 	Logger::instance().debug(TAG,std::string("se esta por liberar la pista nro ") + u.convertirAString(nroPista));
 	int cant = _cantidadPistas.leer();
 
+
+
 	if (nroPista > cant || nroPista <= 0)
 		throw "Liberando pista incorrecta";
 
 	bool * pistasLibres = _pistasLibre.leer();
 
-	if (pistasLibres[nroPista+1] == false) {
-		pistasLibres[nroPista+1] = true;
+
+	mostrar(pistasLibres, cant);
+
+	if (pistasLibres[nroPista-1] == false) {
+		pistasLibres[nroPista-1] = true;
 		_semPistas.v();
 	}
 	else {
 		throw "Error, intentando liberar pista ya libre";
 	}
 
+	std::cout << "Se libero la pista nro: " << nroPista << std::endl;
 	Logger::instance().debug(TAG,std::string("se libero la pista nro ") + u.convertirAString(nroPista));
 }
 
