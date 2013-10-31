@@ -69,6 +69,6 @@ void Process::startProcess() {
 }
 
 Process::~Process() {
-	if (isRunning())
-		this->wait();
+	//if (isRunning())
+	this->wait();
 }

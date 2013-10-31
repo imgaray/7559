@@ -20,6 +20,9 @@ public:
 	int inicializar () const;
 	int p () const; // decrementa
 	int v () const; // incrementa
+
+	int valorActual();
+
 	void eliminar () const;
 };
 

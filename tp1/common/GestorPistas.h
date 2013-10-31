@@ -40,7 +40,7 @@ public:
 	virtual ~GestorPistas();
 private:
 
-	MemoriaCompartida<int> _cantidadPistas;
+	//MemoriaCompartida<int> _cantidadPistas;
 
 
 	/**
@@ -48,11 +48,11 @@ private:
 	 * Creo que no hay problema entre compartir memoria del Heap entre procesos.
 	 * porque esto se instancia una sola vez dinamicamente en un proceso.
 	 */
-	MemoriaCompartida<bool*> _pistasLibre;
+	//MemoriaCompartida<bool*> _pistasLibre;
 
 
 	Semaforo _semPistas;
-	int _cantPistasInt;
+	//int _cantPistasInt;
 };
 
 #endif /* GESTORPISTAS_H_ */

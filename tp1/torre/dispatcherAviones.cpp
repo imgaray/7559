@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
 		LOG("cantidad de controles " + arch.obtenerAtributo("controladores"));
 		
 		//Se crean los procesos consumidores
-		while (cantidadControles) {
+		while (cantidadControles > 0) {
 				FifoEscritura* fifoConsumer = new FifoEscritura(FIFO_CONTROLADOR + u.convertirAString(cantidadControles));
 				Process* consumidor = new Process("controlador/consumidorPeticiones", cantidadControles);
 				LOG("iniciado proceso de consumidor de peticiones " + u.convertirAString(cantidadControles));
