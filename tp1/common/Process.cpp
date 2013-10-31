@@ -46,7 +46,7 @@ void Process::wait() {
 		if (waitpid(id, &exitStatus, 0) == -1) {
 			throw("process error, could not wait for child process");
 		}
-	} else throw("process error, process not running");
+	} //else throw("process error, process not running");
 }
 
 void Process::killProcess() {
