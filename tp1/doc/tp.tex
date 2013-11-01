@@ -79,7 +79,7 @@ viene a ser el productor (asignando el ingreso de aviones), mientras que el cons
 \newpage
 \section{Diseño}
 
-Para la resolucion de la concurrencia en la aplicacion se implemenetaron varias herramienstas como Fifo, Pipe, Lock , Memoria Compartida y Proceso (representa un hilo de ejecucion).
+Para la resolucion de la concurrencia en la aplicacion se implemenetaron varias herramienstas como Fifo, Lock , Memoria Compartida y Proceso (representa un hilo de ejecucion).
 
 Se crearon los siguientes procesos, uno encargardo de la generacion de aviones, llamado generadorAviones, uno que recibe los aviones creados, llamado consumerAviones, que los coloca en una cola con prioridad, y con otro que se comunica con otro encargado de distribuir los aviones (llamado 
 dispatcherAviones).\\
@@ -100,10 +100,39 @@ Se implemento un sistema de log para hacer un seguimientos de los pasos que vaya
 \end{itemize}
 El archivo de salida de Log esta resguardado por un Lock para su correcta escritura por los distintos procesos que vuelcan su informacion.
 
+
+
 \newpage
 \section{Diagramas}
 
---Diagrama de procesos--
+
+
+\begin{figure}
+  \centering
+    \includegraphics[width=0.6\textwidth] {dia_procesos_2}
+  \caption{Diagrama de Procesos}
+  \label{fig:ejemplo}
+\end{figure}
+
+
+Descripcion de los procesos:
+
+\begin{itemize}
+\item Main Process: Proceso principal 
+\item Generador de Aviones: Genera aviones y los envia a travez de un fifo al consumer.
+\item Consumer de Aviones: Recibe aviones del generador y los coloca en la cola de prioridad.
+\item Dispatcher de Aviones: Encargado de retirar los aviones de la cola de prioridad y asignar este a un controlador
+\item Controlador: Encargado de llevar a cabo la tarea que debe cumplir un avion, obteniendo una pista para este
+\end{itemize}
+
+--Diagrama de Comuniacion de procesos--
+
+\begin{figure}
+  \centering
+    \includegraphics[width=0.6\textwidth] {comunicacion_procesos}
+  \caption{Diagrama de Procesos}
+  \label{fig:ejemplo}
+\end{figure}
 
 --Diagramas de estados de procesos--
 
