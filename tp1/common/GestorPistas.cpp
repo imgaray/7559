@@ -130,7 +130,9 @@ void GestorPistas::liberarPista(int nroPista) {
 
 void GestorPistas::eliminar() {
 	_semPistas.eliminar();
-	//PoolPistas::instancia().liberar();
+
+	// TODO: Liberar porque sale un error en shmdt();
+	PoolPistas::instancia().liberar();
 }
 
 GestorPistas::~GestorPistas() {

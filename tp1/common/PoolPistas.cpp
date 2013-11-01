@@ -22,11 +22,12 @@ PoolPistas::PoolPistas() :
 }
 
 PoolPistas::~PoolPistas() {
-	_memoria.liberar();
+	//_memoria.liberar();
 }
 
 void PoolPistas::limpiar() {
 	_lock.tomarLock();
+	_pistas = _memoria.leer();
 	for (int i = 0; i < _cantPistas ; i++) {
 		//pistas[i] = true; // libre
 		_pistas.pista[i] = true;
@@ -65,7 +66,7 @@ int PoolPistas::obtenerPistaLibre() {
 	}
 
 
-	_memoria.escribir(this->_pistas);
+	_memoria.escribir(_pistas);
 	_lock.liberarLock();
 
 	if (encontrado == false) {

@@ -14,6 +14,7 @@ template <class T> class MemoriaCompartida {
 private:
 	int	shmId;
 	T*	ptrDatos;
+	T* 	ptrOriginal;
 	int	cantidadProcesosAdosados() const;
 
 public:
@@ -34,7 +35,7 @@ public:
 	
 	void escribir(const T& dato);
 	
-	T leer() const;
+	T& leer() const;
 };
 
 template <class T> MemoriaCompartida<T>::MemoriaCompartida ():shmId(0),ptrDatos(NULL) {
@@ -50,6 +51,7 @@ template <class T> void MemoriaCompartida<T>::crear ( const std::string& archivo
 			void* tmpPtr = shmat ( this->shmId,NULL,0 );
 			if ( tmpPtr != (void*) -1 ) {
 				this->ptrDatos = static_cast<T*> (tmpPtr);
+				this->ptrOriginal = this->ptrDatos;
 			} else {
 				std::string mensaje = std::string("Error en shmat(): ") + std::string(strerror(errno));
 				throw mensaje;
@@ -65,6 +67,12 @@ template <class T> void MemoriaCompartida<T>::crear ( const std::string& archivo
 }
 
 template <class T> void MemoriaCompartida<T>::liberar() {
+
+	if (this->ptrDatos != this->ptrOriginal) {
+			std::string msj = "Se intenta liberar puntero distinto al obtenido en la MemmoriaCompartida";
+			std::cerr << msj << std::endl;
+		}
+
 	int errorDt = shmdt ( (void *) this->ptrDatos );
 
 	if ( errorDt != -1 ) {
@@ -88,6 +96,7 @@ template <class T> MemoriaCompartida<T>::MemoriaCompartida ( const std::string& 
 			void* tmpPtr = shmat ( this->shmId,NULL,0 );
 			if ( tmpPtr != (void*) -1 ) {
 				this->ptrDatos = static_cast<T*> (tmpPtr);
+				this->ptrOriginal = this->ptrDatos;
 			} else {
 				std::string mensaje = std::string("Error en shmat(): ") + std::string(strerror(errno));
 				throw mensaje;
@@ -103,10 +112,12 @@ template <class T> MemoriaCompartida<T>::MemoriaCompartida ( const std::string& 
 }
 
 template <class T> MemoriaCompartida<T>::MemoriaCompartida ( const MemoriaCompartida& origen ):shmId(origen.shmId) {
+
 	void* tmpPtr = shmat ( origen.shmId,NULL,0 );
 
 	if ( tmpPtr != (void*) -1 ) {
 		this->ptrDatos = static_cast<T*> (tmpPtr);
+		this->ptrOriginal = this->ptrDatos;
 	} else {
 		std::string mensaje = std::string("Error en shmat(): ") + std::string(strerror(errno));
 		throw mensaje;
@@ -114,6 +125,12 @@ template <class T> MemoriaCompartida<T>::MemoriaCompartida ( const MemoriaCompar
 }
 
 template <class T> MemoriaCompartida<T>::~MemoriaCompartida () {
+
+	if (this->ptrDatos != this->ptrOriginal) {
+			std::string msj = "Se intenta liberar puntero distinto al obtenido en la MemmoriaCompartida";
+			std::cerr << msj << std::endl;
+	}
+
 	int errorDt = shmdt ( static_cast<void*> (this->ptrDatos) );
 
 	if ( errorDt != -1 ) {
@@ -132,6 +149,7 @@ template <class T> MemoriaCompartida<T>& MemoriaCompartida<T>::operator= ( const
 
 	if ( tmpPtr != (void*) -1 ) {
 		this->ptrDatos = static_cast<T*> (tmpPtr);
+		this->ptrOriginal = this->ptrDatos;
 	} else {
 		std::string mensaje = std::string("Error en shmat(): ") + std::string(strerror(errno));
 		throw mensaje;
@@ -144,7 +162,7 @@ template <class T> void MemoriaCompartida<T>::escribir ( const T& dato ) {
 	*(this->ptrDatos) = dato;
 }
 
-template <class T> T MemoriaCompartida<T>::leer() const {
+template <class T> T& MemoriaCompartida<T>::leer() const {
 	return *(this->ptrDatos);
 }
 
