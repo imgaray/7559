@@ -35,7 +35,7 @@ void inicializarRecursos() {
 	int cantPistas = u.convertirAEntero(archivo.obtenerAtributo("pistas"));
 
 	gestorPistas = new GestorPistas(cantPistas);
-	gestorPistas->incializar();
+	gestorPistas->inicializar();
 }
 
 
@@ -46,6 +46,8 @@ void liberarRecursos() {
 
 	unlink(ruta_mc_pistas_libres);
 	unlink(ruta_sem_pistas);
+	
+	gestorPistas->eliminar();
 }
 
 int main(int argc, char** argv) {
@@ -77,7 +79,10 @@ int main(int argc, char** argv) {
 		delete consumerAviones;
 
 	liberarRecursos();
-
+	
+	if (gestorPistas != NULL)
+		delete gestorPistas;
+	
 	Logger::instance().info(TAG, "finalizado correctamente");
 	Logger::close();
 	

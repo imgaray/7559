@@ -31,7 +31,7 @@ GestorPistas::GestorPistas(int cantidadPistas) :
 	{
 }
 
-void GestorPistas::incializar() {
+void GestorPistas::inicializar() {
 
 //	if (_cantPistasInt == 0) {
 //		throw "Error al inicializar el gestor de pistas";

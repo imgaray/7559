@@ -16,7 +16,7 @@ public:
 	/**
 	 * Metodo debe ser llamado una unica vez
 	 */
-	void incializar();
+	void inicializar();
 
 	/**
 	 * Retorna el numero de pista disponible.
