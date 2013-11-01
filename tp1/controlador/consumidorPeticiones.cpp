@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
 	fifo.abrir();
 	logger.debug(TAG + numero, "abierta la fifo numero " + numero);
 	std::string ruta = FIFO_CONTROLADOR;
-	Controlador c(u.convertirAEntero(numero));
+	Controlador controlador(u.convertirAEntero(numero));
 	int resultado = 1;
 	do {
 		char* ptr = new char[32];
@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
 			logger.info(TAG + numero, mensaje.c_str());
 
 			Pista* pista = new Pista(nroPista);
-			c.manejar(avioneta, pista);
+			controlador.manejar(avioneta, pista);
 			delete avioneta;
 			delete pista;
 
@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
 			logger.info(TAG + numero, mensaje);
 
 
-			logger.debug(TAG + numero, "leido EOF de la fifo");
+			//logger.debug(TAG + numero, "leido EOF de la fifo");
 
 		} else {
 			logger.debug(TAG + numero, "leido EOF de la fifo");
