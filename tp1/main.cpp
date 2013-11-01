@@ -68,10 +68,9 @@ int main(int argc, char** argv) {
 		consumerAviones = new Process(fconsumer);
 		Logger::instance().info(TAG, "consumer de aviones iniciado");
 	} catch(char const* mensaje) {
-		//Logger::instance().fatal(TAG, "generador de aviones iniciado");
-		std::cout << "Excepcion catcheada en main principal: " << mensaje << std::endl;
+		Logger::instance().fatal(TAG, "Error en main principal: " + std::string(mensaje));
 	}
-
+	
 	if (generadorAviones != NULL)
 		delete generadorAviones;
 
@@ -83,7 +82,7 @@ int main(int argc, char** argv) {
 	if (gestorPistas != NULL)
 		delete gestorPistas;
 	
-	Logger::instance().info(TAG, "finalizado correctamente");
+	Logger::instance().info(TAG, "Finalizado correctamente");
 	Logger::close();
 	
 	return 0;

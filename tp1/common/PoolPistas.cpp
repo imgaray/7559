@@ -61,7 +61,7 @@ int PoolPistas::obtenerPistaLibre() {
 	_lock.liberarLock();
 
 	if (encontrado == false) {
-		throw "No se puedo encontrar pista libre";
+		throw "No se pudo encontrar pista libre";
 	}
 
 

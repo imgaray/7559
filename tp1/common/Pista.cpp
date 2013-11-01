@@ -4,10 +4,12 @@
 #include "Logger.h"
 
 #define SEP ';'
-
 #define TAG "Pista"
 
+std::string Pista::basenameRutaPista = "/tmp/pista_nro_";
+
 void Pista::tomar() {
+	lock->tomarLock();
 	Utilitario u;
 	Logger::instance().info(TAG,"pista " + u.convertirAString(numero) + " tomada");
 }
@@ -15,9 +17,14 @@ void Pista::tomar() {
 void Pista::liberar() {
 	Utilitario u;
 	Logger::instance().info(TAG,"pista " + u.convertirAString(numero) + " liberada");
+	lock->liberarLock();
 }
 
 Pista::Pista(unsigned numero): numero(numero) {
+	Utilitario u;
+	std::string rutaPista = basenameRutaPista + u.convertirAString(numero);
+	mknod(rutaPista.c_str(), 0666, 0);
+	lock = new LockFile(rutaPista);
 }
 
 Pista::Pista(const std::string& s) {
@@ -25,6 +32,10 @@ Pista::Pista(const std::string& s) {
 }
 
 Pista::~Pista() {
+	Utilitario u;
+	std::string rutaPista = basenameRutaPista + u.convertirAString(numero);
+	unlink(rutaPista.c_str());
+	delete lock;
 }
 
 const char* Pista::serializar(){

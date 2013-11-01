@@ -15,6 +15,7 @@ public:
 	Pista(const std::string& s);
 	virtual ~Pista();
 private:
+	static std::string basenameRutaPista;
 	LockFile* lock;
 	unsigned numero;
 };
