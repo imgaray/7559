@@ -28,8 +28,11 @@ PoolPistas::~PoolPistas() {
 void PoolPistas::limpiar() {
 	_lock.tomarLock();
 	for (int i = 0; i < _cantPistas ; i++) {
-		pistas[i] = true; // libre
+		//pistas[i] = true; // libre
+		_pistas.pista[i] = true;
 	}
+
+	_memoria.escribir(_pistas);
 	_lock.liberarLock();
 }
 
@@ -47,23 +50,27 @@ int PoolPistas::obtenerPistaLibre() {
 
 	_lock.tomarLock();
 
+	//this->pistas = _memoria.leer().pistas;
+	this->_pistas = _memoria.leer();
+
 	// busca la primera pista libre
 	int i = 0;
 	while (i < _cantPistas && encontrado == false)  {
-		if (pistas[i] == true) {
+		if (_pistas.pista[i] == true) {
 			encontrado = true;
-			pistas[i] = false;
+			_pistas.pista[i] = false;
 			nroPista = i+1;
 		}
 		i++;
 	}
 
+
+	_memoria.escribir(this->_pistas);
 	_lock.liberarLock();
 
 	if (encontrado == false) {
 		throw "No se pudo encontrar pista libre";
 	}
-
 
 	return nroPista;
 }
@@ -74,12 +81,20 @@ void PoolPistas::inicializar() {
 
 	int cantPistas = u.convertirAEntero(archivo.obtenerAtributo("pistas"));
 
-	if (_memoria.crear(cantPistas * sizeof(bool)) != 0)
-		throw "Error al crear la MemComp del PoolPistas";
+	if (cantPistas > MAX_PISTAS) {
+		std::string msj = "Cantidad de Pistas excede al Maximo.";
+		throw msj;
+	}
+
+
+	//se crea sola en el constructor
+
+	//if (_memoria.crear(RUTA_MC_PISTAS_LIBRES, 'a') != 0)
+	//	throw "Error al crear la MemComp del PoolPistas";
 
 	_cantPistas = cantPistas;
 
-	this->pistas = (bool*) _memoria.datos();
+	//this->pistas = (bool*) _memoria.datos();
 }
 
 void PoolPistas::liberarPista(int nroPista) {
@@ -88,8 +103,11 @@ void PoolPistas::liberarPista(int nroPista) {
 		throw "Liberando pista incorrecta";
 
 	_lock.tomarLock();
-	if (pistas[nroPista-1] == false) {
-		pistas[nroPista-1] = true;
+	_pistas = _memoria.leer();
+
+	if (_pistas.pista[nroPista-1] == false) {
+		_pistas.pista[nroPista-1] = true;
+		_memoria.escribir(_pistas);
 	}
 	else {
 		throw "Error, intentando liberar pista ya libre";

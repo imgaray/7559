@@ -8,8 +8,10 @@
 #ifndef POOLPISTAS_H_
 #define POOLPISTAS_H_
 
-#include "MemCompartidaV.h"
+#include "MemoriaCompartida.h"
 #include "LockFile.h"
+
+#define MAX_PISTAS 500
 
 class PoolPistas {
 public:
@@ -37,15 +39,26 @@ public:
 
 	virtual ~PoolPistas();
 private:
+
+	typedef struct  {
+		bool pista[MAX_PISTAS];
+	} Capacidad;
+
 	void inicializar();
 
 	PoolPistas();
 	static PoolPistas* _instancia;
 
 	LockFile _lock;
-	MemCompartidaV _memoria;
+	//MemCompartidaV _memoria;
+	MemoriaCompartida<Capacidad> _memoria;
 	int _cantPistas;
-	bool* pistas;
+	//bool* pistas;
+
+	Capacidad _pistas;
+
+	std::string _rutaArch;
+	char _idArch;
 };
 
 #endif /* POOLPISTAS_H_ */

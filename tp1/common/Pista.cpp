@@ -1,6 +1,7 @@
 #include "Pista.h"
 #include <string.h>
 #include <iostream>
+#include <sys/stat.h>
 #include "Logger.h"
 
 #define SEP ';'
