@@ -110,31 +110,34 @@ El archivo de salida de Log esta resguardado por un Lock para su correcta escrit
 \begin{figure}
   \centering
     \includegraphics[width=0.6\textwidth] {dia_procesos_2}
-  \caption{Diagrama de Procesos}
-  \label{fig:ejemplo}
+  \caption{Diagrama de Procesos.}
+  \label{fig:dia_procesos}
 \end{figure}
 
 
+En la Figura~\ref{fig:dia_procesos} se ilustra como es el camino de creacion de los distintos procesos.
 Descripcion de los procesos:
 
 \begin{itemize}
-\item Main Process: Proceso principal 
+\item Main Process: Proceso principal que dispara otros procesos.
 \item Generador de Aviones: Genera aviones y los envia a travez de un fifo al consumer.
 \item Consumer de Aviones: Recibe aviones del generador y los coloca en la cola de prioridad.
-\item Dispatcher de Aviones: Encargado de retirar los aviones de la cola de prioridad y asignar este a un controlador
-\item Controlador: Encargado de llevar a cabo la tarea que debe cumplir un avion, obteniendo una pista para este
+\item Dispatcher de Aviones: Encargado de retirar los aviones de la cola de prioridad y asignar este a un controlador.
+\item Controlador: Encargado de llevar a cabo la tarea que debe cumplir un avion, obteniendo una pista para este.
 \end{itemize}
+\\
+% --Diagrama de Comuniacion de procesos--
 
---Diagrama de Comuniacion de procesos--
+En la Figura~\ref{fig:dia_comunicacion_procesos} se muestra como es la comunicacion entre los distintos procesos y el medio por el cual se lleva a cabo.
 
 \begin{figure}
   \centering
     \includegraphics[width=0.6\textwidth] {comunicacion_procesos}
-  \caption{Diagrama de Procesos}
-  \label{fig:ejemplo}
+  \caption{Diagrama de Comunicacion entre procesos.}
+  \label{fig:dia_comunicacion_procesos}
 \end{figure}
 
---Diagramas de estados de procesos--
+% --Diagramas de estados de procesos--
 
 
 \newpage
@@ -143,10 +146,10 @@ Descripcion de los procesos:
 
 Los procesos que ''generan'' y ''consumen'' aviones interactuan entre si mediante el usos de Fifos. La comunicacion entre el generadorAviones y el dispatcherAviones se hace mediante el uso de una Memoria Compartida donde en esta se localiza la cola con prioridad de aviones. 
 
-Los aviones que se colocan en la cola de prioridad son representaciones hechas de un avion mediandte por un objeto sencillo que mantiene principalmente su estado(si se encuentra volado o en tierra).
+Los aviones que se colocan en la cola de prioridad son representaciones hechas de un avion mediandte por un objeto sencillo que mantiene principalmente su estado(si se encuentra volando o en tierra).
 
-El dispatcher obtiene un avion de la cola, ubicada en la memoria compartida, si es que no esta vacia, y selecciona un proceso controlador al cual asignarle ese avion mediante un algoritmo particular de seleccion.
-Luego de el controlador consigue el avion obtiene un pista vacia para resolver la situacion del mismo, luego libera la pista y se pone a la espera de otra asignacion de alguno avion. Si no no hubiera pista vacias cuando el proceso la solicita se bloquea esperando hasta que alguna se libere.\\
+El dispatcher obtiene un avion de la cola, ubicada en la memoria compartida y selecciona un proceso controlador al cual asignarle ese avion mediante un algoritmo particular de seleccion.
+Luego de que el controlador obtiene el avion asignado, intenta conseguir una pista vacia para resolver la situacion del mismo, solicitando esta a un gestor de pistas que almacena las pistas libres en una memoria compartia, luego que se consigue realizar la accion del avion se libera la pista(informando al gestor) y se pone a la espera de otra asignacion de algun otro avion. Si no hubiera pista vacias cuando el proceso la solicita se bloquea esperando hasta que alguna se libere.\\
 
 
 Dentro de un archivo de configuracion se establece las cantidades correspondientes a cada entidad del modelo(aviones, controladores y pistas). El archivo se crea mediante un script desarrolado en python, donde se pide el ingreso de las cantidades de objetos a simular.
