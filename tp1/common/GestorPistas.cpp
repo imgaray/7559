@@ -52,18 +52,18 @@ void GestorPistas::incializar() {
 	if (_semPistas.inicializar() != 0)
 		throw "Error al inicilizar el semaforo";
 
-	std::cout << "Valor inicial del semaforo: " << _semPistas.valorActual() << std::endl;
+	//std::cout << "Valor inicial del semaforo: " << _semPistas.valorActual() << std::endl;
 	this->obtenerPista();
-	std::cout << "Valor actual del semaforo: " << _semPistas.valorActual() << std::endl;
+	//std::cout << "Valor actual del semaforo: " << _semPistas.valorActual() << std::endl;
 }
 
 
 int GestorPistas::obtenerPista() {
 	Logger::instance().debug(TAG,"obteniendo una pista libre" );
 
-	std::cout << "Valor actual(obtener) del semaforo: " << _semPistas.valorActual() << std::endl;
+	//std::cout << "Valor actual(obtener) del semaforo: " << _semPistas.valorActual() << std::endl;
 	_semPistas.p();
-	std::cout << "Valor actual(ya obtenido) del semaforo: " << _semPistas.valorActual() << std::endl;
+	//std::cout << "Valor actual(ya obtenido) del semaforo: " << _semPistas.valorActual() << std::endl;
 
 	int nroPista = PoolPistas::instancia().obtenerPistaLibre();
 
@@ -94,7 +94,7 @@ int GestorPistas::obtenerPista() {
 
 	Logger::instance().debug(TAG,std::string("se obtubo la pista libre nro ") + u.convertirAString(nroPista));
 
-	std::cout << "Se obtuvo la pista: " << nroPista << std::endl;
+	//std::cout << "Se obtuvo la pista: " << nroPista << std::endl;
 
 	return nroPista;
 }
@@ -124,7 +124,7 @@ void GestorPistas::liberarPista(int nroPista) {
 //		throw "Error, intentando liberar pista ya libre";
 //	}
 
-	std::cout << "Se libero la pista nro: " << nroPista << std::endl;
+	//std::cout << "Se libero la pista nro: " << nroPista << std::endl;
 	Logger::instance().debug(TAG,std::string("se libero la pista nro ") + u.convertirAString(nroPista));
 }
 

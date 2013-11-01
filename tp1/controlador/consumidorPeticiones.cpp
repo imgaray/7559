@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
 			int nroPista = gestor.obtenerPista();
 			std::string mensaje = std::string("Obtenida pista nro: ") + u.convertirAString(nroPista);
 
-			logger.debug(TAG + numero, mensaje.c_str());
+			logger.info(TAG + numero, mensaje.c_str());
 
 			Pista* pista = new Pista(nroPista);
 			c.manejar(avioneta, pista);
@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
 
 			gestor.liberarPista(nroPista);
 			mensaje = std::string("Liberada pista nro: ") + u.convertirAString(nroPista);
-			logger.debug(TAG + numero, mensaje);
+			logger.info(TAG + numero, mensaje);
 
 
 			logger.debug(TAG + numero, "leido EOF de la fifo");
