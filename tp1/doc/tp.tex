@@ -125,7 +125,7 @@ Descripcion de los procesos:
 \item Dispatcher de Aviones: Encargado de retirar los aviones de la cola de prioridad y asignar este a un controlador.
 \item Controlador: Encargado de llevar a cabo la tarea que debe cumplir un avion, obteniendo una pista para este.
 \end{itemize}
-\\
+
 % --Diagrama de Comuniacion de procesos--
 
 En la Figura~\ref{fig:dia_comunicacion_procesos} se muestra como es la comunicacion entre los distintos procesos y el medio por el cual se lleva a cabo.
@@ -140,15 +140,43 @@ En la Figura~\ref{fig:dia_comunicacion_procesos} se muestra como es la comunicac
 % --Diagramas de estados de procesos--
 
 
-Diagramas de Estados de Procesos
+% Diagramas de Estados de Procesos
 
-\includegraphics{./dia_est-generadorAviones}\\
+\begin{figure}
+  \centering
+    \includegraphics[width=0.5\textwidth] {dia_est-generadorAviones}
+  \caption{Diagrama de Estados del Proceso GeneradorAviones.}
+  \label{fig:dia_est_generadorAviones}
+\end{figure}
 
-\includegraphics{./dia_est-consumerAviones}\\
 
-\includegraphics{./dia_est-dispatcherAviones}\\
 
-\includegraphics{./dia_est-Controlador}\\
+\begin{figure}
+  \centering
+    \includegraphics[width=0.5\textwidth] {dia_est-consumerAviones}
+  \caption{Diagrama de Estados del Proceso ConsumerAviones.}
+  \label{fig:dia_est_consumerAviones}
+\end{figure}
+
+
+
+\begin{figure}
+  \centering
+    \includegraphics[width=0.5\textwidth] {dia_est-dispatcherAviones}
+  \caption{Diagrama de Estados del Procesos DispatcherAviones.}
+  \label{fig:dia_est_dispatcherAviones}
+\end{figure}
+
+
+\begin{figure}
+  \centering
+    \includegraphics[width=0.5\textwidth] {dia_est-Controlador}
+  \caption{Diagrama de Estados del Proceso Controlador (consumidorPeticiones).}
+  \label{fig:dia_est_controlador}
+\end{figure}
+
+
+
 
 \newpage
 \section{Integración}
