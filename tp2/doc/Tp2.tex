@@ -1,0 +1,97 @@
+\documentclass[a4paper,11pt]{article}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Paquetes utilizados
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Gráficos complejos
+\usepackage{graphicx}
+%\usepackage{caption}
+%\usepackage{subcaption}
+%\usepackage{placeins}
+
+% Soporte para el lenguaje español
+\usepackage{textcomp}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\DeclareUnicodeCharacter{B0}{\textdegree}
+\usepackage[spanish]{babel}
+\usepackage{pdfpages}
+
+% Formato de párrafo
+%\setlength{\parskip}{1ex plus 0.5ex minus 0.2ex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Título
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Título principal del documento.
+\title{\textbf{TÍTULO DOCUMENTO}}
+
+% Información sobre los autores.
+\author{
+	NOMBRE AUTOR 1\\
+	NOMBRE AUTOR 2\\
+  \\
+  \normalsize{XX Cuatrimestre de 20XX}							\\
+  \normalsize{XX.XX - NOMBRE MATERIA}							\\
+  \normalsize{Facultad de Ingeniería, Universidad de Buenos Aires}
+}
+\date{FECHA}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Documento
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+	% ------------------------------------------------------------------
+	% Top matter
+	% ------------------------------------------------------------------
+	\thispagestyle{empty}
+	\maketitle
+
+	\begin{abstract}
+
+		\input{abstract.tex}
+
+	\end{abstract}
+
+	\clearpage
+
+	% ------------------------------------------------------------------
+	% Tabla de contenidos
+	% ------------------------------------------------------------------
+	\tableofcontents
+	\clearpage
+
+
+	% ------------------------------------------------------------------
+	% Desarrollo
+	% ------------------------------------------------------------------
+	\part{Informe}
+		\section{Introducción}
+		\input{intro.tex}
+			\subsection{Análisis}
+			\input{analisis.tex} 
+			\subsection{Hipótesis}
+			\input{hipotesis.tex} 
+
+		\newpage
+		\section{Desarrollo}
+		\input{desarrollo.tex} 
+			\subsection{Diseño}
+			\input{disenio.tex} 
+	\newpage
+
+	\includepdf[scale=0.8,pages=1,pagecommand=\part{Enunciado}]{enunciado.pdf}
+	\includepdf[scale=0.8,pages=2-]{enunciado.pdf}
+
+	% ------------------------------------------------------------------
+	% Bibliografía
+	% ------------------------------------------------------------------
+	\begin{thebibliography}{99}
+		\bibitem{LABEL} BIBLIOGRAFIA.
+	\end{thebibliography}
+
+\end{document}
