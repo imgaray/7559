@@ -1,12 +1,12 @@
 /**
- *  Clase paquete encargada de los mensajes a enviar
+ *  Clase paquete encargada de almacenar los mensajes a enviar recibir
  * 
  */
 
 /**
  *	Propuesta de Paquete: 
  * 	2 bytes para el tamanio.
- *  2 bytes para el tipo.
+ *  1 bytes para el tipo.
  *  resto datos ( Mensaje, (Conversaciones, cantidad), NombreNuevaConversacion
  * 
  */
@@ -33,5 +33,10 @@ public:
 	
 	void agregarDatos(void* datos, int tamanio);
 	
+	
 	void* serializar();
+	
+	void deserializar(void* datos);
+private:
+	char* _buffer[TAM_MAX_PAQ];
 };
