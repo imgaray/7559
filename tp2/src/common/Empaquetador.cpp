@@ -19,6 +19,13 @@ Empaquetador::~Empaquetador() {
 
 }
 
+void Empaquetador::agregarMensaje(const std::string& mensaje) {
+	_paquete.limpiar();
+	_paquete.definirTipo(Empaquetador::MENSAJE);
+
+	_paquete.agregarDatos((void*) mensaje.c_str(), mensaje.size());
+}
+
 void Empaquetador::agregarMensajeError(const std::string& mensaje) {
 	_paquete.limpiar();
 	_paquete.definirTipo(Empaquetador::ERROR);
@@ -48,3 +55,72 @@ void Empaquetador::confirmarRespuesta() {
 	_paquete.definirTipo(Empaquetador::OK);
 }
 
+void Empaquetador::agregarConversaciones(std::set<std::string> conversaciones) {
+	_paquete.limpiar();
+	_paquete.definirTipo(Empaquetador::CONVERSACIONES);
+
+	std::set<std::string>::iterator it = conversaciones.begin();
+
+	while (it != conversaciones.end()) {
+		_paquete.agregarAtributo((void*) (*it).c_str(), (*it).size());
+		it++;
+	}
+}
+
+const std::string Empaquetador::nombreUsuario() const {
+	std::string nombre;
+	nombre.clear();
+
+	if (iniciandoSesion()) {
+		nombre = _paquete.mensaje();
+	}
+
+	return nombre;
+}
+
+const std::set<std::string> Empaquetador::conversaciones() const {
+	std::set<std::string> conj;
+
+	int ind = 0;
+
+	char* conv = _paquete.atributo(0);
+
+	while (conv != NULL) {
+		ind++;
+		conj.insert(std::string(conv));
+		delete conv;
+
+		conv = _paquete.atributo(ind);
+	}
+
+
+	return conj;
+}
+
+const std::string Empaquetador::mesaje() const {
+	return _paquete.mensaje();
+}
+
+bool Empaquetador::iniciandoSesion() const {
+	return (_paquete.tipo() == Empaquetador::INICIO_SESION);
+}
+bool Empaquetador::finalizandoSesion() const {
+	return (_paquete.tipo() == Empaquetador::FIN_SESION);
+}
+
+bool Empaquetador::confirmacionRecibida() const {
+	return (_paquete.tipo() == Empaquetador::OK);
+}
+
+bool Empaquetador::errorRecibido() const {
+	return (_paquete.tipo() == Empaquetador::ERROR);
+}
+
+Empaquetador::TipoPaquete Empaquetador::tipoActual() const {
+	return (Empaquetador::TipoPaquete) _paquete.tipo();
+}
+
+
+const Paquete& Empaquetador::paquete() const {
+	return _paquete;
+}

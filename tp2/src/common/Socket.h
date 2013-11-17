@@ -17,7 +17,11 @@
 #include <sys/types.h>
 #include <string>
 
-#include "Definiciones.h"
+#include "Paquete.h"
+
+//#include "Definiciones.h"
+
+typedef unsigned short int Puerto;
 
 //class Mensaje;
 

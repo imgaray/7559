@@ -30,6 +30,10 @@
 #ifndef EMPAQUETADOR_H_
 #define EMPAQUETADOR_H_
 
+
+#include "Paquete.h"
+#include <set>
+
 class Empaquetador {
 public:
 	Empaquetador();
@@ -60,6 +64,7 @@ public:
 	void agregarNombreUsuario(std::string& nombreUsuario);
 
 	void agregarConversaciones(std::set<std::string> conversaciones);
+	void agregarMensaje(const std::string& mensaje);
 	void agregarMensajeError(const std::string& mensaje);
 	void crearConversacion(std::string& nombreNuevaConversacion);
 
@@ -78,9 +83,12 @@ public:
 	bool iniciandoSesion() const;
 	bool finalizandoSesion() const;
 
-	TipoPaquete tipoActual();
+	bool confirmacionRecibida() const;
+	bool errorRecibido() const;
 
-	Paquete& paquete();
+	TipoPaquete tipoActual() const;
+
+	const Paquete& paquete() const;
 
 private:
 	Paquete _paquete;

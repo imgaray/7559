@@ -6,14 +6,10 @@
  */
 
 #include "Socket.h"
-#include "Consulta.h"
-#include "Respuesta.h"
-#include "Definiciones.h"
 
 #include "Paquete.h"
 
 #include <iostream>
-// #include "common-Mensaje.h"
 #include <cstring>
 #include <cerrno>
 #include <csignal>
@@ -148,7 +144,7 @@ bool Socket::enviar(const Paquete& paquete) {
 	
 	//std::string s_datos = mensaje.serializar();
     //const char* datos = s_datos.c_str(); // consulta.datos();
-    const char* datos = (char*) paquete.serializar();
+    const char* datos = (const char*) paquete.serializar();
     
     //size_t tam_datos = s_datos.size(); // consulta.tamanio();
     size_t tam_datos = paquete.tamanio();
@@ -206,7 +202,7 @@ bool Socket::recibirDatos(std::string& datos){
 		//	MYPRINT(recibidos);
 			datos += buff;
 
-			finDeMensaje = (buff == sep_fin);
+			//finDeMensaje = (buff == sep_fin);
 		}
 	}
 	return _conectado;
@@ -235,10 +231,10 @@ bool Socket::recibirDatos(){
 			_conectado = false;
 			
 		} else if (recibidos > 0) {
-			ind+ = recibidos;
+			ind += recibidos;
 		}
 		
-	} while (recibidos > 0 && recibidos < TAM_MAX_PAQ)
+	} while (recibidos > 0 && recibidos < TAM_MAX_PAQ);
 	
 	
 	return _conectado;
