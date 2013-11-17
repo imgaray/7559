@@ -25,7 +25,7 @@ class Paquete {
 public:
 	Paquete();
 	Paquete(const void* spaquete);
-	const Paquete& Paquete(const Paquete& orig);
+	Paquete(const Paquete& orig);
 	~Paquete();
 	
 	Paquete& operator =(const Paquete& orig);
@@ -54,6 +54,8 @@ public:
 	void agregarAtributo(void* datos, unsigned tamanio);
 
 private:
+
+	void copiar(char* destino, const char* origen, int cantidad) const;
 
 	void leerCabecera();
 

@@ -55,11 +55,11 @@ void Empaquetador::confirmarRespuesta() {
 	_paquete.definirTipo(Empaquetador::OK);
 }
 
-void Empaquetador::agregarConversaciones(std::set<std::string> conversaciones) {
+void Empaquetador::agregarConversaciones(std::vector<std::string> conversaciones) {
 	_paquete.limpiar();
 	_paquete.definirTipo(Empaquetador::CONVERSACIONES);
 
-	std::set<std::string>::iterator it = conversaciones.begin();
+	std::vector<std::string>::iterator it = conversaciones.begin();
 
 	while (it != conversaciones.end()) {
 		_paquete.agregarAtributo((void*) (*it).c_str(), (*it).size());
@@ -78,8 +78,8 @@ const std::string Empaquetador::nombreUsuario() const {
 	return nombre;
 }
 
-const std::set<std::string> Empaquetador::conversaciones() const {
-	std::set<std::string> conj;
+const std::vector<std::string> Empaquetador::conversaciones() const {
+	std::vector<std::string> conj;
 
 	int ind = 0;
 
@@ -87,7 +87,7 @@ const std::set<std::string> Empaquetador::conversaciones() const {
 
 	while (conv != NULL) {
 		ind++;
-		conj.insert(std::string(conv));
+		conj[ind]=std::string(conv);
 		delete conv;
 
 		conv = _paquete.atributo(ind);
@@ -119,7 +119,6 @@ bool Empaquetador::errorRecibido() const {
 Empaquetador::TipoPaquete Empaquetador::tipoActual() const {
 	return (Empaquetador::TipoPaquete) _paquete.tipo();
 }
-
 
 const Paquete& Empaquetador::paquete() const {
 	return _paquete;
