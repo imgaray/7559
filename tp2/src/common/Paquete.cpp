@@ -16,7 +16,7 @@ Paquete::Paquete(const Paquete& orig) {
 	*this = orig;
 }
 
-Paquete& Paquete::operator =(const Paquete& orig) {
+const Paquete& Paquete::operator =(const Paquete& orig) {
 	_tipo = orig._tipo;
 	_tamanioReal = orig._tamanioReal;
 	_msj = orig._msj;

@@ -4,13 +4,8 @@
  */
 
 /**
- *	Propuesta de Paquete: 
- * 	2 bytes para el tamanio. (formato Big Endian)
- *  1 bytes para el tipo.
- *  resto datos ( Mensaje, (Conversaciones, cantidad), NombreNuevaConversacion
- * 
+ * Se debe utilizar siempre la clase "Empaquetador" para crear y modificar paquetes.
  */
-
 
 #ifndef PAQUETE_H_
 #define PAQUETE_H_
@@ -28,7 +23,7 @@ public:
 	Paquete(const Paquete& orig);
 	~Paquete();
 	
-	Paquete& operator =(const Paquete& orig);
+	const Paquete& operator =(const Paquete& orig);
 
 	void definirTipo(int tipo);
 

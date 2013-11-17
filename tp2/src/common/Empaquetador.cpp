@@ -19,6 +19,10 @@ Empaquetador::~Empaquetador() {
 
 }
 
+void Empaquetador::asociar(const Paquete& paquete) {
+	_paquete = paquete;
+}
+
 void Empaquetador::agregarMensaje(const std::string& mensaje) {
 	_paquete.limpiar();
 	_paquete.definirTipo(Empaquetador::MENSAJE);
