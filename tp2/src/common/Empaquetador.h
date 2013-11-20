@@ -85,7 +85,7 @@ public:
 	/**
 	 * Agrega un mensaje al paquete y lo define como MENSAJE
 	 */
-	void agregarMensaje(const std::string& mensaje);
+	void agregarMensaje(const std::string& nombreUsuario, const std::string& mensaje);
 
 	/**
 	 * Agrega un Mensaje de Error y define el paquete como error.
@@ -106,15 +106,15 @@ public:
 	 * Metodos que usar el receptor
 	 *************************************************************************/
 	/**
-	 * Retorna el nombre de usuario si el paquete es del paquete es de inicio de sesion, caso
-	 * contrario retorna un string vacio.
-	 */
-	const std::string nombreUsuario() const;
-
-	/**
 	 * Retorna el mensaje que posee el paquete.
 	 */
-	const std::string mesaje() const;
+	const std::string mensajeDeUsuario() const;
+
+	/**
+	* Retorna el nombre de usuario que posee el paquete, si es Paquete es de Tipo INICIO_SESION o MENSAJE.
+	* Caso contrario retorna string vacio.
+	*/
+	const std::string nombreDeUsuario() const;
 
 	/**
 	 * Retorna un std::vector con el nombres de las conversaciones disponibles si el paquete es de tipo

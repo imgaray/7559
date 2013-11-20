@@ -23,11 +23,12 @@ void Empaquetador::asociar(const Paquete& paquete) {
 	_paquete = paquete;
 }
 
-void Empaquetador::agregarMensaje(const std::string& mensaje) {
+void Empaquetador::agregarMensaje(const std::string& nombreUsuario, const std::string& mensaje) {
 	_paquete.limpiar();
 	_paquete.definirTipo(Empaquetador::MENSAJE);
 
-	_paquete.agregarDatos((void*) mensaje.c_str(), mensaje.size());
+	_paquete.agregarAtributo((void*) nombreUsuario.c_str(), nombreUsuario.size());
+	_paquete.agregarAtributo((void*) mensaje.c_str(), mensaje.size());
 }
 
 void Empaquetador::agregarMensajeError(const std::string& mensaje) {
@@ -71,12 +72,20 @@ void Empaquetador::agregarConversaciones(std::vector<std::string> conversaciones
 	}
 }
 
-const std::string Empaquetador::nombreUsuario() const {
+const std::string Empaquetador::nombreDeUsuario() const {
 	std::string nombre;
 	nombre.clear();
 
 	if (iniciandoSesion()) {
 		nombre = _paquete.mensaje();
+	}
+	else if (_paquete.tipo() == Empaquetador::MENSAJE){
+		char* cres = _paquete.atributo(0);
+
+		if (cres != NULL) {
+			nombre = cres;
+			delete cres;
+		}
 	}
 
 	return nombre;
@@ -91,7 +100,9 @@ const std::vector<std::string> Empaquetador::conversaciones() const {
 
 	while (conv != NULL) {
 		ind++;
-		conj[ind]=std::string(conv);
+		//conj[ind]=std::string(conv);
+		conj.push_back(std::string(conv));
+
 		delete conv;
 
 		conv = _paquete.atributo(ind);
@@ -101,8 +112,19 @@ const std::vector<std::string> Empaquetador::conversaciones() const {
 	return conj;
 }
 
-const std::string Empaquetador::mesaje() const {
-	return _paquete.mensaje();
+const std::string Empaquetador::mensajeDeUsuario() const {
+	std::string res;
+
+	if (_paquete.tipo() == Empaquetador::MENSAJE) {
+		char* cres = _paquete.atributo(1);
+
+		if ( cres != NULL ) {
+			res = cres;
+			delete cres;
+		}
+	}
+
+	return res;
 }
 
 bool Empaquetador::iniciandoSesion() const {

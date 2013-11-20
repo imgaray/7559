@@ -107,16 +107,19 @@ char* Paquete::atributo(int indice) const {
 
 	int posBuffer = TAM_CABECERA,  i = 0;;
 	unsigned tamLocal;
+	bool encontrado = false;
 
-	while (posBuffer < TAM_MAX_PAQ) {
+	while (posBuffer < TAM_MAX_PAQ && i <= indice && encontrado == false) {
 		tamLocal = _buffer[posBuffer];
 		if ( i == indice && ( posBuffer + tamLocal < TAM_MAX_PAQ ) ) {
 			res = new char[tamLocal + 1];
 			copiar( res,(char*)( _buffer + posBuffer + 1), tamLocal );
 			res[tamLocal] = '\0';
+			encontrado = true;
 		}
 		else {
 			i++;
+			posBuffer += tamLocal + 1;
 		}
 	}
 
