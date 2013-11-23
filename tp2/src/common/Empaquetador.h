@@ -154,6 +154,11 @@ public:
 	 */
 	const Paquete& paquete() const;
 
+	/**
+	 * Deja el paquete contenido dentro en un estado inicial.
+	 */
+	void limpiar();
+
 private:
 	Paquete _paquete;
 };

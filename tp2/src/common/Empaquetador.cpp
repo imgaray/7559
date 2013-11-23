@@ -149,3 +149,7 @@ Empaquetador::TipoPaquete Empaquetador::tipoActual() const {
 const Paquete& Empaquetador::paquete() const {
 	return _paquete;
 }
+
+void Empaquetador::limpiar() {
+	_paquete.limpiar();
+}
