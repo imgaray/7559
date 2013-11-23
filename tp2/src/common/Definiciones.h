@@ -14,6 +14,12 @@
 #include <vector>
 
 /**
+ * Constantes del Servidor
+ */
+
+const Puerto PUERTO_SERVIDOR = 9090;
+
+/**
  * Nombres de Semaforos Posix
  */
 
@@ -29,10 +35,11 @@
 
 typedef std::pair<int, DirSocket> InfoUsuario;
 
+typedef int IdConversacion;
 
-typedef std::vector<int> Destinatarios;
-typedef std::map<int, std::string> Conversaciones;
-typedef std::map<std::string, Destinatarios > ConvUsuarios;
+typedef std::vector<IdConversacion> Destinatarios;
+typedef std::map<std::string, IdConversacion> Conversaciones;
+typedef std::map<IdConversacion, Destinatarios > ConvUsuarios;
 typedef std::map<std::string,  InfoUsuario> Usuarios;
 
 

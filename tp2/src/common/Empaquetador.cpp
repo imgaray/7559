@@ -112,6 +112,21 @@ const std::vector<std::string> Empaquetador::conversaciones() const {
 	return conj;
 }
 
+const std::string Empaquetador::nombreConversacion() const {
+	std::string res;
+
+	if (_paquete.tipo() == Empaquetador::CREAR_CONVERSACION) {
+		char* cres = _paquete.atributo(0);
+
+		if (cres != NULL) {
+			res = cres;
+			delete cres;
+		}
+	}
+
+	return res;
+}
+
 const std::string Empaquetador::mensajeDeUsuario() const {
 	std::string res;
 

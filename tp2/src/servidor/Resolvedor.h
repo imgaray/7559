@@ -30,7 +30,7 @@ private:
 
 	void agregarConversacion(const Paquete& paquete);
 
-	const Paquete crearConversacion(const Empaquetador& empaquetador);
+	const Paquete crearConversacion(const Empaquetador& empaquetador, Destinatarios& destinos);
 
 
 	Conversaciones _conversaciones;

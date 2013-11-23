@@ -117,6 +117,11 @@ public:
 	const std::string nombreDeUsuario() const;
 
 	/**
+	 * Retorna un string con el nombre de la nueva conversacion a crear.
+	 */
+	const std::string nombreConversacion() const;
+
+	/**
 	 * Retorna un std::vector con el nombres de las conversaciones disponibles si el paquete es de tipo
 	 * CONVERSACIONES, en caso contrario retorna un contenedor vacio.
 	 */
