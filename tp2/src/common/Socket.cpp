@@ -79,12 +79,21 @@ Socket* Socket::escucharConexion() {
     // Acepto la conexion entrante
     fd = accept(_fd, (struct sockaddr *)&nuevaDir, &cli_tam);
 
+    if (fd == -1) {
+    	return NULL;
+    }
+
     if (_enlazado) {
         nsocket = new Socket(fd);
         memcpy(&nsocket->_direccion, &nuevaDir, sizeof(nuevaDir));
     }
 
     return nsocket;
+}
+
+
+int Socket::fdAsociado() {
+	return _fd;
 }
 
 void Socket::conectar(const std::string& huesped) {
