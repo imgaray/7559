@@ -5,7 +5,7 @@ CXXFLAGS = -g
 CC = g++
 
 #EN ESTA VARIABLE VAN TODAS LAS DEPENDENCIAS QUE TENGAN UN MAIN Y SE QUIERAN COMPILAR
-TARGET = consumerAviones dispatcherAviones
+TARGET = procCliente mainReceptor
 
 TARGETFLAGS = -g 
 
@@ -43,7 +43,7 @@ robjs = $(wildcard *.o $(TARGET))
 #########################################
 
 
-all: consumerAviones dispatcherAviones
+all: $(TARGET)
 
 binaries: $(bin)
 
@@ -53,12 +53,12 @@ binaries: $(bin)
 %.o: %.cpp
 	$(CC) $(CXXFLAGS) $(I-INCLUDES) -c $<
 
-consumerAviones: consumerAviones.cpp binaries
-	$(CC) $(I-INCLUDES) $(bin) $(TARGETFLAGS) consumerAviones.cpp -o consumerAviones
+mainReceptor: mainReceptor.cpp binaries
+	$(CC) $(I-INCLUDES) $(bin) $(TARGETFLAGS) mainReceptor.cpp -o receptorCliente
 
 
-dispatcherAviones: dispatcherAviones.cpp binaries
-	$(CC) $(I-INCLUDES) $(bin) $(TARGETFLAGS) dispatcherAviones.cpp -o dispatcherAviones
+procCliente: procCliente.cpp binaries
+	$(CC) $(I-INCLUDES) $(bin) $(TARGETFLAGS) procCliente.cpp -o cliente
 
 clean:
 	$(LIMPIAR) rm -f $(robjs)
