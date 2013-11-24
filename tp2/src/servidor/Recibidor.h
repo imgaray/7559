@@ -26,7 +26,9 @@ private:
 
 	int escuchar(Paquete& paq, DirSocket& dir);
 
-	void transmitir(const Paquete& paq, const DirSocket& dir);
+	void transmitirAResolvedor(const Paquete& paq, const DirSocket& dir);
+
+	void iniciarProcesoCliente(const DirSocket& dir);
 
 	SocketUDP _receptor;
 	SemaforoPSX *_semIntercambio;

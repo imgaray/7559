@@ -75,10 +75,10 @@ const Paquete Resolvedor::agregarUsuario(const Paquete& paquete) {
 	return emp.paquete();
 }
 
-const Paquete Resolvedor::crearConversacion(const Empaquetador& emp, Destinatarios& destinos) {
+const Paquete Resolvedor::crearConversacion(const Empaquetador& empaquetador, Destinatarios& destinos){
 	Empaquetador res;
 
-	std::string nombreConversacion = emp.nombreConversacion();
+	std::string nombreConversacion(empaquetador.nombreConversacion());
 
 	if (nombreConversacion.size() == 0) {
 		res.agregarMensajeError(std::string("No hay nombre para crear la nueva conversacion"));

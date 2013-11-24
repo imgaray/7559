@@ -115,7 +115,7 @@ template <class T> void MemoriaCompartida<T>::escribir ( const T& dato ) {
 	*(this->ptrDatos) = dato;
 }
 
-template <class T> T MemoriaCompartida<T>::leer() const {
+template <class T> T& MemoriaCompartida<T>::leer() {
 	return *(this->ptrDatos);
 }
 

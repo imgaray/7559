@@ -6,6 +6,7 @@
  */
 
 #include "Recibidor.h"
+#include "../common/Empaquetador.h"
 
 Recibidor Recibidor::_instancia;
 
@@ -29,7 +30,8 @@ int Recibidor::comenzar() {
 	while(_escuchando) {
 
 		if ( escuchar(paq,dirCliente) == 0 ) {
-			transmitir(paq, dirCliente);
+			transmitirAResolvedor(paq, dirCliente);
+			iniciarProcesoCliente(dirCliente);
 		}
 
 	}
@@ -39,4 +41,13 @@ int Recibidor::comenzar() {
 
 Recibidor& Recibidor::instancia() {
 	return _instancia;
+}
+
+
+void Recibidor::iniciarProcesoCliente(const DirSocket& dirCliente) {
+
+}
+
+void Recibidor::transmitirAResolvedor(const Paquete& paq, const DirSocket& dirCliente) {
+
 }

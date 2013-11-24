@@ -34,7 +34,7 @@ public:
 	
 	void escribir(const T& dato);
 	
-	T leer() const;
+	T& leer();
 };
 
 

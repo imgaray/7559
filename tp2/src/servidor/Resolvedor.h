@@ -8,8 +8,8 @@
 #ifndef RESOLVEDOR_H_
 #define RESOLVEDOR_H_
 
-#include "../common/Paquete.h"
 #include "../common/Definiciones.h"
+#include "../common/Empaquetador.h"
 
 
 

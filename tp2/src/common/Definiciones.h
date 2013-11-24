@@ -19,6 +19,9 @@
 
 const Puerto PUERTO_SERVIDOR = 9090;
 
+#define CANT_PAQ_COLA 100
+
+
 /**
  * Nombres de Semaforos Posix
  */
@@ -26,8 +29,12 @@ const Puerto PUERTO_SERVIDOR = 9090;
 
 #define SEM_INTERCAMBIO_RYR 			"sem_int_ryr"
 #define SEM_MEM_COMP_INTERCAMBIO_RYR	"sem_mem_comp_ryr"
-#define SEM_COLA_PAQ_RECIBIDOS			"sem_cola_paq"
 
+
+#define SEM_COLA_PAQ_SACAR			"sem_cola_paq_poner"
+#define SEM_COLA_PAQ_PONER			"sem_cola_paq_poner"
+#define SEM_MEM_COMP_COLA_PAQ		"sem_mem_comp_cola_paq"
+#define MEM_COMP_COLA_PAQ			"/tmp/cola_paquetes"
 
 /**
  * Estructuras usadas en el resolvedor.
