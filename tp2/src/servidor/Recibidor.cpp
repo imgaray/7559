@@ -43,6 +43,11 @@ Recibidor& Recibidor::instancia() {
 	return _instancia;
 }
 
+int Recibidor::escuchar(Paquete& paq, DirSocket& dir) {
+
+	return 0;
+}
+
 
 void Recibidor::iniciarProcesoCliente(const DirSocket& dirCliente) {
 

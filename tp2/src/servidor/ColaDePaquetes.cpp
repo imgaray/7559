@@ -6,6 +6,7 @@
  */
 
 #include "ColaDePaquetes.h"
+#include "../common/MemoriaCompartida.h"
 
 ColaDePaquetes::ColaDePaquetes() : _semSacar(NULL), _semPoner(NULL), _semMemComp(NULL),
 	_memoria(NULL), _indices(NULL){
@@ -18,7 +19,7 @@ ColaDePaquetes::ColaDePaquetes() : _semSacar(NULL), _semPoner(NULL), _semMemComp
 	_memoria = new MemCola(MEM_COMP_COLA_PAQ, 'a');
 	_indices = new MemIndices(MEM_COMP_COLA_PAQ, 'b');
 
-	_metaPInicio = _memoria->leer();
+	_metaPInicio = _memoria->leer().paquetes;
 	_metaPFin = _metaPInicio + CANT_PAQ_COLA - 1;
 }
 

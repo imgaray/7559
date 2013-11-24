@@ -88,7 +88,7 @@ const Paquete Resolvedor::crearConversacion(const Empaquetador& empaquetador, De
 	itConversaciones it = _conversaciones.find(nombreConversacion);
 
 	if (it == _conversaciones.end()) {
-		(*it).first = nombreConversacion;
+		//(*it).first = nombreConversacion;
 		(*it).second = _ultimoIDLibre;
 		_ultimoIDLibre++;
 		res.confirmarRespuesta();

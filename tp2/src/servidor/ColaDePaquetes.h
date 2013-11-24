@@ -17,13 +17,16 @@ typedef struct {
 	char datos[TAM_MAX_PAQ];
 } metaPaquete;
 
+typedef struct {
+	metaPaquete paquetes[CANT_PAQ_COLA];
+} MetaPaquetes;
 
 typedef struct{
 	int frente;
 	int fondo;
 } Indices;
 
-typedef MemoriaCompartida<metaPaquete[CANT_PAQ_COLA]> MemCola;
+typedef MemoriaCompartida<MetaPaquetes> MemCola;
 typedef MemoriaCompartida<Indices> MemIndices;
 
 class ColaDePaquetes {
