@@ -10,6 +10,7 @@
 
 #include "../common/Definiciones.h"
 #include "../common/Empaquetador.h"
+#include "../common/SemaforoPSX.h"
 
 
 
@@ -19,6 +20,9 @@ public:
 
 	const Paquete resolver(const Paquete& origen, Destinatarios& destinos);
 	void enviar(const Paquete& paqueteRespuesta, const Destinatarios& destinos);
+
+	const Paquete agregarNuevoUsuario(const NuevoUsuario& info);
+
 	virtual ~Resolvedor();
 
 private:
@@ -32,13 +36,34 @@ private:
 
 	const Paquete crearConversacion(const Empaquetador& empaquetador, Destinatarios& destinos);
 
+	const Paquete unirseConversacion(const Empaquetador& empaquetador, Destinatarios& destinos);
+
+	const Paquete reenviarMensaje(const Empaquetador& empaquetador, Destinatarios& destinos);
+
+	const Paquete paqueteNoValido(const Empaquetador& emp, Destinatarios& destinos);
+
+	const Paquete finalizarSesion(const Empaquetador& empaquetador, Destinatarios& destinos);
+
+
+	void eliminarUsuarioDeConversacion(const IdConversacion& idConv, const IdUsuario& idUsr);
+
+	void agregarDestinos(IdConversacion id, Destinatarios& destinos);
+
+	void enviarPaquete(IdUsuario id, const Paquete& paq);
+
+
+	void eliminarUsuariosFinalizados();
 
 	Conversaciones _conversaciones;
 	ConvUsuarios _usrXConv;
 	Usuarios _usuarios;
 
+	UsuariosAEliminar _usrAEliminar;
+
 	SocketUDP _emisor;
 	int _ultimoIDLibre;
+
+	SemaforoPSX _semResolvedor;
 
 
 	static Resolvedor _instancia;

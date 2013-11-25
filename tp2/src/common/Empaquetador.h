@@ -3,17 +3,17 @@
  * Tipos de Paquetes (formatos y sus datos)
  *
  *
- * TAM || MENSAJE || "mesaje"
+ * TAM || MENSAJE || NombreUsuario || "mesaje"
  *
- * TAM || FIN_SESION
+ * TAM || FIN_SESION || nombreUsuario
  *
- * TAM || INICIO_SESION || NombreUsuario
+ * TAM || INICIO_SESION || nombreUsuario
  *
  * TAM || CONVERSACIONES || #Listado de Conversaciones (tamString || nombre)
  *
- * TAM || CREAR_CONVERSACION || NombreNuevaConversacion
+ * TAM || CREAR_CONVERSACION || nombreUSuario || NombreNuevaConversacion
  *
- * TAM || UNIRSE_CONVERSACION || NombreConversacion
+ * TAM || UNIRSE_CONVERSACION || nombreUsuario || NombreConversacion
  *
  * TAM || ERROR || "Mensaje de Error"
  *
@@ -95,12 +95,23 @@ public:
 	/**
 	 * Agrega un nombre de conversacion al paquete y lo define con el tipo de CREAR_CONVERSACION
 	 */
-	void crearConversacion(std::string& nombreNuevaConversacion);
+	void crearConversacion(const std::string& nomUsuario,const std::string& nombreNuevaConversacion);
 
 	/**
 	 * Define el paquete como una respuesta de confirmacion (OK)
 	 */
 	void confirmarRespuesta();
+
+	/**
+	 * Define el paquete como una respuesta de confirmacion (OK) y agrega una mensaje.
+	 */
+	void confirmarRespuesta(const std::string& mensaje);
+
+
+	/**
+	 * Se intena a unir a la conversacion definida con el nombre
+	 */
+	void unirseConversacion(const std::string& nomUsario, const std::string& nombreConversacion);
 
 	/*************************************************************************
 	 * Metodos que usar el receptor
@@ -108,44 +119,44 @@ public:
 	/**
 	 * Retorna el mensaje que posee el paquete.
 	 */
-	const std::string mensajeDeUsuario() const;
+	const std::string PAQ_mensajeDeUsuario() const;
 
 	/**
 	* Retorna el nombre de usuario que posee el paquete, si es Paquete es de Tipo INICIO_SESION o MENSAJE.
 	* Caso contrario retorna string vacio.
 	*/
-	const std::string nombreDeUsuario() const;
+	const std::string PAQ_nombreDeUsuario() const;
 
 	/**
-	 * Retorna un string con el nombre de la nueva conversacion a crear.
+	 * Retorna un string con el nombre de la nueva conversacion a crear o la conversacion a la cual se desea unirse.
 	 */
-	const std::string nombreConversacion() const;
+	const std::string PAQ_nombreConversacion() const;
 
 	/**
 	 * Retorna un std::vector con el nombres de las conversaciones disponibles si el paquete es de tipo
 	 * CONVERSACIONES, en caso contrario retorna un contenedor vacio.
 	 */
-	const std::vector<std::string> conversaciones() const;
+	const std::vector<std::string> PAQ_conversaciones() const;
 
 	/**
 	 * Retorna un bool indicando si el paquete es de inicio de sesion.
 	 */
-	bool iniciandoSesion() const;
+	bool PAQ_iniciandoSesion() const;
 
 	/**
 	 * Retorna un bool indicando si el paquete es de finalizacion de sesion.
 	 */
-	bool finalizandoSesion() const;
+	bool PAQ_finalizandoSesion() const;
 
 	/**
 	 * Retorna un bool indicando si el paquete es de confirmacion.
 	 */
-	bool confirmacionRecibida() const;
+	bool PAQ_confirmacionRecibida() const;
 
 	/**
 	 * Retorna un bool indicando si el paquete posee un error.
 	 */
-	bool errorRecibido() const;
+	bool PAQ_errorRecibido() const;
 
 	/***************************************************************************/
 

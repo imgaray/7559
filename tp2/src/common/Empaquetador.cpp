@@ -44,10 +44,13 @@ void Empaquetador::iniciarSesion(const std::string& nombreUsuario) {
 
 }
 
-void Empaquetador::crearConversacion(std::string& nombreNuevaConversacion) {
+void Empaquetador::crearConversacion(const std::string& nomUsuario,const std::string& nombreNuevaConversacion) {
 	_paquete.limpiar();
 	_paquete.definirTipo(Empaquetador::CREAR_CONVERSACION);
+
+	_paquete.agregarAtributo((void*) nomUsuario.c_str(), nomUsuario.size());
 	_paquete.agregarDatos((void*) nombreNuevaConversacion.c_str(), nombreNuevaConversacion.size());
+
 }
 
 void Empaquetador::finalizarSesion() {
@@ -58,6 +61,12 @@ void Empaquetador::finalizarSesion() {
 void Empaquetador::confirmarRespuesta() {
 	_paquete.limpiar();
 	_paquete.definirTipo(Empaquetador::OK);
+}
+
+void Empaquetador::confirmarRespuesta(const std::string& mensaje) {
+	_paquete.limpiar();
+	_paquete.definirTipo(Empaquetador::OK);
+	_paquete.agregarDatos((void*)mensaje.c_str(), mensaje.size());
 }
 
 void Empaquetador::agregarConversaciones(std::vector<std::string> conversaciones) {
@@ -72,14 +81,16 @@ void Empaquetador::agregarConversaciones(std::vector<std::string> conversaciones
 	}
 }
 
-const std::string Empaquetador::nombreDeUsuario() const {
+const std::string Empaquetador::PAQ_nombreDeUsuario() const {
 	std::string nombre;
 	nombre.clear();
 
-	if (iniciandoSesion()) {
+	if (PAQ_iniciandoSesion()) {
 		nombre = _paquete.mensaje();
 	}
-	else if (_paquete.tipo() == Empaquetador::MENSAJE){
+	else if (_paquete.tipo() == Empaquetador::MENSAJE
+			|| _paquete.tipo() == Empaquetador::CREAR_CONVERSACION
+			|| _paquete.tipo() == Empaquetador::UNIRSE_CONVERSACION){
 		char* cres = _paquete.atributo(0);
 
 		if (cres != NULL) {
@@ -91,32 +102,46 @@ const std::string Empaquetador::nombreDeUsuario() const {
 	return nombre;
 }
 
-const std::vector<std::string> Empaquetador::conversaciones() const {
+
+void Empaquetador::unirseConversacion(const std::string& nomUsuario, const std::string& nombreConversacion) {
+	_paquete.limpiar();
+	_paquete.definirTipo(Empaquetador::UNIRSE_CONVERSACION);
+
+	_paquete.agregarAtributo((void*)nomUsuario.c_str(), nomUsuario.size());
+	_paquete.agregarAtributo((void*)nombreConversacion.c_str(), nombreConversacion.size());
+
+}
+
+
+const std::vector<std::string> Empaquetador::PAQ_conversaciones() const {
 	std::vector<std::string> conj;
 
 	int ind = 0;
 
-	char* conv = _paquete.atributo(0);
 
-	while (conv != NULL) {
-		ind++;
-		//conj[ind]=std::string(conv);
-		conj.push_back(std::string(conv));
+	if (_paquete.tipo() == Empaquetador::CONVERSACIONES) {
 
-		delete conv;
+		char* conv = _paquete.atributo(0);
 
-		conv = _paquete.atributo(ind);
+		while (conv != NULL) {
+			ind++;
+			//conj[ind]=std::string(conv);
+			conj.push_back(std::string(conv));
+
+			delete conv;
+
+			conv = _paquete.atributo(ind);
+		}
 	}
-
 
 	return conj;
 }
 
-const std::string Empaquetador::nombreConversacion() const {
+const std::string Empaquetador::PAQ_nombreConversacion() const {
 	std::string res;
 
-	if (_paquete.tipo() == Empaquetador::CREAR_CONVERSACION) {
-		char* cres = _paquete.atributo(0);
+	if (_paquete.tipo() == Empaquetador::CREAR_CONVERSACION || _paquete.tipo() == Empaquetador::UNIRSE_CONVERSACION) {
+		char* cres = _paquete.atributo(1);
 
 		if (cres != NULL) {
 			res = cres;
@@ -127,7 +152,7 @@ const std::string Empaquetador::nombreConversacion() const {
 	return res;
 }
 
-const std::string Empaquetador::mensajeDeUsuario() const {
+const std::string Empaquetador::PAQ_mensajeDeUsuario() const {
 	std::string res;
 
 	if (_paquete.tipo() == Empaquetador::MENSAJE) {
@@ -142,18 +167,18 @@ const std::string Empaquetador::mensajeDeUsuario() const {
 	return res;
 }
 
-bool Empaquetador::iniciandoSesion() const {
+bool Empaquetador::PAQ_iniciandoSesion() const {
 	return (_paquete.tipo() == Empaquetador::INICIO_SESION);
 }
-bool Empaquetador::finalizandoSesion() const {
+bool Empaquetador::PAQ_finalizandoSesion() const {
 	return (_paquete.tipo() == Empaquetador::FIN_SESION);
 }
 
-bool Empaquetador::confirmacionRecibida() const {
+bool Empaquetador::PAQ_confirmacionRecibida() const {
 	return (_paquete.tipo() == Empaquetador::OK);
 }
 
-bool Empaquetador::errorRecibido() const {
+bool Empaquetador::PAQ_errorRecibido() const {
 	return (_paquete.tipo() == Empaquetador::ERROR);
 }
 

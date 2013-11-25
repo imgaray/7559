@@ -26,7 +26,7 @@ const Puerto PUERTO_SERVIDOR = 9090;
  * Nombres de Semaforos Posix
  */
 
-
+#define SEM_RESOLVEDOR					"sem_resolvedor"
 #define SEM_INTERCAMBIO_RYR 			"sem_int_ryr"
 #define SEM_MEM_COMP_INTERCAMBIO_RYR	"sem_mem_comp_ryr"
 
@@ -40,15 +40,29 @@ const Puerto PUERTO_SERVIDOR = 9090;
  * Estructuras usadas en el resolvedor.
  */
 
-typedef std::pair<int, DirSocket> InfoUsuario;
-
+// SI idConversacion == 0 => conversacion inexistente
 typedef int IdConversacion;
+typedef std::string IdUsuario;
 
-typedef std::vector<IdConversacion> Destinatarios;
+
+typedef struct {
+	int pid;
+	IdConversacion id_conv;
+	DirSocket _dirSock;
+} InfoUsuario;
+
+
+
+typedef std::vector<IdUsuario> Destinatarios;
+
 typedef std::map<std::string, IdConversacion> Conversaciones;
-typedef std::map<IdConversacion, Destinatarios > ConvUsuarios;
-typedef std::map<std::string,  InfoUsuario> Usuarios;
+typedef std::pair<std::string, IdConversacion> parConversaciones;
 
+typedef std::map<IdConversacion, Destinatarios > ConvUsuarios;
+
+typedef std::pair<IdUsuario,  InfoUsuario> parUsuarios;
+typedef std::map<IdUsuario,  InfoUsuario> Usuarios;
+typedef Destinatarios UsuariosAEliminar;
 
 typedef Usuarios::iterator itUsuarios;
 typedef ConvUsuarios::iterator itConvUsuarios;
