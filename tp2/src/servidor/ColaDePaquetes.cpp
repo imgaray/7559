@@ -21,6 +21,7 @@ ColaDePaquetes::ColaDePaquetes() : _semSacar(NULL), _semPoner(NULL), _semMemComp
 
 	_metaPInicio = _memoria->leer().paquetes;
 	_metaPFin = _metaPInicio + CANT_PAQ_COLA - 1;
+
 }
 
 ColaDePaquetes::~ColaDePaquetes() {
@@ -70,6 +71,7 @@ void ColaDePaquetes::destruir() {
 
 const Paquete ColaDePaquetes::sacar() {
 	_semSacar->wait();
+
 	Paquete paq;
 	Indices ind;
 
@@ -77,15 +79,22 @@ const Paquete ColaDePaquetes::sacar() {
 	_semMemComp->wait();
 
 	ind = _indices->leer();
-	_metaPaq = _metaPInicio + ind.frente;
-	ind.frente++;
 
-	copiarPaquete( _metaPaq->datos, _buffer);
 
-	ind.frente = ind.frente % CANT_PAQ_COLA;
+	// If necesario porque al capturar y tratar una señal se sale del bloqueo del wait() de Sacar.
+	if (ind.cantidad > 0) {
+		_metaPaq = _metaPInicio + ind.frente;
+		ind.frente++;
 
-	_indices->escribir(ind);
+		copiarPaquete( _metaPaq->datos, _buffer);
 
+		ind.frente = ind.frente % CANT_PAQ_COLA;
+
+		_indices->escribir(ind);
+	}
+	else {
+		paq.definirTipo(0);
+	}
 	_semMemComp->signal();
 
 	_semPoner->signal();
@@ -128,6 +137,7 @@ void ColaDePaquetes::inicializarIndices() {
 	Indices inds;
 	inds.fondo = 0;
 	inds.frente = 0;
+	inds.cantidad = 0;
 	_semMemComp->wait();
 	if (_indices != NULL) {
 		_indices->escribir(inds);

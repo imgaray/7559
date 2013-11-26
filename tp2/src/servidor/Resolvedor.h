@@ -12,16 +12,26 @@
 #include "../common/Empaquetador.h"
 #include "../common/SemaforoPSX.h"
 
+#include "ColaDePaquetes.h"
 
 
 class Resolvedor {
 public:
 	static Resolvedor& instanacia();
+	static bool instanciado();
+	static void liberar();
+
+	void dejarDeResponder();
+
+	int comenzar();
 
 	const Paquete resolver(const Paquete& origen, Destinatarios& destinos);
+
 	void enviar(const Paquete& paqueteRespuesta, const Destinatarios& destinos);
 
 	const Paquete agregarNuevoUsuario(const NuevoUsuario& info);
+
+	void usarSemaforos(bool usar);
 
 	virtual ~Resolvedor();
 
@@ -54,6 +64,10 @@ private:
 
 	void eliminarUsuariosFinalizados();
 
+	void wait();
+	void signal();
+
+
 	Conversaciones _conversaciones;
 	ConvUsuarios _usrXConv;
 	Usuarios _usuarios;
@@ -64,9 +78,13 @@ private:
 	int _ultimoIDLibre;
 
 	SemaforoPSX _semResolvedor;
+	bool _usarSemaforo;
+
+	ColaDePaquetes _colaPaquetes;
+	bool _seguirEnviando;
 
 
-	static Resolvedor _instancia;
+	static Resolvedor* _instancia;
 };
 
 #endif /* RESOLVEDOR_H_ */

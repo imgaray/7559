@@ -9,34 +9,52 @@
 #define RECIBIDOR_H_
 
 #include "../common/Definiciones.h"
+#include "../common/Empaquetador.h"
 #include "../common/SemaforoPSX.h"
+#include "../common/Process.h"
+#include "../common/SocketUDP.h"
+
+#include "AreaIntercambio.h"
+
+typedef std::vector<Process*> Procesos;
 
 class Recibidor {
 public:
-
 	static Recibidor& instancia();
+	static bool instanciado();
+	static void liberar();
 
+	int comenzar(int pidResolvedor);
 
-	int comenzar();
+	void dejarDeEscuchar();
 
 	virtual ~Recibidor();
+
 private:
 	Recibidor();
 	Recibidor(const Recibidor& orig);
 
 	int escuchar(Paquete& paq, DirSocket& dir);
 
-	void transmitirAResolvedor(const Paquete& paq, const DirSocket& dir);
+	void transmitirAResolvedor();
 
-	void iniciarProcesoCliente(const DirSocket& dir);
+	void iniciarProcesoCliente(const Empaquetador& emp, const DirSocket& dir);
+
+	Procesos _procesos;
+	Process* _ultimoProceso;
 
 	SocketUDP _receptor;
 	SemaforoPSX *_semIntercambio;
 	SemaforoPSX *_semResolvedor;
 
+
+	AreaIntercambio _areaIntcmb;
+
 	bool _escuchando;
 
-	static Recibidor _instancia;
+	static Recibidor *_instancia;
+
+	int _pidResolvedor;
 };
 
 #endif /* RECIBIDOR_H_ */

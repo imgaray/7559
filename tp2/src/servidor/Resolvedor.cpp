@@ -9,25 +9,74 @@
 #include "../common/Empaquetador.h"
 
 
-Resolvedor Resolvedor::_instancia;
+Resolvedor* Resolvedor::_instancia = NULL;
 
-Resolvedor::Resolvedor() :_emisor() , _semResolvedor(SEM_RESOLVEDOR, 1){
+Resolvedor::Resolvedor() :_emisor() , _semResolvedor(SEM_RESOLVEDOR, 1), _seguirEnviando(true) {
 
 	_emisor.enlazar(0);
 	_ultimoIDLibre = 1;
+	_usarSemaforo = true;
+}
 
+void Resolvedor::usarSemaforos(bool usar) {
+	_usarSemaforo = usar;
+}
+
+void Resolvedor::wait() {
+	if (_usarSemaforo == true)
+		_semResolvedor.wait();
+}
+
+void Resolvedor::signal() {
+	if (_usarSemaforo == true)
+		_semResolvedor.signal();
 }
 
 Resolvedor& Resolvedor::instanacia() {
-	return _instancia;
+	if (_instancia == NULL)
+		_instancia = new Resolvedor();
+	return *_instancia;
+}
+
+bool Resolvedor::instanciado() {
+	return (_instancia != NULL);
 }
 
 Resolvedor::~Resolvedor() {
 
-
 }
 
+void Resolvedor::liberar() {
+	if (_instancia != NULL) {
+		delete _instancia;
+		_instancia = NULL;
+	}
+}
+
+void Resolvedor::dejarDeResponder() {
+	_seguirEnviando = false;
+}
+
+int Resolvedor::comenzar() {
+	Paquete solicitud, respuesta;
+
+	Destinatarios destinos;
+	while (_seguirEnviando) {
+
+		solicitud = _colaPaquetes.sacar();
+
+		respuesta = resolver(solicitud, destinos);
+
+		enviar(respuesta, destinos);
+	}
+
+	return 0;
+}
+
+
 const Paquete Resolvedor::resolver(const Paquete& origen, Destinatarios& destinos) {
+	wait();
+
 	const Empaquetador emp(origen);
 	Empaquetador respuesta;
 	destinos.clear();
@@ -54,6 +103,8 @@ const Paquete Resolvedor::resolver(const Paquete& origen, Destinatarios& destino
 		respuesta.asociar(this->paqueteNoValido(emp, destinos));
 	}
 
+
+	signal();
 	return respuesta.paquete();
 }
 
@@ -157,7 +208,7 @@ const Paquete Resolvedor::agregarUsuario(const Paquete& paquete) {
 		InfoUsuario infoUsr;
 		infoUsr.id_conv = 0;
 		infoUsr.pid = 0;
-		infoUsr._dirSock;
+		//infoUsr._dirSock;
 
 		_usuarios.insert(parUsuarios(nomUsr, infoUsr));
 
@@ -250,8 +301,10 @@ void Resolvedor::agregarDestinos(IdConversacion id, Destinatarios& destinos) {
 
 void Resolvedor::enviar(const Paquete& paqueteRespuesta, const Destinatarios& destinos) {
 
+	wait();
+
 	Destinatarios::const_iterator it = destinos.begin();
-	_semResolvedor.wait();
+
 	while (it != destinos.end()) {
 		this->enviarPaquete(*it , paqueteRespuesta);
 	}
@@ -259,8 +312,7 @@ void Resolvedor::enviar(const Paquete& paqueteRespuesta, const Destinatarios& de
 
 	eliminarUsuariosFinalizados();
 
-	_semResolvedor.signal();
-
+	signal();
 }
 
 void Resolvedor::enviarPaquete(IdUsuario id, const Paquete& paq)  {

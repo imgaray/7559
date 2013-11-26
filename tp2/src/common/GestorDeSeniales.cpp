@@ -58,3 +58,8 @@ void GestorDeSeniales::lanzarSenial(int parametro) {
 void GestorDeSeniales::enviarSenialAProceso(int pid, int SIGNUM) {
 	kill(pid, SIGNUM);
 }
+
+
+void GestorDeSeniales::enviarmeSenial(int SIGNUM) {
+	raise(SIGNUM);
+}

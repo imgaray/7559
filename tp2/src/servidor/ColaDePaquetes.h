@@ -24,6 +24,7 @@ typedef struct {
 typedef struct{
 	int frente;
 	int fondo;
+	int cantidad;
 } Indices;
 
 typedef MemoriaCompartida<MetaPaquetes> MemCola;
@@ -47,6 +48,9 @@ private:
 	void copiarPaquete(const char* origen, char* destino);
 
 	void recalcularPunteros();
+
+
+
 
 	SemaforoPSX *_semSacar;
 	SemaforoPSX *_semPoner;

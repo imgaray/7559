@@ -12,7 +12,7 @@
 #include <map>
 #include <string>
 #include <vector>
-
+#include <signal.h>
 /**
  * Constantes del Servidor
  */
@@ -26,15 +26,38 @@ const Puerto PUERTO_SERVIDOR = 9090;
  * Nombres de Semaforos Posix
  */
 
-#define SEM_RESOLVEDOR					"sem_resolvedor"
-#define SEM_INTERCAMBIO_RYR 			"sem_int_ryr"
+#define SEM_RESOLVEDOR					"sem_resolvedor" // semaforo para una exclusion mutua del las estructuras del resolvedor
+#define SEM_INTERCAMBIO_RYR 			"sem_int_ryr"	// semaforo para sincronizar recibidor con y receptor
 #define SEM_MEM_COMP_INTERCAMBIO_RYR	"sem_mem_comp_ryr"
 
 
 #define SEM_COLA_PAQ_SACAR			"sem_cola_paq_poner"
 #define SEM_COLA_PAQ_PONER			"sem_cola_paq_poner"
 #define SEM_MEM_COMP_COLA_PAQ		"sem_mem_comp_cola_paq"
+
+
+/**
+ * Rutas de archivos para memoria compartida
+ */
+
 #define MEM_COMP_COLA_PAQ			"/tmp/cola_paquetes"
+#define MC_INTCMB_RECIBIDOR 		"/tmp/recibidor"
+#define PROJ_ID_RESOLVEDOR			'a'
+#define PROJ_ID_RECIBIDOR			'b'
+
+/**
+ * NUMEROS DE SEÑALES
+ */
+
+#define SIGNUM_INTERCAMBIO_RESOLVEDOR 			SIGUSR1
+
+#define SIGNUM_INTRCMB_RECIBIDOR_CLIENTE 		SIGUSR2
+
+#define SIGNUM_FINALIZACION						SIGINT
+
+#define SIGNUM_ESPERA_CONFIRMACION				SIGSTOP
+#define SIGNUM_CONFIRMACION						SIGCONT
+#define SIGNUM_CONFIRMACION_NEGATIVA			SIGUSR1
 
 /**
  * Estructuras usadas en el resolvedor.

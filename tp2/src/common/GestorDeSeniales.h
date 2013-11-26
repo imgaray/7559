@@ -35,6 +35,11 @@ public:
 	 */
 	void enviarSenialAProceso(int pid, int SIGNUM);
 
+	/**
+	 * Se autoenvia una señal al proceso que se lo llama
+	 */
+	void enviarmeSenial(int SIGNUM);
+
 	virtual ~GestorDeSeniales();
 
 private:
