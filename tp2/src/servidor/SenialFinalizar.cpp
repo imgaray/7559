@@ -9,6 +9,7 @@
 #include "../common/Definiciones.h"
 #include "Resolvedor.h"
 #include "Recibidor.h"
+#include "ReceptorMensajes.h"
 
 SenialFinalizar::SenialFinalizar() {
 	this->agregarSenialABloquear(SIGNUM_FINALIZACION);
@@ -28,4 +29,7 @@ void SenialFinalizar::operacion() {
 
 	if (Recibidor::instanciado())
 		Recibidor::instancia().dejarDeEscuchar();
+
+	if (ReceptorMensajes::instanaciado())
+		ReceptorMensajes::instancia().dejarDeRecibir();
 }

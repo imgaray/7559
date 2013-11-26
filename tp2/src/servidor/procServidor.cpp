@@ -17,7 +17,12 @@ bool _seguirProcesando = true;
 int mainResolvedor();
 int mainRecibidor(int pidResolvedor);
 
-int main_SS() {
+
+/**
+ * TODO
+ * Cambiar el nombre de este por por el correcto ( main_SS por main)
+ */
+int main() {
 	int pidResolvedor, pidRecibidor;
 
 	pidResolvedor = fork();

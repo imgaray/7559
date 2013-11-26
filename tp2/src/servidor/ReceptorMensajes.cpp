@@ -8,16 +8,17 @@
 #include "ReceptorMensajes.h"
 #include "../common/Definiciones.h"
 #include "../common/Empaquetador.h"
-
+#include "../common/GestorDeSeniales.h"
 
 ReceptorMensajes* ReceptorMensajes::_instancia = NULL;
 
 ReceptorMensajes::ReceptorMensajes() :
 		_seguirRecibiendo(true),
-		_gestor(GestorDeSeniales::instancia()),
 		_semReceptor(SEM_INTERCAMBIO_RYR, 0),
 		_receptor() {
 	_receptor.enlazar(0);
+
+	GestorDeSeniales::instancia().agregarSenial(_senial);
 }
 
 ReceptorMensajes::~ReceptorMensajes() {
@@ -30,6 +31,10 @@ ReceptorMensajes& ReceptorMensajes::instancia() {
 	return *_instancia;
 }
 
+bool ReceptorMensajes::instanaciado() {
+	return (_instancia != NULL);
+}
+
 void ReceptorMensajes::liberar() {
 	if (_instancia != NULL) {
 		delete _instancia;
@@ -39,7 +44,7 @@ void ReceptorMensajes::liberar() {
 
 int ReceptorMensajes::comenzar() {
 	// ver si poner semaforo para sincronizar con resolvedor...
-	_gestor.enviarmeSenial(SIGNUM_ESPERA_CONFIRMACION);
+	GestorDeSeniales::instancia().enviarmeSenial(SIGNUM_ESPERA_CONFIRMACION);
 	_semReceptor.signal();
 
 	NuevoUsuario info = areaIntcmb.leer();

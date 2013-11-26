@@ -99,6 +99,9 @@ const Paquete Resolvedor::resolver(const Paquete& origen, Destinatarios& destino
 	else if (emp.tipoActual() == Empaquetador::UNIRSE_CONVERSACION) {
 		respuesta.asociar(this->unirseConversacion(emp, destinos));
 	}
+	else if (emp.tipoActual() == Empaquetador::UNIRSE_CONVERSACION) {
+		respuesta.asociar(this->conversaciones(emp, destinos));
+	}
 	else  {
 		respuesta.asociar(this->paqueteNoValido(emp, destinos));
 	}
@@ -106,6 +109,30 @@ const Paquete Resolvedor::resolver(const Paquete& origen, Destinatarios& destino
 
 	signal();
 	return respuesta.paquete();
+}
+
+
+const Paquete Resolvedor::conversaciones(const Empaquetador& emp,Destinatarios& destinos) {
+	Empaquetador res;
+
+	std::string nombreUsr = emp.PAQ_nombreDeUsuario();
+
+	if (_usuarios.find(nombreUsr) == _usuarios.end()) {
+		res.agregarMensajeError("Usuario no existe");
+		return res.paquete();
+	}
+
+	// agrego todos los nombres de conversaciones
+	std::vector<std::string> convs;
+	itConversaciones it;
+	for (it = _conversaciones.begin(); it !=  _conversaciones.end() ; it++) {
+		convs.push_back(it->first);
+	}
+
+	// agrego como unico destinatario al usurio que realizo la consulta
+	destinos.push_back(nombreUsr);
+
+	return res.paquete();
 }
 
 const Paquete Resolvedor::finalizarSesion(const Empaquetador& empaquetador, Destinatarios& destinos) {
@@ -289,6 +316,14 @@ const Paquete Resolvedor::unirseConversacion(const Empaquetador& empaquetador, D
 	return res.paquete();
 }
 
+
+const Paquete conversaciones(const Empaquetador& emp,Destinatarios& destinos) {
+	Empaquetador res;
+
+	destinos.push_back(emp.PAQ_nombreDeUsuario());
+
+	return res.paquete();
+}
 
 void Resolvedor::agregarDestinos(IdConversacion id, Destinatarios& destinos) {
 	itConvUsuarios it = _usrXConv.find(id);

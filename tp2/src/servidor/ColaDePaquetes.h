@@ -43,13 +43,9 @@ public:
 	void inicializarIndices();
 
 private:
-
-
 	void copiarPaquete(const char* origen, char* destino);
 
 	void recalcularPunteros();
-
-
 
 
 	SemaforoPSX *_semSacar;

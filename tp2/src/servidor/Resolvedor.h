@@ -48,6 +48,8 @@ private:
 
 	const Paquete unirseConversacion(const Empaquetador& empaquetador, Destinatarios& destinos);
 
+	const Paquete conversaciones(const Empaquetador& emp,Destinatarios& destinos);
+
 	const Paquete reenviarMensaje(const Empaquetador& empaquetador, Destinatarios& destinos);
 
 	const Paquete paqueteNoValido(const Empaquetador& emp, Destinatarios& destinos);

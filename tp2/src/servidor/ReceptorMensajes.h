@@ -12,11 +12,11 @@
 #include "../common/Definiciones.h"
 #include "../common/GestorDeSeniales.h"
 #include "../common/SemaforoPSX.h"
+
+
+#include "SenialFinalizar.h"
 #include "AreaIntercambio.h"
-
-
 #include "ColaDePaquetes.h"
-
 
 /**
  * Clase encargada de resivir todos los mensajes de un cliente que ya inicio sesion.
@@ -33,16 +33,18 @@ public:
 
 	static ReceptorMensajes& instancia();
 	static void liberar();
+	static bool instanaciado();
+
 
 private:
 	ReceptorMensajes();
 	ReceptorMensajes(const ReceptorMensajes& orig);
 
+	SenialFinalizar _senial;
 
 	ColaDePaquetes cola;
 	AreaIntercambio areaIntcmb;
 	SemaforoPSX _semReceptor;
-	GestorDeSeniales& _gestor;
 
 	DirSocket _dirCliente;
 

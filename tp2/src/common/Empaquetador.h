@@ -75,7 +75,7 @@ public:
 	/**
 	 * Define el paquete de finalizacion de sesion.
 	 */
-	void finalizarSesion();
+	void finalizarSesion(const std::string& nombreUsuario);
 
 	/**
 	 * Agrega un vector de convesarciones al paquete y lo define como tipo CONVERSACIONES
@@ -107,11 +107,13 @@ public:
 	 */
 	void confirmarRespuesta(const std::string& mensaje);
 
-
 	/**
 	 * Se intena a unir a la conversacion definida con el nombre
 	 */
 	void unirseConversacion(const std::string& nomUsario, const std::string& nombreConversacion);
+
+
+	void verConversaciones(const std::string& nombreUsuario);
 
 	/*************************************************************************
 	 * Metodos que usar el receptor
@@ -157,6 +159,12 @@ public:
 	 * Retorna un bool indicando si el paquete posee un error.
 	 */
 	bool PAQ_errorRecibido() const;
+
+
+	/**
+	 * Retorna un bool indicando si el paquete posee un error.
+	 */
+	const std::string PAQ_mensajeDeError() const;
 
 	/***************************************************************************/
 
