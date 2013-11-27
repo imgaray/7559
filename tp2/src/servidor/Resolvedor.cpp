@@ -196,12 +196,19 @@ const Paquete Resolvedor::finalizarSesion(const Empaquetador& empaquetador, Dest
 
 		if (it->second.id_conv != 0) {
 			IdConversacion idConv = it->second.id_conv;
+
+			std::string msj = std::string("<<<") +it->first + std::string(": ha dejado la conversacion.") + std::string(">>>");
+			//res.confirmarRespuesta(msj);
+			res.finalizarSesion(msj);
+
+			this->agregarDestinos(idConv, destinos);
+
 			this->eliminarUsuarioDeConversacion(idConv, idUsr);
 		}
 
 		_usrAEliminar.push_back(idUsr);
 
-		res.confirmarRespuesta();
+		//res.confirmarRespuesta();
 		destinos.push_back(idUsr);
 	}
 
@@ -214,6 +221,7 @@ void Resolvedor::eliminarUsuarioDeConversacion(const IdConversacion& idConv, con
 	bool encontrado = false;
 	unsigned indice = 0;
 
+	//busco al usuario dentro de la conversacion.
 	while(indice < dest.size() && encontrado == false) {
 
 		if (*(dest.begin() + indice) == idUsr ) {
@@ -224,6 +232,7 @@ void Resolvedor::eliminarUsuarioDeConversacion(const IdConversacion& idConv, con
 		indice++;
 	}
 
+	// Si la conversacion se quedo vacia la borro y la elimino tambien de _conversaciones
 	if (dest.size() == 0) {
 		_usrXConv.erase(idConv);
 

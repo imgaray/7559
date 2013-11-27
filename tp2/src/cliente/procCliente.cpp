@@ -13,6 +13,7 @@
 #include "SenialFinalizacion.h"
 
 bool _seguirRecibiendo_ = true;
+#define TAM_BUFFER 128
 
 int mainReceptor(SocketUDP& receptor);
 
@@ -52,11 +53,15 @@ void imprimir(const Empaquetador& emp) {
 			std::cout << i+1 << ": " << conv[i] << std::endl;
 		}
 	}
+	else if (emp.tipoActual() == Empaquetador::FIN_SESION) {
+		std::cout << emp.PAQ_nombreDeUsuario() << std::endl;
+	}
 	else {
 		std::cout << "Error: Mensaje no reconocible" << std::endl;
 		imprimirPaquete(emp.paquete());
 	}
 
+	std::cout << ">> ";
 	std::cout << ">> ";
 }
 
@@ -78,7 +83,7 @@ int main() {
 	_sock.enlazar(0);
 	DirSocket dirRealServ;
 
-
+	char buffer[TAM_BUFFER];
 	{
 		std::string nombreServidor = "localhost";
 		dirServidor = _sock.direccionServidor(PUERTO_SERVIDOR, nombreServidor);
@@ -89,7 +94,9 @@ int main() {
 		while (_conectado == false && intentos > 0) {
 
 			std::cout << "Ingrese Nombre de Usuario: ";
-			std::cin >> usuario;
+			std::cin.getline(buffer, 128);
+			usuario = buffer;
+			//getline(std::cin, mensaje);
 
 			emp.iniciarSesion(usuario);
 
@@ -129,7 +136,7 @@ int main() {
 
 	int pid = fork();
 
-	if (pid > 0)
+	if (pid == 0)
 		return mainReceptor(_sock);
 
 
@@ -143,8 +150,9 @@ int main() {
 	while (_seguirRecibiendo_) {
 
 		std::cout << ">> ";
-		std::cin >> mensaje;
-
+		//std::cin >> mensaje;
+		std::cin.getline(buffer, TAM_BUFFER);
+		mensaje = buffer;
 
 		//std::cout << "Ingreso: \"" <<mensaje <<"\". Tamanio:" << mensaje.size()  << std::endl;
 
@@ -156,7 +164,8 @@ int main() {
 			}
 			else if (mensaje[1] == '2') {
 				std::cout << "ingrese nombre de la conversacion a unirse: ";
-				std::cin >> mensaje;
+				std::cin.getline(buffer, TAM_BUFFER);
+				mensaje = buffer;
 				if (mensaje.size() > 0) {
 					//std::cout << "por enviar: " << mensaje << std::endl;
 					emp.unirseConversacion(usuario, mensaje);
@@ -165,7 +174,8 @@ int main() {
 			}
 			else if (mensaje[1] == '3') {
 				std::cout << "ingrese nombre de nueva conversacion: ";
-				std::cin >> mensaje;
+				std::cin.getline(buffer, TAM_BUFFER);
+				mensaje = buffer;
 				if (mensaje.size() > 0) {
 					//std::cout << "por enviar: " << mensaje << std::endl;
 					emp.crearConversacion(usuario, mensaje);

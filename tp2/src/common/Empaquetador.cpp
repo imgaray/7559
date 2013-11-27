@@ -69,7 +69,7 @@ void Empaquetador::confirmarRespuesta() {
 void Empaquetador::confirmarRespuesta(const std::string& mensaje) {
 	_paquete.limpiar();
 	_paquete.definirTipo(Empaquetador::OK);
-	_paquete.agregarDatos((void*)mensaje.c_str(), mensaje.size());
+	_paquete.agregarAtributo((void*)mensaje.c_str(), mensaje.size());
 }
 
 void Empaquetador::agregarConversaciones(std::vector<std::string> conversaciones) {
@@ -169,7 +169,8 @@ const std::string Empaquetador::PAQ_nombreConversacion() const {
 const std::string Empaquetador::PAQ_mensajeDeUsuario() const {
 	std::string res;
 
-	if (_paquete.tipo() == Empaquetador::MENSAJE) {
+	if (_paquete.tipo() == Empaquetador::MENSAJE ||
+			_paquete.tipo() == Empaquetador::OK ) {
 		char* cres = _paquete.atributo(1);
 
 		if ( cres != NULL ) {
