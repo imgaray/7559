@@ -49,11 +49,11 @@ bool SocketUDP::recibir(Paquete& paquete, DirSocket& emisor) {
 
 	unsigned int tamanioDir = sizeof(emisor._dir);
 	long int recibidos = 0, recv;
-	struct sockaddr* addr = (sockaddr*) &emisor._dir;
+	//struct sockaddr* addr = (sockaddr*) &emisor._dir;
 
 	while (recibidos < TAM_MAX_PAQ && recibidos != -1) {
 
-		recv =  recvfrom(_fd, (void*) _buffer, TAM_MAX_PAQ, 0, addr, &tamanioDir);
+		recv =  recvfrom(_fd, (void*) _buffer, TAM_MAX_PAQ, 0, (struct sockaddr*) &emisor._dir, &tamanioDir);
 
 		if (recv >= 0 ) {
 			recibidos += recv;

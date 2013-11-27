@@ -34,6 +34,7 @@ int SenialIntcmbResolvedor::numeroSenial() {
 void SenialIntcmbResolvedor::operacion() {
 
 	SemaforoPSX semConfirmacion(SEM_CONFIRMACION_RECEPTOR, 0);
+	semConfirmacion.inicializar();
 
 	Logger::instance().debug(TAG, "Iniciando tramtamiento de intercambio.");
 
@@ -72,7 +73,7 @@ void SenialIntcmbResolvedor::operacion() {
 	info.pid = nuevoUsr.pid_receptor;
 	info.id_conv = 0;
 
-	Logger::instance().debug(TAG, "Esperando que inicie Receptor y pare para esperer confirmacion.");
+	Logger::instance().debug(TAG, "Esperando que inicie Receptor y se detenga para esperer confirmacion.");
 	semConfirmacion.wait();
 
 	if (emp.PAQ_confirmacionRecibida()) {
@@ -88,6 +89,8 @@ void SenialIntcmbResolvedor::operacion() {
 	}
 
 	Logger::instance().debug(TAG, "Habilitando semaforos del resolvedor.");
+
+	resolvedor.senialTratada();
 	resolvedor.usarSemaforos(true);
 }
 

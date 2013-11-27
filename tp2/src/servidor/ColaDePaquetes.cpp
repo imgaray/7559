@@ -9,8 +9,50 @@
 #include "../common/MemoriaCompartida.h"
 #include "../common/Utilitario.h"
 #include "../logger/Logger.h"
+#include "../common/Empaquetador.h"
 
 #define TAG "ColaDePaquetes"
+
+void imprimirPaquete(const std::string& metodo, const Paquete& paq) {
+	Empaquetador emp(paq);
+
+	std::string msj;
+
+	if (emp.PAQ_iniciandoSesion()) {
+		msj = "Iniciando sesion. Usuario:";
+		msj += emp.PAQ_nombreDeUsuario();
+	}
+	else if (emp.tipoActual() == Empaquetador::MENSAJE) {
+		msj = "Mensaje de Usuario :";
+		msj += emp.PAQ_mensajeDeUsuario();
+		msj += ". Usuario: ";
+		msj += emp.PAQ_nombreDeUsuario();
+	}
+	else if (emp.PAQ_finalizandoSesion()) {
+		msj = "Finalizando sesion. Usuario: ";
+		msj += emp.PAQ_nombreDeUsuario();
+	}
+	else if (emp.tipoActual() == Empaquetador::CREAR_CONVERSACION) {
+		msj = "Creando conversacion. Nombre Conversacion: ";
+		msj += emp.PAQ_nombreConversacion();
+		msj += ". Usuario: ";
+		msj += emp.PAQ_nombreDeUsuario();
+	}
+	else if (emp.tipoActual() == Empaquetador::UNIRSE_CONVERSACION) {
+		msj = "Uniendose a conversacion. Nombre Conversacion: ";
+		msj += emp.PAQ_nombreConversacion();
+		msj += ". Usuario: ";
+		msj += emp.PAQ_nombreDeUsuario();
+	}
+	else if (emp.tipoActual() == Empaquetador::CONVERSACIONES) {
+		msj = "Ver Conversaciones. Usuario ";
+		msj += emp.PAQ_nombreDeUsuario();
+	}
+
+	msj = std::string("Paquete en ") + metodo + std::string(": ") + msj;
+	Logger::instance().debug(TAG, msj);
+}
+
 
 ColaDePaquetes::ColaDePaquetes() : _semSacar(NULL), _semPoner(NULL), _semMemComp(NULL),
 	_memoria(NULL), _indices(NULL){
@@ -84,10 +126,10 @@ const Paquete ColaDePaquetes::sacar() {
 
 	Utilitario u;
 
-	std::string msj = std::string("Valor antes del wait() (Sacar): ") + u.convertirAString(_semSacar->valorActual());
+	std::string msj = std::string("::SACAR::Valor antes del wait(): ") + u.convertirAString(_semSacar->valorActual());
 	Logger::instance().debug(TAG,msj);
 	_semSacar->wait();
-	msj = std::string("Valor despues del wait() (Sacar): ") + u.convertirAString(_semSacar->valorActual());
+	msj = std::string("::SACAR::Valor despues del wait() (Sacar): ") + u.convertirAString(_semSacar->valorActual());
 	Logger::instance().debug(TAG,msj);
 
 
@@ -122,6 +164,8 @@ const Paquete ColaDePaquetes::sacar() {
 
 		paq.deserializar((void*)_buffer);
 
+		imprimirPaquete("Sacar", paq);
+
 	}
 	else {
 		_semMemComp->signal();
@@ -141,15 +185,13 @@ void ColaDePaquetes::insertar(const Paquete& paquete) {
 
 	Utilitario u;
 
-	std::string msj = std::string("Valor antes del wait() (Poner): ") + u.convertirAString(_semSacar->valorActual());
+	std::string msj = std::string("::PONER::Valor antes del wait(): ") + u.convertirAString(_semPoner->valorActual());
 	Logger::instance().debug(TAG,msj);
 	_semPoner->wait();
-	msj = std::string("Valor despues del wait() (Poner): ") + u.convertirAString(_semSacar->valorActual());
+	msj = std::string("::PONER::Valor despues del wait() (Poner): ") + u.convertirAString(_semPoner->valorActual());
 	Logger::instance().debug(TAG,msj);
 
-	Logger::instance().debug(TAG,msj);
 	Indices ind;
-
 
 	Logger::instance().debug(TAG, "Por poner paquete en la cola");
 
@@ -171,6 +213,11 @@ void ColaDePaquetes::insertar(const Paquete& paquete) {
 
 	_semMemComp->signal();
 	_semSacar->signal();
+
+	msj = std::string("::PONER::Valor de SEM sacar despues del signal(): ") + u.convertirAString(_semSacar->valorActual());
+	Logger::instance().debug(TAG,msj);
+
+	imprimirPaquete("Poner", paquete);
 }
 
 void ColaDePaquetes::copiarPaquete(const char* origen, char* destino) {

@@ -118,8 +118,8 @@ void Logger::setLogLevel(int nivelLog){
 
 void Logger::printHeader() {
 	archivoLog << "<html>" << std::endl;
-	archivoLog << "<title>Log de simulacion de aeropuerto</title>" << std::endl;
-	archivoLog << "<header align=\"center\"><strong> Log de simulacion de aeropuerto </strong></header>" << std::endl;
+	archivoLog << "<title>Log de simulacion de Sistema de Mensajes</title>" << std::endl;
+	archivoLog << "<header align=\"center\"><strong> Log de simulacion de Sistema de Mensajes </strong></header>" << std::endl;
 	archivoLog << "<table id=\"table1\" class=\"mytable\" cellspacing=\"2\" cellpadding=\"10\" >" << std::endl;
 	archivoLog << "<tr><th>Tipo</th><th>Lugar del mensaje</th><th align=\"left\">Mensaje</th></tr>" << std::endl;
 }

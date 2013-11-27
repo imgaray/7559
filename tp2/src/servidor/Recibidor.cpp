@@ -11,6 +11,7 @@
 
 #include "../common/Empaquetador.h"
 #include "../common/GestorDeSeniales.h"
+#include "../common/Utilitario.h"
 #include "../logger/Logger.h"
 
 #include "AreaIntercambio.h"
@@ -42,7 +43,11 @@ Recibidor::~Recibidor() {
 	if (_semIntercambio != NULL)
 		delete _semIntercambio;
 
+	Utilitario u;
+	std::string msj;
 	for (unsigned i = 0; i < _procesos->size() ; i++) {
+		msj = std::string("Finalizando receptor pid: ") + u.convertirAString((*_procesos)[i]->getId());
+		Logger::instance().debug(TAG, msj);
 		GestorDeSeniales::instancia().enviarSenialAProceso((*_procesos)[i]->getId(), SIGNUM_FINALIZACION);
 	}
 
@@ -109,6 +114,15 @@ int Recibidor::escuchar(Paquete& paq, DirSocket& dir) {
 
 
 void Recibidor::iniciarProcesoCliente(const Empaquetador& emp, const DirSocket& dirCliente) {
+	// TODO: para ver si es la correcta dir de cliente, borrar estas lineas..
+//	{
+//		Empaquetador e;
+//		e.agregarMensaje("SERVIDOR", "HOLA USUARIO");
+//		if (_receptor.enviar(emp.paquete(), dirCliente) == true)
+//			Logger::instance().debug(TAG, "PAQUETE de prueba enviado al nuevo USUARIO.");
+//	}
+
+	//////////////////////////////////////////
 
 	Logger::instance().debug(TAG, "Lanzando proceos ReceptorMensajes");
 

@@ -17,7 +17,7 @@
  * Constantes del Servidor
  */
 
-const Puerto PUERTO_SERVIDOR = 9090;
+const Puerto PUERTO_SERVIDOR = 9091;
 
 #define CANT_PAQ_COLA 100
 
@@ -31,7 +31,7 @@ const Puerto PUERTO_SERVIDOR = 9090;
 #define SEM_CONFIRMACION_RECEPTOR		"/tmp/sem_confirmacion_receptor"
 
 
-#define SEM_COLA_PAQ_SACAR			"/tmp/sem_cola_paq_poner"
+#define SEM_COLA_PAQ_SACAR			"/tmp/sem_cola_paq_sacar"
 #define SEM_COLA_PAQ_PONER			"/tmp/sem_cola_paq_poner"
 #define SEM_MEM_COMP_COLA_PAQ		"/tmp/sem_mem_comp_cola_paq"
 
@@ -57,7 +57,7 @@ const Puerto PUERTO_SERVIDOR = 9090;
 
 #define SIGNUM_ESPERA_CONFIRMACION				SIGSTOP
 #define SIGNUM_CONFIRMACION						SIGCONT
-#define SIGNUM_CONFIRMACION_NEGATIVA			SIGUSR1
+#define SIGNUM_CONFIRMACION_NEGATIVA			SIGINT
 
 /**
  * Estructuras usadas en el resolvedor.

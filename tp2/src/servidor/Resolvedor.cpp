@@ -11,6 +11,7 @@
 
 #include "../common/Empaquetador.h"
 #include "../common/GestorDeSeniales.h"
+#include "../common/Utilitario.h"
 
 #include "../logger/Logger.h"
 
@@ -27,9 +28,13 @@ Resolvedor::Resolvedor() :_emisor() , _semResolvedor(SEM_RESOLVEDOR, 1), _seguir
 	_emisor.enlazar(0);
 	_ultimoIDLibre = 1;
 	_usarSemaforo = true;
+
+	_senialTratada = false;
 	GestorDeSeniales::instancia().agregarSenial(_senial);
 
-	Logger::instance().debug(TAG, "Instanciando");
+	Logger::instance().debug(TAG, "INTANCIADO");
+
+	_colaPaquetes.inicializarIndices();
 }
 
 void Resolvedor::usarSemaforos(bool usar) {
@@ -37,13 +42,17 @@ void Resolvedor::usarSemaforos(bool usar) {
 }
 
 void Resolvedor::wait() {
-	if (_usarSemaforo == true)
+	if (_usarSemaforo == true){
+		Logger::instance().debug(TAG, "Por realizar WAIT() de recursos de RESOLVEDOR");
 		_semResolvedor.wait();
+	}
 }
 
 void Resolvedor::signal() {
-	if (_usarSemaforo == true)
+	if (_usarSemaforo == true) {
+		Logger::instance().debug(TAG, "Por realizar SIGNAL() de recursos de RESOLVEDOR");
 		_semResolvedor.signal();
+	}
 }
 
 Resolvedor& Resolvedor::instanacia() {
@@ -58,6 +67,10 @@ bool Resolvedor::instanciado() {
 
 Resolvedor::~Resolvedor() {
 
+}
+
+void Resolvedor::senialTratada() {
+	_senialTratada = true;
 }
 
 void Resolvedor::liberar() {
@@ -85,17 +98,21 @@ int Resolvedor::comenzar() {
 		Logger::instance().debug(TAG, "Se intenta sacar paquete de la cola");
 		solicitud = _colaPaquetes.sacar();
 
-		Logger::instance().debug(TAG, "Se saco paquete de la Cola");
+		if (_senialTratada == false) {
+			Logger::instance().debug(TAG, "Se saco paquete de la Cola");
 
-		respuesta = resolver(solicitud, destinos);
+			respuesta = resolver(solicitud, destinos);
 
-		Logger::instance().debug(TAG, "Se resolvio la solicitud del paquete.");
+			Logger::instance().debug(TAG, "Se resolvio la solicitud del paquete.");
 
-		enviar(respuesta, destinos);
-		Logger::instance().debug(TAG, "Se enviaron las respuestas");
-
+			enviar(respuesta, destinos);
+		}
+		else {
+			Logger::instance().debug(TAG, "NO se saco paquete de la cola.");
+			_senialTratada = false;
+		}
 		// para debuggear
-		sleep(3);
+		//sleep(3);
 	}
 
 
@@ -383,10 +400,21 @@ void Resolvedor::enviar(const Paquete& paqueteRespuesta, const Destinatarios& de
 
 	wait();
 
+	std::string msj;
+	Utilitario u;
+
+	msj = "Cantidad de destino a enviar PAQUETE: ";
+	msj += u.convertirAString(destinos.size());
+
+	Logger::instance().debug(TAG, msj);
+
+
 	Destinatarios::const_iterator it = destinos.begin();
 
-	while (it != destinos.end()) {
+	 for (;it != destinos.end() ; it++) {
 		this->enviarPaquete(*it , paqueteRespuesta);
+		msj = std::string("Se envio paquete a usuario: ") + *it;
+		Logger::instance().debug(TAG, msj);
 	}
 
 
@@ -404,8 +432,9 @@ void Resolvedor::enviarPaquete(IdUsuario id, const Paquete& paq)  {
 }
 
 const Paquete Resolvedor::agregarNuevoUsuario(const NuevoUsuario& info) {
-	//_semResolvedor.wait();
 	this->wait();
+
+	Logger::instance().debug(TAG, "Por agregar info de nuevo USUARIO");
 
 	std::string nombreUsr = info.nombre;
 
@@ -423,10 +452,12 @@ const Paquete Resolvedor::agregarNuevoUsuario(const NuevoUsuario& info) {
 		it->second.id_conv = 0;
 		it->second.pid = info.pid_receptor;
 
-		// TODO verificar si ya con esto quedo modificado el mapa
+		Logger::instance().debug(TAG, "Info de nuevo USUARIO agregada.");
+
+		// TODO verificar si ya con esto quedo modificado el mapa.
+		// ¡¡¡ Verificado !!!
 	}
 
-	//_semResolvedor.signal();
 	this->signal();
 
 	return emp2.paquete();

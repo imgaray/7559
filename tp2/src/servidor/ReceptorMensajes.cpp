@@ -59,8 +59,10 @@ int ReceptorMensajes::comenzar() {
 	Logger::instance().debug(TAG, "Enviando señal de semaforo de confirmacion de incio.");
 	semConfimacion.signal();
 
+
 	// ver si poner semaforo para sincronizar con resolvedor...
 	GestorDeSeniales::instancia().enviarmeSenial(SIGNUM_ESPERA_CONFIRMACION);
+
 	_semReceptor->signal();
 
 	Logger::instance().debug(TAG, "Se recibio señal de confimacion");

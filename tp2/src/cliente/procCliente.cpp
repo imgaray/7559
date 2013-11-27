@@ -10,13 +10,29 @@
 #include "../common/Empaquetador.h"
 #include "../common/GestorDeSeniales.h"
 
+#include "SenialFinalizacion.h"
+
 bool _seguirRecibiendo_ = true;
 
 int mainReceptor(SocketUDP& receptor);
 
+void imprimirPaquete(const Paquete& paq) {
+
+	const char* buffer = (char*) paq.serializar();
+
+	for (int i = 0; i < 50 ; i++) {
+		std::cout << "(" <<  i << ")=" <<"\'"<< buffer[i] <<"\';  Int= " <<(int) buffer[i]<< std::endl;
+		//if (i % 20 == 0)
+		//std::cout << std::endl;
+	}
+
+}
+
 void imprimir(const Empaquetador& emp) {
 	printf("\r");
 	fflush(stdout);
+
+	std::cout << "Imprimiendo Paquete" << std::endl;
 
 	if (emp.tipoActual() == Empaquetador::MENSAJE) {
 		std::cout << emp.PAQ_nombreDeUsuario() << ": ";
@@ -29,12 +45,16 @@ void imprimir(const Empaquetador& emp) {
 	else if (emp.tipoActual() == Empaquetador::CONVERSACIONES) {
 		std::vector<std::string> conv = emp.PAQ_conversaciones();
 
-		std::cout << "Conversaciones Disponibles: "<< std::endl;
+		std::cout << "Conversaciones Disponibles";
+		std::cout << "(" << conv.size() << ")" << std::endl;
 
 		for (unsigned i = 0; i < conv.size() ; i++) {
 			std::cout << i+1 << ": " << conv[i] << std::endl;
 		}
-
+	}
+	else {
+		std::cout << "Error: Mensaje no reconocible" << std::endl;
+		imprimirPaquete(emp.paquete());
 	}
 
 	std::cout << ">> ";
@@ -67,15 +87,20 @@ int main() {
 
 		while (_conectado == false && intentos > 0) {
 
-			std::cout << "Ingrese Nombre de Usuario: " << std::endl;
+			std::cout << "Ingrese Nombre de Usuario: ";
 			std::cin >> usuario;
 
 			emp.iniciarSesion(usuario);
 
-			_sock.enviar(emp.paquete(), dirServidor);
-			_sock.recibir(paqRecibido, dirRealServ);
+			if (_sock.enviar(emp.paquete(), dirServidor) == true)
+				std::cout << "Solicitude de conexion enviada." << std::endl;
 
-			emp.asociar(paqRecibido);
+				sleep(1);
+
+			if (_sock.recibir(paqRecibido, dirRealServ) == true)
+				emp.asociar(paqRecibido);
+
+			imprimir(emp);
 
 			if (emp.PAQ_confirmacionRecibida()) {
 				std::cout << "Conexion Establecida" << std::endl;
@@ -118,29 +143,39 @@ int main() {
 		std::cout << ">> ";
 		std::cin >> mensaje;
 
-		if (mensaje == ".1") {
-			emp.verConversaciones(usuario);
+
+		std::cout << "Ingreso: \"" <<mensaje <<"\". Tamanio:" << mensaje.size()  << std::endl;
+
+		if (mensaje.size() == 2 && mensaje[0] == '.') {
+
+			if (mensaje[1] == '1') {
+				emp.verConversaciones(usuario);
+			}
+			else if (mensaje[1] == '2') {
+				std::cout << "ingrese nombre de la conversacion a unirse: ";
+				std::cin >> mensaje;
+				if (mensaje.size() > 0) {
+					std::cout << "por enviar: " << mensaje << std::endl;
+					emp.unirseConversacion(usuario, mensaje);
+				}
+			}
+			else if (mensaje[1] == '3') {
+				std::cout << "ingrese nombre de nueva conversacion: ";
+				std::cin >> mensaje;
+				if (mensaje.size() > 0) {
+					std::cout << "por enviar: " << mensaje << std::endl;
+					emp.crearConversacion(usuario, mensaje);
+				}
+			}
+			else if (mensaje[1] == '4') {
+				emp.finalizarSesion(usuario);
+				_seguirRecibiendo_ = false;
+			}
 		}
-		else if (mensaje == ".2") {
-			std::cout << "ingrese nombre de la conversacion a unirse: ";
-			std::cin >> mensaje;
-			if (mensaje.size() > 0)
-				emp.unirseConversacion(usuario, mensaje);
-		}
-		else if (mensaje == ".3	") {
-			std::cout << "ingrese nombre de nueva conversacion: ";
-			std::cin >> mensaje;
-			if (mensaje.size() > 0)
-				emp.crearConversacion(usuario, mensaje);
-		}
-		else if (mensaje == ".4") {
-			emp.finalizarSesion(usuario);
-			_seguirRecibiendo_ = false;
-		}
-		else if (mensaje == ".op" ) {
+		else if (mensaje.size() == 3 && mensaje[0] == '.' && mensaje[1] == 'o' && mensaje[3] == 'p') {
 			imprimirOpciones();
 		}
-		else {
+		else if (mensaje.size() > 0) {
 			emp.agregarMensaje(usuario, mensaje);
 		}
 
@@ -163,13 +198,20 @@ int main() {
 
 int mainReceptor(SocketUDP &receptor) {
 
+	SenialFinalizacion senial;
+	GestorDeSeniales::instancia().agregarSenial(senial);
+
 	Empaquetador emp;
 	Paquete paq;
 	DirSocket aux;
 
 	while (_seguirRecibiendo_) {
+		std::cout << "::::Por esperar respuesta." << std::endl;
 		receptor.recibir(paq, aux);
+
 		emp.asociar(paq);
+		std::cout << "::::Respuesta recibida." << std::endl;
+
 		imprimir(emp);
 	}
 

@@ -49,7 +49,8 @@ void Empaquetador::crearConversacion(const std::string& nomUsuario,const std::st
 	_paquete.definirTipo(Empaquetador::CREAR_CONVERSACION);
 
 	_paquete.agregarAtributo((void*) nomUsuario.c_str(), nomUsuario.size());
-	_paquete.agregarDatos((void*) nombreNuevaConversacion.c_str(), nombreNuevaConversacion.size());
+	//_paquete.agregarDatos((void*) nombreNuevaConversacion.c_str(), nombreNuevaConversacion.size());
+	_paquete.agregarAtributo((void*) nombreNuevaConversacion.c_str(), nombreNuevaConversacion.size());
 
 }
 

@@ -39,14 +39,11 @@ void inicializarRecursos();
 void liberarRecursos();
 
 
-
-/**
- * TODO
- * Cambiar el nombre de este por por el correcto ( main_SS por main)
- */
 int main() {
 
 	try{
+
+	Logger::instance().clear();
 	Logger::instance().debug(TAG, "Inicializando recursos");
 	inicializarRecursos();
 
@@ -92,6 +89,7 @@ int main() {
 	liberarRecursos();
 
 	Logger::instance().debug(TAG, "Recursos liberados.");
+	Logger::close();
 
 	return 0;
 
@@ -192,8 +190,8 @@ void inicializarRecursos() {
 	semaforos[5]->inicializar();
 
 
-	ColaDePaquetes cola;
-	cola.inicializarIndices();
+//	ColaDePaquetes cola;
+//	cola.inicializarIndices();
 }
 void liberarRecursos() {
 	unlink(MEM_COMP_COLA_PAQ);
@@ -215,4 +213,5 @@ void liberarRecursos() {
 
 	unlink(SEM_MEM_COMP_COLA_PAQ);
 	unlink(SEM_CONFIRMACION_RECEPTOR);
+
 }

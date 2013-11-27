@@ -34,6 +34,8 @@ public:
 
 	void usarSemaforos(bool usar);
 
+	void senialTratada();
+
 	virtual ~Resolvedor();
 
 private:
@@ -70,6 +72,7 @@ private:
 	void wait();
 	void signal();
 
+	bool _senialTratada;
 
 	Conversaciones _conversaciones;
 	ConvUsuarios _usrXConv;
