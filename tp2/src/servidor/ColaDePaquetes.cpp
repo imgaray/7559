@@ -7,6 +7,10 @@
 
 #include "ColaDePaquetes.h"
 #include "../common/MemoriaCompartida.h"
+#include "../common/Utilitario.h"
+#include "../logger/Logger.h"
+
+#define TAG "ColaDePaquetes"
 
 ColaDePaquetes::ColaDePaquetes() : _semSacar(NULL), _semPoner(NULL), _semMemComp(NULL),
 	_memoria(NULL), _indices(NULL){
@@ -21,6 +25,8 @@ ColaDePaquetes::ColaDePaquetes() : _semSacar(NULL), _semPoner(NULL), _semMemComp
 
 	_metaPInicio = _memoria->leer().paquetes;
 	_metaPFin = _metaPInicio + CANT_PAQ_COLA - 1;
+
+	Logger::instance().debug(TAG, "Instanciando cola.");
 
 }
 
@@ -41,6 +47,9 @@ ColaDePaquetes::~ColaDePaquetes() {
 }
 
 void ColaDePaquetes::destruir() {
+
+	Logger::instance().debug(TAG, "Por destruir cola de paquetes.");
+
 	_memoria->liberar();
 
 	if (_memoria != NULL) {
@@ -70,12 +79,15 @@ void ColaDePaquetes::destruir() {
 
 
 const Paquete ColaDePaquetes::sacar() {
+
+	Logger::instance().debug(TAG, "Intentando sacar paquete de cola.");
+
 	_semSacar->wait();
 
 	Paquete paq;
 	Indices ind;
 
-
+	Logger::instance().debug(TAG, "Por sacar paquete de cola.");
 	_semMemComp->wait();
 
 	ind = _indices->leer();
@@ -85,15 +97,23 @@ const Paquete ColaDePaquetes::sacar() {
 	if (ind.cantidad > 0) {
 		_metaPaq = _metaPInicio + ind.frente;
 		ind.frente++;
+		ind.cantidad--;
 
 		copiarPaquete( _metaPaq->datos, _buffer);
 
 		ind.frente = ind.frente % CANT_PAQ_COLA;
 
 		_indices->escribir(ind);
+
+		Utilitario u;
+		std::string msj = std::string("Se scao un paquete de la cola. Cantidad actual: ") + u.convertirAString(ind.cantidad);
+		Logger::instance().debug(TAG, msj);
 	}
 	else {
 		paq.definirTipo(0);
+
+		Logger::instance().debug(TAG, "No se saco ningun paquete de la cola");
+
 	}
 	_semMemComp->signal();
 
@@ -105,9 +125,15 @@ const Paquete ColaDePaquetes::sacar() {
 }
 
 void ColaDePaquetes::insertar(const Paquete& paquete) {
+
+	Logger::instance().debug(TAG, "Intentando poner paquete en la cola.");
+
 	_semPoner->wait();
 
 	Indices ind;
+
+
+	Logger::instance().debug(TAG, "Por poner paquete en la cola");
 
 	_semMemComp->wait();
 
@@ -115,12 +141,16 @@ void ColaDePaquetes::insertar(const Paquete& paquete) {
 
 	_metaPaq = _metaPInicio + ind.fondo;
 	ind.fondo++;
+	ind.cantidad++;
 	copiarPaquete((char*)paquete.serializar(), _metaPaq->datos);
 
 	ind.fondo = ind.fondo % CANT_PAQ_COLA;
 
 	_indices->escribir(ind);
 
+	Utilitario u;
+	std::string msj = std::string("Paquete puesto en la cola. Cantidad actual: ") + u.convertirAString(ind.cantidad);
+	Logger::instance().debug(TAG, msj);
 
 	_semMemComp->signal();
 	_semSacar->signal();

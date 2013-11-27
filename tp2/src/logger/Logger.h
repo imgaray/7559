@@ -7,7 +7,7 @@
 #include <vector>
 #include <ctime>
 #include <time.h>
-#include "LockFile.h"
+#include "../common/LockFile.h"
 
 using namespace std;
 

@@ -10,12 +10,18 @@
 #include "../common/Definiciones.h"
 #include "../common/Empaquetador.h"
 #include "../common/GestorDeSeniales.h"
+#include "../common/SemaforoPSX.h"
+
+#include "../logger/Logger.h"
 
 #include "AreaIntercambio.h"
 #include "Resolvedor.h"
 
+#define TAG "RESOLVEDOR_SENIAL_INTCMB"
+
 SenialIntcmbResolvedor::SenialIntcmbResolvedor() {
-	this->agregarSenialABloquear(SIGINT);
+	this->agregarSenialABloquear(SIGNUM_FINALIZACION);
+	this->agregarSenialABloquear(SIGNUM_INTERCAMBIO_RESOLVEDOR);
 }
 
 SenialIntcmbResolvedor::~SenialIntcmbResolvedor() {
@@ -26,24 +32,36 @@ int SenialIntcmbResolvedor::numeroSenial() {
 }
 
 void SenialIntcmbResolvedor::operacion() {
+
+	SemaforoPSX semConfirmacion(SEM_CONFIRMACION_RECEPTOR, 0);
+
+	Logger::instance().debug(TAG, "Iniciando tramtamiento de intercambio.");
+
 	AreaIntercambio intercambio;
 
 	Resolvedor& resolvedor = Resolvedor::instanacia();
 	GestorDeSeniales& gestorSen = GestorDeSeniales::instancia();
 
 	NuevoUsuario nuevoUsr;
+
+	Logger::instance().debug(TAG, "Leyendo datos de nuevo usuario.");
 	nuevoUsr = intercambio.leer();
 
 	Empaquetador emp;
 
 	std::string nombreUsuario = nuevoUsr.nombre;
+	Logger::instance().debug(TAG, nuevoUsr.nombre);
 
+	Logger::instance().debug(TAG, "Creando paquete de incio de sesion..");
 	emp.iniciarSesion(nombreUsuario);
 
 	Destinatarios dest;
 
+	Logger::instance().debug(TAG, "Desabilitando semaforos del resolvedor.");
 	resolvedor.usarSemaforos(false);
 
+
+	Logger::instance().debug(TAG, "Por resolver paquete leido .");
 	// se envia el paquete de inicio al resolvedor
 	Paquete res = resolvedor.resolver(emp.paquete(),dest);
 
@@ -54,17 +72,22 @@ void SenialIntcmbResolvedor::operacion() {
 	info.pid = nuevoUsr.pid_receptor;
 	info.id_conv = 0;
 
+	Logger::instance().debug(TAG, "Esperando que inicie Receptor y pare para esperer confirmacion.");
+	semConfirmacion.wait();
 
 	if (emp.PAQ_confirmacionRecibida()) {
+		Logger::instance().debug(TAG, "Enviando señal de confimacion al receptor de Mensajes.");
 		// se confirma al proceso que continue que se confirmo el inicio sesion
 		gestorSen.enviarSenialAProceso(info.pid, SIGNUM_CONFIRMACION);
 	}
 	else {
+		Logger::instance().debug(TAG, "Enviando señal de finalizacion al receptor de Mensajes.");
 		// No se pudo crear sesion, lo mas comun es porque se encontro usuario con mismo nombre
 		// envia señal para que finaliza el proceso
 		gestorSen.enviarSenialAProceso(info.pid, SIGNUM_CONFIRMACION_NEGATIVA);
 	}
 
+	Logger::instance().debug(TAG, "Habilitando semaforos del resolvedor.");
 	resolvedor.usarSemaforos(true);
 }
 

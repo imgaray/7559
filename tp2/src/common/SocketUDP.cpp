@@ -75,7 +75,6 @@ bool SocketUDP::enviar(const Paquete& paquete, const DirSocket& destino) {
 	unsigned int tamanioDir = sizeof(destino._dir);
 	long int enviados = 0, env;
 
-	char c= 'a';
 	//for (int i = 0; i< TAM_MAX_PAQ; i++) {	_buffer[i] = c;	c++;	}
 
 	while (enviados < TAM_MAX_PAQ && enviados != -1) {

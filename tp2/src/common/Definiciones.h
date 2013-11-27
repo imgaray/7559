@@ -26,14 +26,14 @@ const Puerto PUERTO_SERVIDOR = 9090;
  * Nombres de Semaforos Posix
  */
 
-#define SEM_RESOLVEDOR					"sem_resolvedor" // semaforo para una exclusion mutua del las estructuras del resolvedor
-#define SEM_INTERCAMBIO_RYR 			"sem_int_ryr"	// semaforo para sincronizar recibidor con y receptor
-#define SEM_MEM_COMP_INTERCAMBIO_RYR	"sem_mem_comp_ryr"
+#define SEM_RESOLVEDOR					"/tmp/sem_resolvedor" // semaforo para una exclusion mutua del las estructuras del resolvedor
+#define SEM_INTERCAMBIO_RYR 			"/tmp/sem_int_ryr"	// semaforo para sincronizar recibidor con y receptor
+#define SEM_CONFIRMACION_RECEPTOR		"/tmp/sem_confirmacion_receptor"
 
 
-#define SEM_COLA_PAQ_SACAR			"sem_cola_paq_poner"
-#define SEM_COLA_PAQ_PONER			"sem_cola_paq_poner"
-#define SEM_MEM_COMP_COLA_PAQ		"sem_mem_comp_cola_paq"
+#define SEM_COLA_PAQ_SACAR			"/tmp/sem_cola_paq_poner"
+#define SEM_COLA_PAQ_PONER			"/tmp/sem_cola_paq_poner"
+#define SEM_MEM_COMP_COLA_PAQ		"/tmp/sem_mem_comp_cola_paq"
 
 
 /**

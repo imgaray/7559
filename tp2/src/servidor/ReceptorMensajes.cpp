@@ -9,6 +9,10 @@
 #include "../common/Definiciones.h"
 #include "../common/Empaquetador.h"
 #include "../common/GestorDeSeniales.h"
+#include "../logger/Logger.h"
+
+
+#define TAG "RECEPTOR_MENSAJES"
 
 ReceptorMensajes* ReceptorMensajes::_instancia = NULL;
 
@@ -19,6 +23,8 @@ ReceptorMensajes::ReceptorMensajes() :
 	_receptor.enlazar(0);
 
 	GestorDeSeniales::instancia().agregarSenial(_senial);
+
+	Logger::instance().debug(TAG, "Receptor instanaciado");
 }
 
 ReceptorMensajes::~ReceptorMensajes() {
@@ -43,20 +49,34 @@ void ReceptorMensajes::liberar() {
 }
 
 int ReceptorMensajes::comenzar() {
+
+	Logger::instance().debug(TAG, "Iniciando receptor y esperando señal de continuacion.");
+
+	SemaforoPSX semConfimacion(SEM_CONFIRMACION_RECEPTOR, 0);
+
+
+	Logger::instance().debug(TAG, "Enviando señal de semaforo de confirmacion de incio.");
+	semConfimacion.signal();
+
 	// ver si poner semaforo para sincronizar con resolvedor...
 	GestorDeSeniales::instancia().enviarmeSenial(SIGNUM_ESPERA_CONFIRMACION);
 	_semReceptor.signal();
+
+	Logger::instance().debug(TAG, "Se recibio señal de confimacion");
 
 	NuevoUsuario info = areaIntcmb.leer();
 
 	{
 		Empaquetador emp;
 
-		if (_seguirRecibiendo)
+		if (_seguirRecibiendo) {
 			emp.confirmarRespuesta("Sesion Iniciada");
-		else
+			Logger::instance().debug(TAG, "Confirmacion de Inicio de Sesion.");
+		}
+		else {
 			emp.agregarMensajeError("Error: Usuario ya existe");
-
+			Logger::instance().debug(TAG, "Usuario ya existe, finalizara proceso");
+		}
 
 		_receptor.enviar(emp.paquete(), info._dirSck);
 	}
@@ -68,10 +88,13 @@ int ReceptorMensajes::comenzar() {
 		cola.insertar(paqRecibido);
 	}
 
+	Logger::instance().debug(TAG, "Finaliza recepcion de mensajes");
+
 	return 0;
 }
 
 
 void ReceptorMensajes::dejarDeRecibir() {
 	_seguirRecibiendo = false;
+	Logger::instance().debug(TAG, "Señal de finalizacion recibida.");
 }

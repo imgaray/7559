@@ -7,15 +7,26 @@
 
 #include "Resolvedor.h"
 #include "../common/Empaquetador.h"
+#include "../common/GestorDeSeniales.h"
 
+#include "../logger/Logger.h"
+
+#include "SenialIntcmbResolvedor.h"
+
+#define TAG "RESOLVEDOR"
 
 Resolvedor* Resolvedor::_instancia = NULL;
+
+SenialIntcmbResolvedor _senial;
 
 Resolvedor::Resolvedor() :_emisor() , _semResolvedor(SEM_RESOLVEDOR, 1), _seguirEnviando(true) {
 
 	_emisor.enlazar(0);
 	_ultimoIDLibre = 1;
 	_usarSemaforo = true;
+	GestorDeSeniales::instancia().agregarSenial(_senial);
+
+	Logger::instance().debug(TAG, "Instanciando");
 }
 
 void Resolvedor::usarSemaforos(bool usar) {
@@ -47,6 +58,9 @@ Resolvedor::~Resolvedor() {
 }
 
 void Resolvedor::liberar() {
+
+	Logger::instance().debug(TAG, "Liberando.");
+
 	if (_instancia != NULL) {
 		delete _instancia;
 		_instancia = NULL;
@@ -60,15 +74,26 @@ void Resolvedor::dejarDeResponder() {
 int Resolvedor::comenzar() {
 	Paquete solicitud, respuesta;
 
+	Logger::instance().debug(TAG, "Inicia el proceso.");
+
 	Destinatarios destinos;
 	while (_seguirEnviando) {
 
+		Logger::instance().debug(TAG, "Se intenta sacar paquete de la cola");
 		solicitud = _colaPaquetes.sacar();
+
+		Logger::instance().debug(TAG, "Se saco paquete de la Cola");
 
 		respuesta = resolver(solicitud, destinos);
 
+		Logger::instance().debug(TAG, "Se resolvio la solicitud del paquete.");
+
 		enviar(respuesta, destinos);
+		Logger::instance().debug(TAG, "Se enviaron las respuestas");
 	}
+
+
+	Logger::instance().debug(TAG, "Finalizando Resolvedor.");
 
 	return 0;
 }
@@ -113,6 +138,8 @@ const Paquete Resolvedor::resolver(const Paquete& origen, Destinatarios& destino
 
 
 const Paquete Resolvedor::conversaciones(const Empaquetador& emp,Destinatarios& destinos) {
+	Logger::instance().debug(TAG, "procesando paquete de CONVERSACIONES");
+
 	Empaquetador res;
 
 	std::string nombreUsr = emp.PAQ_nombreDeUsuario();
@@ -136,6 +163,7 @@ const Paquete Resolvedor::conversaciones(const Empaquetador& emp,Destinatarios& 
 }
 
 const Paquete Resolvedor::finalizarSesion(const Empaquetador& empaquetador, Destinatarios& destinos) {
+	Logger::instance().debug(TAG, "Procesando paquete de FIN_DE_SESION.");
 	Empaquetador res;
 
 	IdUsuario idUsr = empaquetador.PAQ_nombreDeUsuario();
@@ -158,6 +186,7 @@ const Paquete Resolvedor::finalizarSesion(const Empaquetador& empaquetador, Dest
 }
 
 void Resolvedor::eliminarUsuarioDeConversacion(const IdConversacion& idConv, const IdUsuario& idUsr) {
+
 	Destinatarios& dest = _usrXConv[idConv];
 	bool encontrado = false;
 	unsigned indice = 0;
@@ -193,6 +222,8 @@ void Resolvedor::eliminarUsuarioDeConversacion(const IdConversacion& idConv, con
 }
 
 const Paquete Resolvedor::paqueteNoValido(const Empaquetador& emp, Destinatarios& destinos) {
+	Logger::instance().debug(TAG, "procesando paquete NO VALIDO.");
+
 	Empaquetador res;
 
 	res.agregarMensajeError("Paquete no valido para procesar");
@@ -202,6 +233,9 @@ const Paquete Resolvedor::paqueteNoValido(const Empaquetador& emp, Destinatarios
 
 
 const Paquete Resolvedor::reenviarMensaje(const Empaquetador& empaquetador, Destinatarios& destinos) {
+
+	Logger::instance().debug(TAG, "Procesando paquete de MENSAJE");
+
 	Empaquetador res;
 	IdUsuario idUsr = empaquetador.PAQ_nombreDeUsuario();
 	itUsuarios itUsr = _usuarios.find(idUsr);
@@ -225,6 +259,8 @@ const Paquete Resolvedor::reenviarMensaje(const Empaquetador& empaquetador, Dest
 }
 
 const Paquete Resolvedor::agregarUsuario(const Paquete& paquete) {
+	Logger::instance().debug(TAG, "Procesando paquete de inicio de sesion.");
+
 	Empaquetador emp(paquete);
 
 	std::string nomUsr = emp.PAQ_nombreDeUsuario();
@@ -252,6 +288,7 @@ const Paquete Resolvedor::agregarUsuario(const Paquete& paquete) {
 }
 
 const Paquete Resolvedor::crearConversacion(const Empaquetador& empaquetador, Destinatarios& destinos){
+	Logger::instance().debug(TAG, "Procesando paquete de CREAR_CONVERSACION");
 	Empaquetador res;
 
 	std::string nombreConversacion(empaquetador.PAQ_nombreConversacion());
@@ -289,6 +326,8 @@ const Paquete Resolvedor::crearConversacion(const Empaquetador& empaquetador, De
 }
 
 const Paquete Resolvedor::unirseConversacion(const Empaquetador& empaquetador, Destinatarios& destinos){
+	Logger::instance().debug(TAG, "procesando paquete de UNIRSE_CONVERSACION.");
+
 	Empaquetador res;
 
 	std::string nombreUsuario = empaquetador.PAQ_nombreDeUsuario();
@@ -359,7 +398,8 @@ void Resolvedor::enviarPaquete(IdUsuario id, const Paquete& paq)  {
 }
 
 const Paquete Resolvedor::agregarNuevoUsuario(const NuevoUsuario& info) {
-	_semResolvedor.wait();
+	//_semResolvedor.wait();
+	this->wait();
 
 	std::string nombreUsr = info.nombre;
 
@@ -380,7 +420,8 @@ const Paquete Resolvedor::agregarNuevoUsuario(const NuevoUsuario& info) {
 		// TODO verificar si ya con esto quedo modificado el mapa
 	}
 
-	_semResolvedor.signal();
+	//_semResolvedor.signal();
+	this->signal();
 
 	return emp2.paquete();
 }

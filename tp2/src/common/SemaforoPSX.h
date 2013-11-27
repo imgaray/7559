@@ -11,10 +11,14 @@
 #include <string>
 #include <semaphore.h>
 
+#include "Semaforo.h"
+
 
 class SemaforoPSX {
 public:
 	SemaforoPSX(const char* nombre,  int valorInicial = 0);
+
+	void inicializar();
 
 	void wait();
 
@@ -25,7 +29,8 @@ public:
 	virtual ~SemaforoPSX();
 private:
 	std::string _nombre;
-	sem_t *_semaforo;
+	//sem_t *_semaforo;
+	Semaforo *_semaforo;
 };
 
 #endif /* SEMAFOROPSX_H_ */

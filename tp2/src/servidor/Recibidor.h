@@ -40,7 +40,7 @@ private:
 
 	void iniciarProcesoCliente(const Empaquetador& emp, const DirSocket& dir);
 
-	Procesos _procesos;
+	Procesos* _procesos;
 	Process* _ultimoProceso;
 
 	SocketUDP _receptor;
