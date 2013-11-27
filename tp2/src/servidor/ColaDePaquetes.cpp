@@ -82,7 +82,14 @@ const Paquete ColaDePaquetes::sacar() {
 
 	Logger::instance().debug(TAG, "Intentando sacar paquete de cola.");
 
+	Utilitario u;
+
+	std::string msj = std::string("Valor antes del wait() (Sacar): ") + u.convertirAString(_semSacar->valorActual());
+	Logger::instance().debug(TAG,msj);
 	_semSacar->wait();
+	msj = std::string("Valor despues del wait() (Sacar): ") + u.convertirAString(_semSacar->valorActual());
+	Logger::instance().debug(TAG,msj);
+
 
 	Paquete paq;
 	Indices ind;
@@ -108,18 +115,22 @@ const Paquete ColaDePaquetes::sacar() {
 		Utilitario u;
 		std::string msj = std::string("Se scao un paquete de la cola. Cantidad actual: ") + u.convertirAString(ind.cantidad);
 		Logger::instance().debug(TAG, msj);
+
+		_semMemComp->signal();
+
+		_semPoner->signal();
+
+		paq.deserializar((void*)_buffer);
+
 	}
 	else {
+		_semMemComp->signal();
+
 		paq.definirTipo(0);
 
 		Logger::instance().debug(TAG, "No se saco ningun paquete de la cola");
-
 	}
-	_semMemComp->signal();
 
-	_semPoner->signal();
-
-	paq.deserializar((void*)_buffer);
 
 	return paq;
 }
@@ -128,8 +139,15 @@ void ColaDePaquetes::insertar(const Paquete& paquete) {
 
 	Logger::instance().debug(TAG, "Intentando poner paquete en la cola.");
 
-	_semPoner->wait();
+	Utilitario u;
 
+	std::string msj = std::string("Valor antes del wait() (Poner): ") + u.convertirAString(_semSacar->valorActual());
+	Logger::instance().debug(TAG,msj);
+	_semPoner->wait();
+	msj = std::string("Valor despues del wait() (Poner): ") + u.convertirAString(_semSacar->valorActual());
+	Logger::instance().debug(TAG,msj);
+
+	Logger::instance().debug(TAG,msj);
 	Indices ind;
 
 
@@ -148,8 +166,7 @@ void ColaDePaquetes::insertar(const Paquete& paquete) {
 
 	_indices->escribir(ind);
 
-	Utilitario u;
-	std::string msj = std::string("Paquete puesto en la cola. Cantidad actual: ") + u.convertirAString(ind.cantidad);
+	msj = std::string("Paquete puesto en la cola. Cantidad actual: ") + u.convertirAString(ind.cantidad);
 	Logger::instance().debug(TAG, msj);
 
 	_semMemComp->signal();

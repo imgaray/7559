@@ -59,3 +59,9 @@ void Semaforo :: eliminar () const {
 	if (semctl ( this->id,0,IPC_RMID ) == -1)
 		throw "no se pudo eliminar el semaforo";
 }
+
+int Semaforo :: valorActual() const {
+	int resultado = semctl ( this->id,0,GETVAL);
+
+	return resultado;
+}

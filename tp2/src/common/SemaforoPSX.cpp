@@ -70,6 +70,11 @@ void SemaforoPSX::destruir() {
 	}
 }
 
+
+int SemaforoPSX::valorActual() {
+	return _semaforo->valorActual();
+}
+
 SemaforoPSX::~SemaforoPSX() {
 	if (_semaforo != NULL) {
 		//sem_close(_semaforo);

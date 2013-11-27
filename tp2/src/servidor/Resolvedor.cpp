@@ -6,6 +6,9 @@
  */
 
 #include "Resolvedor.h"
+
+#include <unistd.h>
+
 #include "../common/Empaquetador.h"
 #include "../common/GestorDeSeniales.h"
 
@@ -90,6 +93,9 @@ int Resolvedor::comenzar() {
 
 		enviar(respuesta, destinos);
 		Logger::instance().debug(TAG, "Se enviaron las respuestas");
+
+		// para debuggear
+		sleep(3);
 	}
 
 

@@ -7,6 +7,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <errno.h>
+#include <string.h>
 
 #include "../common/GestorDeSeniales.h"
 #include "../common/Definiciones.h"
@@ -38,13 +40,13 @@ void liberarRecursos();
 
 
 
-
 /**
  * TODO
  * Cambiar el nombre de este por por el correcto ( main_SS por main)
  */
 int main() {
 
+	try{
 	Logger::instance().debug(TAG, "Inicializando recursos");
 	inicializarRecursos();
 
@@ -61,7 +63,7 @@ int main() {
 
 	if (pidRecibidor == 0) {
 		Logger::instance().debug(TAG, "Iniciando proceso Recibidor");
-		return mainRecibidor(pidRecibidor);
+		return mainRecibidor(pidResolvedor);
 	}
 
 	cout << "Servidor corriendo ..." << endl;
@@ -92,15 +94,30 @@ int main() {
 	Logger::instance().debug(TAG, "Recursos liberados.");
 
 	return 0;
+
+	}
+	catch (std::string& e) {
+		std::cout << e << std::endl;
+	}
+	catch (const char* e) {
+		std::cout << e << std::endl;
+	}
 }
 
 
 int mainResolvedor() {
 	int retorno;
-	{
+
+	try {
 		Resolvedor& resolvedor = Resolvedor::instanacia();
 
 		retorno = resolvedor.comenzar();
+	}
+	catch ( std::string& e) {
+		std::cout << e << std::endl;
+	}
+	catch ( const char* e) {
+		std::cout << e << std::endl;
 	}
 
 	Resolvedor::liberar();
@@ -110,10 +127,17 @@ int mainResolvedor() {
 
 int mainRecibidor(int pidResolvedor) {
 	int retorno;
+	try
 	{
 		Recibidor& recibidor = Recibidor::instancia();
 
 		retorno = recibidor.comenzar(pidResolvedor);
+	}
+	catch(std::string& e) {
+		std::cout << e << std::endl;
+	}
+	catch ( const char* e) {
+		std::cout << e << std::endl;
 	}
 
 	Recibidor::liberar();
@@ -123,17 +147,29 @@ int mainRecibidor(int pidResolvedor) {
 
 void inicializarRecursos() {
 
-	mknod(MEM_COMP_COLA_PAQ, 0664, 0);
-	mknod(MC_INTCMB_RECIBIDOR, 0664, 0);
+	if (mknod(MEM_COMP_COLA_PAQ, 0777, 0) == -1)
+		std::cout << "Error en mknod: " << MEM_COMP_COLA_PAQ << ": " << strerror(errno) << std::endl;
 
-	mknod(SEM_COLA_PAQ_PONER, 0644 , 0);
-	mknod(SEM_COLA_PAQ_SACAR,0664 , 0);
+	if (mknod(MC_INTCMB_RECIBIDOR, 0777, 0) == -1)
+		std::cout << "Error en mknod: " << MC_INTCMB_RECIBIDOR << ": " << strerror(errno) << std::endl;
 
-	mknod(SEM_RESOLVEDOR, 0664, 0);
-	mknod(SEM_INTERCAMBIO_RYR, 0664 , 0);
+	if (mknod(SEM_COLA_PAQ_PONER, 0777 , 0) == -1)
+		std::cout << "Error en mknod: " << SEM_COLA_PAQ_PONER << ": " << strerror(errno) << std::endl;
 
-	mknod(SEM_MEM_COMP_COLA_PAQ, 0664, 0);
-	mknod(SEM_CONFIRMACION_RECEPTOR, 0664, 0);
+	if (mknod(SEM_COLA_PAQ_SACAR,0777 , 0) == -1 )
+		std::cout << "Error en mknod: " << SEM_COLA_PAQ_SACAR << ": " << strerror(errno) << std::endl;
+
+	if (mknod(SEM_RESOLVEDOR, 0777, 0) == -1)
+		std::cout << "Error en mknod: " << SEM_RESOLVEDOR<< ": " << strerror(errno) << std::endl;
+
+	if (mknod(SEM_INTERCAMBIO_RYR, 0777 , 0) == -1)
+		std::cout << "Error en mknod: " << SEM_INTERCAMBIO_RYR << ": " << strerror(errno) << std::endl;
+
+	if (mknod(SEM_MEM_COMP_COLA_PAQ, 0777, 0) == -1)
+		std::cout << "Error en mknod: " << SEM_MEM_COMP_COLA_PAQ << ": " << strerror(errno) << std::endl;
+
+	if (mknod(SEM_CONFIRMACION_RECEPTOR, 0777, 0) == -1)
+		std::cout << "Error en mknod: " << SEM_CONFIRMACION_RECEPTOR << ": " << strerror(errno) << std::endl;
 
 	semaforos = new SemaforoPSX*[6];
 
@@ -157,7 +193,6 @@ void inicializarRecursos() {
 
 
 	ColaDePaquetes cola;
-
 	cola.inicializarIndices();
 }
 void liberarRecursos() {
@@ -165,7 +200,7 @@ void liberarRecursos() {
 	unlink(MC_INTCMB_RECIBIDOR);
 
 
-	for (int i = 0; i < 5 ; i++) {
+	for (int i = 0; i < 6 ; i++) {
 		semaforos[i]->destruir();
 		delete semaforos[i];
 	}

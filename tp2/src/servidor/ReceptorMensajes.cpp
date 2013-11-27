@@ -17,12 +17,14 @@
 ReceptorMensajes* ReceptorMensajes::_instancia = NULL;
 
 ReceptorMensajes::ReceptorMensajes() :
-		_seguirRecibiendo(true),
-		_semReceptor(SEM_INTERCAMBIO_RYR, 0),
 		_receptor() {
 	_receptor.enlazar(0);
 
+	_seguirRecibiendo = true;
+
 	GestorDeSeniales::instancia().agregarSenial(_senial);
+
+	_semReceptor = new SemaforoPSX(SEM_INTERCAMBIO_RYR, 0);
 
 	Logger::instance().debug(TAG, "Receptor instanaciado");
 }
@@ -54,13 +56,12 @@ int ReceptorMensajes::comenzar() {
 
 	SemaforoPSX semConfimacion(SEM_CONFIRMACION_RECEPTOR, 0);
 
-
 	Logger::instance().debug(TAG, "Enviando señal de semaforo de confirmacion de incio.");
 	semConfimacion.signal();
 
 	// ver si poner semaforo para sincronizar con resolvedor...
 	GestorDeSeniales::instancia().enviarmeSenial(SIGNUM_ESPERA_CONFIRMACION);
-	_semReceptor.signal();
+	_semReceptor->signal();
 
 	Logger::instance().debug(TAG, "Se recibio señal de confimacion");
 

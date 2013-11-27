@@ -2,7 +2,7 @@
 #include "Utilitario.h"
 #include <iostream>
 
-Process::Process(std::string file): id(0), exitStatus(0), file(file) {
+Process::Process(const std::string& file): id(0), exitStatus(0), file(file) {
 	startProcess();
 }
 

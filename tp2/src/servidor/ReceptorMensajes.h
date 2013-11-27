@@ -44,7 +44,7 @@ private:
 
 	ColaDePaquetes cola;
 	AreaIntercambio areaIntcmb;
-	SemaforoPSX _semReceptor;
+	SemaforoPSX* _semReceptor;
 
 	DirSocket _dirCliente;
 

@@ -26,6 +26,8 @@ public:
 
 	void destruir();
 
+	int valorActual();
+
 	virtual ~SemaforoPSX();
 private:
 	std::string _nombre;

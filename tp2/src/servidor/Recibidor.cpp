@@ -6,6 +6,9 @@
  */
 
 #include "Recibidor.h"
+
+#include <iostream>
+
 #include "../common/Empaquetador.h"
 #include "../common/GestorDeSeniales.h"
 #include "../logger/Logger.h"
@@ -39,8 +42,13 @@ Recibidor::~Recibidor() {
 	if (_semIntercambio != NULL)
 		delete _semIntercambio;
 
-	for (unsigned i = 0; i < _procesos->size() ; i++)
+	for (unsigned i = 0; i < _procesos->size() ; i++) {
+		GestorDeSeniales::instancia().enviarSenialAProceso((*_procesos)[i]->getId(), SIGNUM_FINALIZACION);
+	}
+
+	for (unsigned i = 0; i < _procesos->size() ; i++) {
 		delete (*_procesos)[i];
+	}
 
 	delete _procesos;
 }
@@ -81,6 +89,8 @@ int Recibidor::comenzar(int pid) {
 
 	}
 
+	Logger::instance().debug(TAG, "Finalizando la \"escuchar\" de nuevos usuarios.");
+
 	return 0;
 }
 
@@ -102,7 +112,10 @@ void Recibidor::iniciarProcesoCliente(const Empaquetador& emp, const DirSocket& 
 
 	Logger::instance().debug(TAG, "Lanzando proceos ReceptorMensajes");
 
-	_ultimoProceso = new Process("./receptor");
+	std::string rutaProceso = "./receptor";
+	_ultimoProceso = new Process(rutaProceso);
+
+	std::cout << "Proceso receptor, pid: " << _ultimoProceso->getId() << std::endl;
 
 	std::string nomUsr = emp.PAQ_nombreDeUsuario();
 

@@ -23,6 +23,7 @@ void imprimir(const Empaquetador& emp) {
 		std::cout << emp.PAQ_mensajeDeUsuario() << std::endl;
 	}
 	else if (emp.tipoActual() == Empaquetador::OK) {
+		std::cout << "<< Confirmacion recibida >> : ";
 		std::cout << emp.PAQ_mensajeDeUsuario() << std::endl;
 	}
 	else if (emp.tipoActual() == Empaquetador::CONVERSACIONES) {
@@ -40,6 +41,7 @@ void imprimir(const Empaquetador& emp) {
 }
 
 void imprimirOpciones() {
+	std::cout << "Opciones " << std::endl;
 	std::cout << ".1 : Elegir conversaciones." << std::endl;
 	std::cout << ".2 : Unirse a una conversacion." << std::endl;
 	std::cout << ".3 : Crear conversaciones." << std::endl;
@@ -64,7 +66,6 @@ int main() {
 		int intentos = 3;
 
 		while (_conectado == false && intentos > 0) {
-
 
 			std::cout << "Ingrese Nombre de Usuario: " << std::endl;
 			std::cin >> usuario;
@@ -106,13 +107,13 @@ int main() {
 		return mainReceptor(_sock);
 
 
-
 	std::string mensaje;
 
 	//Empaquetador::TipoPaquete paqAnterior = Empaquetador::DESCONOCIDO;
 
-	while (_seguirRecibiendo_) {
+	std::cout << "Ingrese \".op\" para ver opciones." << std::endl;
 
+	while (_seguirRecibiendo_) {
 
 		std::cout << ">> ";
 		std::cin >> mensaje;
@@ -136,14 +137,24 @@ int main() {
 			emp.finalizarSesion(usuario);
 			_seguirRecibiendo_ = false;
 		}
+		else if (mensaje == ".op" ) {
+			imprimirOpciones();
+		}
+		else {
+			emp.agregarMensaje(usuario, mensaje);
+		}
 
+		if (_sock.enviar(emp.paquete(), dirRealServ) == false) {
+			std::cout << "Error: mensaje no se pudo enviar" << std::endl;
+		}
 	}
-
 
 	GestorDeSeniales::instancia().enviarSenialAProceso(pid, SIGNUM_FINALIZACION);
 
 	int estadoSalida;
 	do {
+
+		std::cout << "Esperando finalizacion..." << std::endl;
 		waitpid(pid, &estadoSalida, 0);
 	} while (WIFEXITED(estadoSalida) == false);
 
@@ -156,13 +167,10 @@ int mainReceptor(SocketUDP &receptor) {
 	Paquete paq;
 	DirSocket aux;
 
-
 	while (_seguirRecibiendo_) {
-
 		receptor.recibir(paq, aux);
 		emp.asociar(paq);
 		imprimir(emp);
-
 	}
 
 	return 0;
