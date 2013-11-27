@@ -64,7 +64,8 @@ void SenialIntcmbResolvedor::operacion() {
 
 	Logger::instance().debug(TAG, "Por resolver paquete leido .");
 	// se envia el paquete de inicio al resolvedor
-	Paquete res = resolvedor.resolver(emp.paquete(),dest);
+
+	Paquete res =resolvedor.agregarNuevoUsuario(nuevoUsr);
 
 	emp.asociar(res);
 

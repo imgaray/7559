@@ -32,7 +32,7 @@ void imprimir(const Empaquetador& emp) {
 	printf("\r");
 	fflush(stdout);
 
-	std::cout << "Imprimiendo Paquete" << std::endl;
+	//std::cout << "Imprimiendo Paquete" << std::endl;
 
 	if (emp.tipoActual() == Empaquetador::MENSAJE) {
 		std::cout << emp.PAQ_nombreDeUsuario() << ": ";
@@ -46,7 +46,7 @@ void imprimir(const Empaquetador& emp) {
 		std::vector<std::string> conv = emp.PAQ_conversaciones();
 
 		std::cout << "Conversaciones Disponibles";
-		std::cout << "(" << conv.size() << ")" << std::endl;
+		std::cout << "(" << conv.size() << "):" << std::endl;
 
 		for (unsigned i = 0; i < conv.size() ; i++) {
 			std::cout << i+1 << ": " << conv[i] << std::endl;
@@ -78,6 +78,7 @@ int main() {
 	_sock.enlazar(0);
 	DirSocket dirRealServ;
 
+
 	{
 		std::string nombreServidor = "localhost";
 		dirServidor = _sock.direccionServidor(PUERTO_SERVIDOR, nombreServidor);
@@ -93,7 +94,7 @@ int main() {
 			emp.iniciarSesion(usuario);
 
 			if (_sock.enviar(emp.paquete(), dirServidor) == true)
-				std::cout << "Solicitude de conexion enviada." << std::endl;
+				std::cout << "Solicitud de conexion enviada." << std::endl;
 
 				sleep(1);
 
@@ -128,7 +129,7 @@ int main() {
 
 	int pid = fork();
 
-	if (pid == 0)
+	if (pid > 0)
 		return mainReceptor(_sock);
 
 
@@ -138,57 +139,63 @@ int main() {
 
 	std::cout << "Ingrese \".op\" para ver opciones." << std::endl;
 
+	bool enviar = false;
 	while (_seguirRecibiendo_) {
 
 		std::cout << ">> ";
 		std::cin >> mensaje;
 
 
-		std::cout << "Ingreso: \"" <<mensaje <<"\". Tamanio:" << mensaje.size()  << std::endl;
+		//std::cout << "Ingreso: \"" <<mensaje <<"\". Tamanio:" << mensaje.size()  << std::endl;
 
 		if (mensaje.size() == 2 && mensaje[0] == '.') {
 
 			if (mensaje[1] == '1') {
 				emp.verConversaciones(usuario);
+				enviar = true;
 			}
 			else if (mensaje[1] == '2') {
 				std::cout << "ingrese nombre de la conversacion a unirse: ";
 				std::cin >> mensaje;
 				if (mensaje.size() > 0) {
-					std::cout << "por enviar: " << mensaje << std::endl;
+					//std::cout << "por enviar: " << mensaje << std::endl;
 					emp.unirseConversacion(usuario, mensaje);
+					enviar = true;
 				}
 			}
 			else if (mensaje[1] == '3') {
 				std::cout << "ingrese nombre de nueva conversacion: ";
 				std::cin >> mensaje;
 				if (mensaje.size() > 0) {
-					std::cout << "por enviar: " << mensaje << std::endl;
+					//std::cout << "por enviar: " << mensaje << std::endl;
 					emp.crearConversacion(usuario, mensaje);
+					enviar = true;
 				}
 			}
 			else if (mensaje[1] == '4') {
+				enviar = true;
 				emp.finalizarSesion(usuario);
 				_seguirRecibiendo_ = false;
 			}
 		}
-		else if (mensaje.size() == 3 && mensaje[0] == '.' && mensaje[1] == 'o' && mensaje[3] == 'p') {
+		else if (mensaje.size() == 3 && mensaje[0] == '.' && mensaje[1] == 'o' && mensaje[2] == 'p') {
 			imprimirOpciones();
 		}
 		else if (mensaje.size() > 0) {
 			emp.agregarMensaje(usuario, mensaje);
+			enviar = true;
 		}
 
-		if (_sock.enviar(emp.paquete(), dirRealServ) == false) {
+		if (enviar == true && _sock.enviar(emp.paquete(), dirRealServ) == false) {
 			std::cout << "Error: mensaje no se pudo enviar" << std::endl;
 		}
+		enviar = false;
 	}
 
 	GestorDeSeniales::instancia().enviarSenialAProceso(pid, SIGNUM_FINALIZACION);
 
 	int estadoSalida;
 	do {
-
 		std::cout << "Esperando finalizacion..." << std::endl;
 		waitpid(pid, &estadoSalida, 0);
 	} while (WIFEXITED(estadoSalida) == false);
@@ -206,11 +213,11 @@ int mainReceptor(SocketUDP &receptor) {
 	DirSocket aux;
 
 	while (_seguirRecibiendo_) {
-		std::cout << "::::Por esperar respuesta." << std::endl;
+		//std::cout << "::::Por esperar respuesta." << std::endl;
 		receptor.recibir(paq, aux);
 
 		emp.asociar(paq);
-		std::cout << "::::Respuesta recibida." << std::endl;
+		//std::cout << "::::Respuesta recibida." << std::endl;
 
 		imprimir(emp);
 	}
