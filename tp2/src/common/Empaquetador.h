@@ -115,6 +115,7 @@ public:
 
 	void verConversaciones(const std::string& nombreUsuario);
 
+
 	/*************************************************************************
 	 * Metodos que usar el receptor
 	 *************************************************************************/

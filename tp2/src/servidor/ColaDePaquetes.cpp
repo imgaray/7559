@@ -86,18 +86,25 @@ ColaDePaquetes::~ColaDePaquetes() {
 	if (_memoria != NULL)
 		delete _memoria;
 
+	if (_indices != NULL)
+		delete _indices;
 }
 
 void ColaDePaquetes::destruir() {
 
 	Logger::instance().debug(TAG, "Por destruir cola de paquetes.");
 
-	_memoria->liberar();
 
 	if (_memoria != NULL) {
 		_memoria->liberar();
 		delete _memoria;
 		_memoria = NULL;
+	}
+
+	if (_indices != NULL) {
+		_indices->liberar();
+		delete _indices;
+		_indices = NULL;
 	}
 
 	if (_semMemComp != NULL) {

@@ -74,24 +74,39 @@ int main() {
 		cin >> entrada;
 	}
 
+	Logger::instance().debug(TAG, "Enviando señales de finalizacion a procesos (Resolvedor y Recibidor).");
+
 	GestorDeSeniales::instancia().enviarSenialAProceso(pidResolvedor, SIGNUM_FINALIZACION);
 	GestorDeSeniales::instancia().enviarSenialAProceso(pidRecibidor, SIGNUM_FINALIZACION);
 
-
 	Logger::instance().debug(TAG, "Esperando que finalicen procesos.");
 
+//	std::cout << "PID RESOLVEDOR:" << pidResolvedor << std::endl;
+//	std::cout << "PID RECIBIDOR:" << pidRecibidor<< std::endl;
+
 	int estado;
-	waitpid(pidResolvedor, &estado, 0);
-	waitpid(pidRecibidor, &estado, 0);
+	do {
+		waitpid(pidResolvedor, &estado, 0);
+	}while(WIFEXITED(estado) == false);
+
+	/*
+	if (WIFEXITED(estado))
+		std::cout << "Proceso termino correctamente." << std::endl;
+
+	if (WIFSIGNALED(estado))
+		std::cout << "Termino por una señal" << std::endl;
+
+	if (WIFSTOPPED(estado))
+		std::cout << "El proceso fue parado" << std::endl;
+
+	if (WSTOPSIG(estado))
+		std::cout << "Senial que paro al proceso:" << WSTOPSIG(estado) << std::endl;
+	*/
+	do {
+		waitpid(pidRecibidor, &estado, 0);
+	} while(WIFEXITED(estado) == false);
 
 	cout << "Finalizado." << endl;
-
-	liberarRecursos();
-
-	Logger::instance().debug(TAG, "Recursos liberados.");
-	Logger::close();
-
-	return 0;
 
 	}
 	catch (std::string& e) {
@@ -100,6 +115,14 @@ int main() {
 	catch (const char* e) {
 		std::cout << e << std::endl;
 	}
+
+	liberarRecursos();
+
+	Logger::instance().debug(TAG, "Recursos liberados.");
+	Logger::close();
+
+
+	return 0;
 }
 
 

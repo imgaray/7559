@@ -12,6 +12,7 @@
 #include "../common/Empaquetador.h"
 #include "../common/SemaforoPSX.h"
 #include "SenialIntcmbResolvedor.h"
+#include "SenialFinalizar.h"
 
 #include "ColaDePaquetes.h"
 
@@ -73,6 +74,8 @@ private:
 	void signal();
 
 	bool _senialTratada;
+
+	SenialFinalizar _senialFin;
 
 	Conversaciones _conversaciones;
 	ConvUsuarios _usrXConv;

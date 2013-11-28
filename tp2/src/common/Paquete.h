@@ -14,7 +14,10 @@
 #include <string>
 
 #define TAM_MAX_PAQ 512
-#define TAM_CABECERA 3
+#define TAM_CABECERA 4
+
+#define POS_TIPO 2
+#define POS_CANT_ATRIB 3
 
 class Paquete {
 public:
@@ -41,6 +44,8 @@ public:
 
 	const std::string mensaje() const;
 
+	void agregarCantidadAtributos(unsigned cant);
+
 	/**
 	 * Atributo creado con memoria dinamica, se debe liberar despues de usar
 	 */
@@ -59,6 +64,7 @@ private:
 	unsigned char _buffer[TAM_MAX_PAQ];
 	unsigned long _tamanioReal;
 	unsigned long _ultimaPosicion;
+	unsigned _cantAtrib;
 	int _tipo;
 	std::string _msj;
 };

@@ -56,13 +56,16 @@ void imprimir(const Empaquetador& emp) {
 	else if (emp.tipoActual() == Empaquetador::FIN_SESION) {
 		std::cout << emp.PAQ_nombreDeUsuario() << std::endl;
 	}
+	else if (emp.tipoActual() == Empaquetador::ERROR) {
+		std::cout << emp.PAQ_mensajeDeError() << std::endl;
+	}
 	else {
 		std::cout << "Error: Mensaje no reconocible" << std::endl;
 		imprimirPaquete(emp.paquete());
 	}
 
 	std::cout << ">> ";
-	std::cout << ">> ";
+	std::cout.flush();
 }
 
 void imprimirOpciones() {
@@ -204,10 +207,16 @@ int main() {
 
 	GestorDeSeniales::instancia().enviarSenialAProceso(pid, SIGNUM_FINALIZACION);
 
+	int intentosSalida = 2;
 	int estadoSalida;
 	do {
 		std::cout << "Esperando finalizacion..." << std::endl;
 		waitpid(pid, &estadoSalida, 0);
+
+		sleep(1);
+		intentosSalida--;
+		if (WIFEXITED(estadoSalida) == false && intentosSalida == 0)
+			GestorDeSeniales::instancia().enviarSenialAProceso(pid, SIGNUM_FINALIZACION);
 	} while (WIFEXITED(estadoSalida) == false);
 
 	return 0;

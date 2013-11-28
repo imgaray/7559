@@ -13,6 +13,7 @@
 #include "../common/SemaforoPSX.h"
 #include "../common/Process.h"
 #include "../common/SocketUDP.h"
+#include "SenialFinalizar.h"
 
 #include "AreaIntercambio.h"
 
@@ -55,6 +56,8 @@ private:
 	static Recibidor *_instancia;
 
 	int _pidResolvedor;
+
+	SenialFinalizar _senialFin;
 };
 
 #endif /* RECIBIDOR_H_ */

@@ -34,6 +34,8 @@ Recibidor::Recibidor() : _areaIntcmb() {
 	_semIntercambio = new SemaforoPSX(SEM_INTERCAMBIO_RYR, 0);
 
 	Logger::instance().debug(TAG, "Instanciando");
+
+	GestorDeSeniales::instancia().agregarSenial(_senialFin);
 }
 
 Recibidor::~Recibidor() {
@@ -114,22 +116,13 @@ int Recibidor::escuchar(Paquete& paq, DirSocket& dir) {
 
 
 void Recibidor::iniciarProcesoCliente(const Empaquetador& emp, const DirSocket& dirCliente) {
-	// TODO: para ver si es la correcta dir de cliente, borrar estas lineas..
-//	{
-//		Empaquetador e;
-//		e.agregarMensaje("SERVIDOR", "HOLA USUARIO");
-//		if (_receptor.enviar(emp.paquete(), dirCliente) == true)
-//			Logger::instance().debug(TAG, "PAQUETE de prueba enviado al nuevo USUARIO.");
-//	}
 
-	//////////////////////////////////////////
-
-	Logger::instance().debug(TAG, "Lanzando proceos ReceptorMensajes");
+	Logger::instance().debug(TAG, "Lanzando proceso ReceptorMensajes");
 
 	std::string rutaProceso = "./receptor";
 	_ultimoProceso = new Process(rutaProceso);
 
-	std::cout << "Proceso receptor, pid: " << _ultimoProceso->getId() << std::endl;
+	//std::cout << "Proceso receptor, pid: " << _ultimoProceso->getId() << std::endl;
 
 	std::string nomUsr = emp.PAQ_nombreDeUsuario();
 
@@ -152,6 +145,7 @@ void Recibidor::iniciarProcesoCliente(const Empaquetador& emp, const DirSocket& 
 }
 
 void Recibidor::dejarDeEscuchar() {
+	Logger::instance().debug(TAG, "Senial de finalizacion recibida");
 	_escuchando = false;
 }
 

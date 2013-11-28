@@ -11,6 +11,7 @@
 #include "../common/MemoriaCompartida.h"
 #include "../common/Definiciones.h"
 
+
 class AreaIntercambio {
 public:
 	AreaIntercambio();

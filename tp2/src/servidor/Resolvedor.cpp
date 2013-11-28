@@ -30,9 +30,15 @@ Resolvedor::Resolvedor() :_emisor() , _semResolvedor(SEM_RESOLVEDOR, 1), _seguir
 	_usarSemaforo = true;
 
 	_senialTratada = false;
+
 	GestorDeSeniales::instancia().agregarSenial(_senial);
+	GestorDeSeniales::instancia().agregarSenial(_senialFin);
 
 	Logger::instance().debug(TAG, "INTANCIADO");
+
+	_conversaciones.clear();
+	_usrXConv.clear();
+	_usuarios.clear();
 
 	_colaPaquetes.inicializarIndices();
 }
@@ -84,6 +90,7 @@ void Resolvedor::liberar() {
 }
 
 void Resolvedor::dejarDeResponder() {
+	Logger::instance().debug(TAG, "Senial de finalizacion recibida");
 	_seguirEnviando = false;
 }
 
@@ -111,8 +118,6 @@ int Resolvedor::comenzar() {
 			Logger::instance().debug(TAG, "NO se saco paquete de la cola.");
 			_senialTratada = false;
 		}
-		// para debuggear
-		//sleep(3);
 	}
 
 
@@ -147,7 +152,7 @@ const Paquete Resolvedor::resolver(const Paquete& origen, Destinatarios& destino
 	else if (emp.tipoActual() == Empaquetador::UNIRSE_CONVERSACION) {
 		respuesta.asociar(this->unirseConversacion(emp, destinos));
 	}
-	else if (emp.tipoActual() == Empaquetador::UNIRSE_CONVERSACION) {
+	else if (emp.tipoActual() == Empaquetador::CONVERSACIONES) {
 		respuesta.asociar(this->conversaciones(emp, destinos));
 	}
 	else  {
@@ -181,6 +186,8 @@ const Paquete Resolvedor::conversaciones(const Empaquetador& emp,Destinatarios& 
 
 	// agrego como unico destinatario al usurio que realizo la consulta
 	destinos.push_back(nombreUsr);
+
+	res.agregarConversaciones(convs);
 
 	return res.paquete();
 }
@@ -308,7 +315,7 @@ const Paquete Resolvedor::agregarUsuario(const Paquete& paquete) {
 		_usuarios.insert(parUsuarios(nomUsr, infoUsr));
 
 		emp.limpiar();
-		emp.confirmarRespuesta();
+		emp.confirmarRespuesta("Sesion iniciada correctamente.");
 	}
 	else {
 		emp.limpiar();
@@ -338,7 +345,10 @@ const Paquete Resolvedor::crearConversacion(const Empaquetador& empaquetador, De
 		_conversaciones.insert(parConversaciones(nombreConversacion, _ultimoIDLibre));
 
 		_ultimoIDLibre++;
-		res.confirmarRespuesta();
+		std::string msj = "Conversacion \"";
+		msj += nombreConversacion;
+		msj += "\" creada correctamente.";
+		res.confirmarRespuesta(msj);
 
 		Destinatarios destVacio;
 
@@ -370,6 +380,10 @@ const Paquete Resolvedor::unirseConversacion(const Empaquetador& empaquetador, D
 
 
 	if (itUsr != _usuarios.end() && itConv != _conversaciones.end()) {
+
+		if (itUsr->second.id_conv != 0) {
+			this->eliminarUsuarioDeConversacion(itUsr->second.id_conv, itUsr->first);
+		}
 
 		// agrego el id de conversacion al usuario.
 		itUsr->second.id_conv = itConv->second;

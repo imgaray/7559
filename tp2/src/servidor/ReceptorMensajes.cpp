@@ -73,7 +73,7 @@ int ReceptorMensajes::comenzar() {
 		Empaquetador emp;
 
 		if (_seguirRecibiendo) {
-			emp.confirmarRespuesta("Sesion Iniciada");
+			emp.confirmarRespuesta("Sesion Iniciada correctamente.");
 			Logger::instance().debug(TAG, "Confirmacion de Inicio de Sesion.");
 		}
 		else {
@@ -98,6 +98,6 @@ int ReceptorMensajes::comenzar() {
 
 
 void ReceptorMensajes::dejarDeRecibir() {
+	Logger::instance().debug(TAG, "Senial de finalizacion recibida");
 	_seguirRecibiendo = false;
-	Logger::instance().debug(TAG, "Señal de finalizacion recibida.");
 }

@@ -76,11 +76,8 @@ void Empaquetador::agregarConversaciones(std::vector<std::string> conversaciones
 	_paquete.limpiar();
 	_paquete.definirTipo(Empaquetador::CONVERSACIONES);
 
-	std::vector<std::string>::iterator it = conversaciones.begin();
-
-	while (it != conversaciones.end()) {
-		_paquete.agregarAtributo((void*) (*it).c_str(), (*it).size());
-		it++;
+	for (unsigned i = 0; i < conversaciones.size(); i++) {
+		_paquete.agregarAtributo((void*) conversaciones[i].c_str(), conversaciones[i].size());
 	}
 }
 
@@ -121,9 +118,8 @@ void Empaquetador::unirseConversacion(const std::string& nomUsuario, const std::
 
 const std::vector<std::string> Empaquetador::PAQ_conversaciones() const {
 	std::vector<std::string> conj;
-
+	conj.clear();
 	int ind = 0;
-
 
 	if (_paquete.tipo() == Empaquetador::CONVERSACIONES) {
 
