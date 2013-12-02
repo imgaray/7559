@@ -349,6 +349,7 @@ const Paquete Resolvedor::crearConversacion(const Empaquetador& empaquetador, De
 	}
 
 	itConversaciones it = _conversaciones.find(nombreConversacion);
+	std::string nomUsr = empaquetador.PAQ_nombreDeUsuario();
 
 	if (it == _conversaciones.end()) {
 		//it->first = nombreConversacion;
@@ -370,8 +371,10 @@ const Paquete Resolvedor::crearConversacion(const Empaquetador& empaquetador, De
 
 		res.asociar(this->unirseConversacion(empUnion,destinos));
 	}
-	else {
-		res.agregarMensajeError(std::string("Conversacion ya existe"));
+	else if (_usuarios.find(nomUsr) != _usuarios.end()) {
+		destinos.push_back(nomUsr);
+		res.agregarMensajeError(std::string("Error:Conversacion ya existe"));
+
 	}
 
 

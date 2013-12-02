@@ -175,7 +175,7 @@ int main() {
 
 		//std::cout << "Ingreso: \"" <<mensaje <<"\". Tamanio:" << mensaje.size()  << std::endl;
 
-		if (mensaje.size() == 2 && mensaje[0] == '.') {
+		if (mensaje.size() >= 2 && mensaje[0] == '.') {
 
 			if (mensaje[1] == '1') {
 				emp.verConversaciones(usuario);
@@ -206,9 +206,13 @@ int main() {
 				emp.finalizarSesion(usuario);
 				_seguirRecibiendo_ = false;
 			}
-		}
-		else if (mensaje.size() == 3 && mensaje[0] == '.' && mensaje[1] == 'o' && mensaje[2] == 'p') {
-			imprimirOpciones();
+			else if (mensaje.size() == 3 && mensaje[0] == '.' && mensaje[1] == 'o' && mensaje[2] == 'p') {
+				imprimirOpciones();
+			}
+			else {
+				std::cout << "<< Opcion no reconocida >>." << std::endl;
+			}
+
 		}
 		else if (mensaje.size() > 0) {
 			emp.agregarMensaje(usuario, mensaje);
