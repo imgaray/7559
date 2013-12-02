@@ -68,6 +68,8 @@ private:
 	void enviarPaquete(IdUsuario id, const Paquete& paq);
 
 
+	void enviarMensajesDeCierre();
+
 	void eliminarUsuariosFinalizados();
 
 	void wait();

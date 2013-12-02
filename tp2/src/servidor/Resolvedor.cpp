@@ -121,6 +121,8 @@ int Resolvedor::comenzar() {
 	}
 
 
+	this->enviarMensajesDeCierre();
+
 	Logger::instance().debug(TAG, "Finalizando Resolvedor.");
 
 	return 0;
@@ -180,8 +182,12 @@ const Paquete Resolvedor::conversaciones(const Empaquetador& emp,Destinatarios& 
 	// agrego todos los nombres de conversaciones
 	std::vector<std::string> convs;
 	itConversaciones it;
+	Utilitario u;
+
+	std::string nomConv;
 	for (it = _conversaciones.begin(); it !=  _conversaciones.end() ; it++) {
-		convs.push_back(it->first);
+		nomConv = it->first + std::string(" (") + u.convertirAString(_usrXConv[it->second].size()) + std::string(")");
+		convs.push_back(nomConv);
 	}
 
 	// agrego como unico destinatario al usurio que realizo la consulta
@@ -208,15 +214,20 @@ const Paquete Resolvedor::finalizarSesion(const Empaquetador& empaquetador, Dest
 			//res.confirmarRespuesta(msj);
 			res.finalizarSesion(msj);
 
+			this->eliminarUsuarioDeConversacion(idConv, idUsr);
+
 			this->agregarDestinos(idConv, destinos);
 
-			this->eliminarUsuarioDeConversacion(idConv, idUsr);
 		}
+		else {
+			res.confirmarRespuesta("Sesion Finalizada");
+		}
+
 
 		_usrAEliminar.push_back(idUsr);
 
 		//res.confirmarRespuesta();
-		destinos.push_back(idUsr);
+		//destinos.push_back(idUsr);
 	}
 
 	return res.paquete();
@@ -379,20 +390,32 @@ const Paquete Resolvedor::unirseConversacion(const Empaquetador& empaquetador, D
 	itConversaciones itConv = _conversaciones.find(nombreConv);
 
 
+
 	if (itUsr != _usuarios.end() && itConv != _conversaciones.end()) {
 
-		if (itUsr->second.id_conv != 0) {
-			this->eliminarUsuarioDeConversacion(itUsr->second.id_conv, itUsr->first);
+		if (itUsr->second.id_conv != itConv->second) {
+
+			if (itUsr->second.id_conv != 0) {
+				this->eliminarUsuarioDeConversacion(itUsr->second.id_conv, itUsr->first);
+			}
+
+			// agrego el id de conversacion al usuario.
+			itUsr->second.id_conv = itConv->second;
+
+			// agrego el usuario a la lista de integrantes de una conversacion
+			_usrXConv[itConv->second].push_back(nombreUsuario);
+
+			res.agregarMensaje(nombreUsuario, ":::Se ha unido a la conversacion:::");
+			this->agregarDestinos(itConv->second, destinos);
 		}
-
-		// agrego el id de conversacion al usuario.
-		itUsr->second.id_conv = itConv->second;
-
-		// agrego el usuario a la lista de integrantes de una conversacion
-		_usrXConv[itConv->second].push_back(nombreUsuario);
-
-		res.agregarMensaje(nombreUsuario, ":::Se ha unido a la conversacion:::");
-		this->agregarDestinos(itConv->second, destinos);
+		else {
+			res.agregarMensajeError("Error: ya se encuentra en la conversacion.");
+			destinos.push_back(itUsr->first);
+		}
+	}
+	else if (itConv == _conversaciones.end()) {
+		res.agregarMensajeError("Error: Conversacion no existe");
+		destinos.push_back(itUsr->first);
 	}
 	else {
 		res.agregarMensajeError("Usuario No existe");
@@ -437,6 +460,22 @@ void Resolvedor::enviar(const Paquete& paqueteRespuesta, const Destinatarios& de
 	 for (;it != destinos.end() ; it++) {
 		this->enviarPaquete(*it , paqueteRespuesta);
 		msj = std::string("Se envio paquete a usuario: ") + *it;
+		Logger::instance().debug(TAG, msj);
+	}
+
+
+	 // Mando mensajes de finalizacion
+
+	it = _usrAEliminar.begin();
+
+	Empaquetador emp(paqueteRespuesta);
+	emp.confirmarRespuesta("Sesion finalizada.");
+
+	Paquete paq = emp.paquete();
+
+	 for (;it != _usrAEliminar.end() ; it++) {
+		this->enviarPaquete(*it , paq);
+		msj = std::string("Se envio paquete de fin de sesion a usuario: ") + *it;
 		Logger::instance().debug(TAG, msj);
 	}
 
@@ -490,8 +529,25 @@ void Resolvedor::eliminarUsuariosFinalizados() {
 
 	for ( unsigned i = 0; i < _usrAEliminar.size(); i++) {
 		IdUsuario& idUsr = _usrAEliminar.at(i);
+
 		_usuarios.erase(idUsr);
 	}
 
 	_usrAEliminar.clear();
+}
+
+
+void Resolvedor::enviarMensajesDeCierre() {
+	Empaquetador emp;
+	emp.agregarMensajeError(" <***> Servidor Cerrandose. <***>");
+
+	Destinatarios dest;
+
+	itUsuarios it = _usuarios.begin();
+
+	for (; it != _usuarios.end() ; it++) {
+		dest.push_back(it->first);
+	}
+
+	this->enviar(emp.paquete(), dest);
 }

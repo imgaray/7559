@@ -41,6 +41,7 @@ void imprimir(const Empaquetador& emp) {
 	}
 	else if (emp.tipoActual() == Empaquetador::OK) {
 		std::cout << "<< Confirmacion recibida >> : ";
+		//std::cout << ";tamanio: " << emp.PAQ_mensajeDeUsuario().size() << ";";
 		std::cout << emp.PAQ_mensajeDeUsuario() << std::endl;
 	}
 	else if (emp.tipoActual() == Empaquetador::CONVERSACIONES) {
@@ -93,41 +94,56 @@ int main() {
 		bool _conectado = false;
 		Paquete paqRecibido;
 		int intentos = 3;
+		bool intentarConectar = true;
 
-		while (_conectado == false && intentos > 0) {
+		while (_conectado == false && intentos > 0 && intentarConectar) {
 
 			std::cout << "Ingrese Nombre de Usuario: ";
 			std::cin.getline(buffer, 128);
 			usuario = buffer;
 			//getline(std::cin, mensaje);
 
-			emp.iniciarSesion(usuario);
-
-			if (_sock.enviar(emp.paquete(), dirServidor) == true)
-				std::cout << "Solicitud de conexion enviada." << std::endl;
-
-				sleep(1);
-
-			if (_sock.recibir(paqRecibido, dirRealServ) == true)
-				emp.asociar(paqRecibido);
-
-			imprimir(emp);
-
-			if (emp.PAQ_confirmacionRecibida()) {
-				std::cout << "Conexion Establecida" << std::endl;
-				_conectado = true;
-			}
-			else if (emp.PAQ_errorRecibido()) {
-				std::cout << emp.PAQ_mensajeDeUsuario() << std::endl;
-				sleep(1);
+			if (usuario == ".salir") {
+				intentarConectar = false;
 			}
 			else {
-				intentos--;
-				std::cout << "intentando conectarse nuevamente en 2 seg..." << std::endl;
-				sleep(2);
+
+				emp.iniciarSesion(usuario);
+
+				if (_sock.enviar(emp.paquete(), dirServidor) == true)
+					std::cout << "Solicitud de conexion enviada." << std::endl;
+
+					sleep(1);
+
+				emp.limpiar();
+
+				if (_sock.recibir(paqRecibido, dirRealServ) == true)
+					emp.asociar(paqRecibido);
+
+				imprimir(emp);
+
+				if (emp.PAQ_confirmacionRecibida()) {
+					//std::cout << "Conexion Establecida" << std::endl;
+					//imprimir(emp);
+					_conectado = true;
+				}
+				else if (emp.PAQ_errorRecibido()) {
+					//std::cout << emp.PAQ_mensajeDeUsuario() << std::endl;
+					//imprimir(emp);
+					std::cout << "(Ingrese otro nombre de usuario o \".salir\" para finalizar.)" << std::endl;
+					sleep(1);
+				}
+				else {
+					intentos--;
+					std::cout << "intentando conectarse nuevamente en 2 seg..." << std::endl;
+					sleep(2);
+				}
 			}
 
 		}
+
+		if (intentarConectar == false)
+			return 0;
 
 
 		if (_conectado == false) {
@@ -147,7 +163,7 @@ int main() {
 
 	//Empaquetador::TipoPaquete paqAnterior = Empaquetador::DESCONOCIDO;
 
-	std::cout << "Ingrese \".op\" para ver opciones." << std::endl;
+	std::cout << "Ingrese \".op\" para ver las opciones." << std::endl;
 
 	bool enviar = false;
 	while (_seguirRecibiendo_) {
@@ -205,6 +221,8 @@ int main() {
 		enviar = false;
 	}
 
+	Paquete paqFinalizacion;
+
 	GestorDeSeniales::instancia().enviarSenialAProceso(pid, SIGNUM_FINALIZACION);
 
 	int intentosSalida = 2;
@@ -233,12 +251,20 @@ int mainReceptor(SocketUDP &receptor) {
 
 	while (_seguirRecibiendo_) {
 		//std::cout << "::::Por esperar respuesta." << std::endl;
-		receptor.recibir(paq, aux);
+		if (receptor.recibir(paq, aux) == true) {
+			emp.asociar(paq);
+			//std::cout << "::::Respuesta recibida." << std::endl;
+			imprimir(emp);
+		}
+	}
 
+	// paquete de finalizacion
+	if (receptor.recibir(paq, aux) == true) {
 		emp.asociar(paq);
-		//std::cout << "::::Respuesta recibida." << std::endl;
-
 		imprimir(emp);
+	}
+	else {
+		std::cout << "Error: no se recibio confirmacion de finalizacion." << std::endl;
 	}
 
 	return 0;
