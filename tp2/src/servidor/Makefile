@@ -5,7 +5,7 @@ CXXFLAGS = -g
 CC = g++
 
 #EN ESTA VARIABLE VAN TODAS LAS DEPENDENCIAS QUE TENGAN UN MAIN Y SE QUIERAN COMPILAR
-TARGET = mainRM mainRES mainREC main
+TARGET = mainReceptor procServidor
 
 TARGETFLAGS = -g 
 
@@ -20,6 +20,9 @@ I-INCLUDES = $(addprefix -I, $(INCLUDES))
 bin = ../common/*.o ../logger/Logger.o $(archivos:.cpp=.o)
 
 robjs = $(wildcard *.o $(TARGET))
+
+TARGET-FILES = $(addsuffix .cpp, $(TARGET))
+TARGET-BIN = $(TARGET-FILES:.cpp=.o)
 
 #######################################
 #verbose = si
@@ -43,27 +46,21 @@ robjs = $(wildcard *.o $(TARGET))
 #########################################
 
 
-all: mainRM mainRES mainREC main
+all: $(TARGET)
 
 binaries: $(bin)
 
-%.o: %.cpp %.h
-	$(CC) $(CXXFLAGS) $(I-INCLUDES) -c $<
-	
 %.o: %.cpp
 	$(CC) $(CXXFLAGS) $(I-INCLUDES) -c $<
 
-mainRM: mainReceptor.cpp binaries
-	$(CC) $(I-INCLUDES) $(bin) $(TARGETFLAGS) mainReceptor.cpp -o receptor
+%.o: %.cpp %.h
+	$(CC) $(CXXFLAGS) $(I-INCLUDES) -c $<
 
-mainRES: mainResolvedor.cpp binaries
-	$(CC) $(I-INCLUDES) $(bin) $(TARGETFLAGS) mainResolvedor.cpp -o resolvedor
+mainReceptor: mainReceptor.o binaries
+	$(CC) $(I-INCLUDES) $(bin) $(TARGETFLAGS) mainReceptor.o -o appReceptor
 	
-mainREC: mainRecibidor.cpp binaries
-	$(CC) $(I-INCLUDES) $(bin) $(TARGETFLAGS) mainRecibidor.cpp -o recibidor
-	
-main: procServidor.cpp binaries
-	$(CC) $(I-INCLUDES) $(bin) $(TARGETFLAGS) procServidor.cpp -o servidor
+procServidor: procServidor.o binaries
+	$(CC) $(I-INCLUDES) $(bin) $(TARGETFLAGS) procServidor.o -o appServidor
 
 clean:
 	$(LIMPIAR) rm -f $(robjs)

@@ -53,7 +53,11 @@ SUBSYS-BINS = $(EXBINS:.cpp=.o)
 #########################################
 
 
-all: $(TARGET)
+
+all: $(SUBSYSTEMS)
+
+$(SUBSYSTEMS):
+	$(MAKE) -C $@
 
 binaries: $(bin)
 
@@ -63,15 +67,15 @@ binaries: $(bin)
 %.o: %.cpp
 	$(CC) $(CXXFLAGS) $(I-INCLUDES) -c $<
 
-SUBSYS%: % 
-	$(MAKE) -C $<
+#SUBSYS%: % 
+#	$(MAKE) -C $<
 
 CLEANSUB%: %
 	$(MAKE) clean -C $<
 
-$(TARGET): $(SUBSYS) binaries
-	cp cliente/cliente ./cliente
-	cp servidor/servidor ./servidor
+#$(TARGET): $(SUBSYSTEMS) binaries
+#	cp cliente/cliente cliente
+#	cp servidor/servidor servidor
 #	$(CC) $(I-INCLUDES) $(bin) $(SUBSYS-BINS) $(TARGETFLAGS) -o $(TARGET)
 
 
@@ -84,4 +88,4 @@ doc:
 clean-doc:
 	rm -f *.aux *.log *.toc tp.pdf
 
-.PHONY: clean all binaries doc clean-doc
+.PHONY: clean all binaries doc clean-doc logger common

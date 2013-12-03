@@ -5,7 +5,7 @@ CXXFLAGS = -g
 CC = g++
 
 #EN ESTA VARIABLE VAN TODAS LAS DEPENDENCIAS QUE TENGAN UN MAIN Y SE QUIERAN COMPILAR
-TARGET = procCliente mainReceptor
+TARGET = procCliente 
 
 TARGETFLAGS = -g 
 
@@ -58,7 +58,7 @@ mainReceptor: mainReceptor.cpp binaries
 
 
 procCliente: procCliente.cpp binaries
-	$(CC) $(I-INCLUDES) $(bin) $(TARGETFLAGS) procCliente.cpp -o cliente
+	$(CC) $(I-INCLUDES) $(bin) $(TARGETFLAGS) procCliente.cpp -o appCliente
 
 clean:
 	$(LIMPIAR) rm -f $(robjs)

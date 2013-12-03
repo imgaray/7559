@@ -13,7 +13,7 @@
 #include <cstring>
 #include <cerrno>
 #include <csignal>
-
+#include <unistd.h>
 // extern int errno;
 
 #define CONEX_EN_ESPERA 10

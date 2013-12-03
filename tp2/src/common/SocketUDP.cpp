@@ -7,6 +7,7 @@
 
 #include "SocketUDP.h"
 #include "Paquete.h"
+#include <unistd.h>
 
 SocketUDP::SocketUDP() {
 	_fd = socket(AF_INET, SOCK_DGRAM, 0);
