@@ -119,7 +119,7 @@ void Recibidor::iniciarProcesoCliente(const Empaquetador& emp, const DirSocket& 
 
 	Logger::instance().debug(TAG, "Lanzando proceso ReceptorMensajes");
 
-	std::string rutaProceso = "./receptor";
+	std::string rutaProceso = "./appReceptor";
 	_ultimoProceso = new Process(rutaProceso);
 
 	//std::cout << "Proceso receptor, pid: " << _ultimoProceso->getId() << std::endl;

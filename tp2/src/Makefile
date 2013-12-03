@@ -15,7 +15,7 @@ archivos = $(wildcard *.cpp)
 # EXTERNOS QUE ESTEN USANDO
 INCLUDES = common logger
 
-SUBSYSTEMS = logger common cliente servidor
+SUBSYSTEMS = #logger common cliente servidor
 
 I-INCLUDES = $(addprefix -I, $(INCLUDES))
 
@@ -54,10 +54,21 @@ SUBSYS-BINS = $(EXBINS:.cpp=.o)
 
 
 
-all: $(SUBSYSTEMS)
+all: cliente servidor
 
-$(SUBSYSTEMS):
-	$(MAKE) -C $@
+servidor: common logger
+	$(MAKE) -C servidor
+	cp servidor/app* .
+
+cliente: common logger
+	$(MAKE) -C cliente
+	cp cliente/app* .
+
+common:
+	$(MAKE) -C common
+	
+logger:
+	$(MAKE) -C logger	
 
 binaries: $(bin)
 
@@ -80,7 +91,7 @@ CLEANSUB%: %
 
 
 clean: $(CLEANSUB)
-	$(LIMPIAR) rm -f $(robjs)
+	rm -f app* common/*.o logger/.o cliente/*.o servidor/*.o
 
 doc:
 	cd doc/ &&  rm -f *.aux *log && pdflatex tp.tex
@@ -88,4 +99,4 @@ doc:
 clean-doc:
 	rm -f *.aux *.log *.toc tp.pdf
 
-.PHONY: clean all binaries doc clean-doc logger common
+.PHONY: clean all binaries doc clean-doc logger common cliente servidor
