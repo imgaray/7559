@@ -72,6 +72,8 @@ int ReceptorMensajes::comenzar() {
 	{
 		Empaquetador emp;
 
+		emp.limpiar();
+
 		if (_seguirRecibiendo) {
 			emp.confirmarRespuesta("Sesion Iniciada correctamente.");
 			Logger::instance().debug(TAG, "Confirmacion de Inicio de Sesion.");

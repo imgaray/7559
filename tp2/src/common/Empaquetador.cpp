@@ -64,6 +64,7 @@ void Empaquetador::finalizarSesion(const std::string& nombreUsuario) {
 void Empaquetador::confirmarRespuesta() {
 	_paquete.limpiar();
 	_paquete.definirTipo(Empaquetador::OK);
+	_paquete.agregarAtributo((void*)"OK.", 3);
 }
 
 void Empaquetador::confirmarRespuesta(const std::string& mensaje) {
@@ -165,9 +166,15 @@ const std::string Empaquetador::PAQ_nombreConversacion() const {
 const std::string Empaquetador::PAQ_mensajeDeUsuario() const {
 	std::string res;
 
-	if (_paquete.tipo() == Empaquetador::MENSAJE ||
-			_paquete.tipo() == Empaquetador::OK ) {
-		char* cres = _paquete.atributo(1);
+	int indice = -1;
+
+	if (_paquete.tipo() == Empaquetador::MENSAJE)
+		indice = 1;
+	else if (_paquete.tipo() == Empaquetador::OK)
+		indice = 0;
+
+	if (indice != -1 ) {
+		char* cres = _paquete.atributo(indice);
 
 		if ( cres != NULL ) {
 			res = cres;

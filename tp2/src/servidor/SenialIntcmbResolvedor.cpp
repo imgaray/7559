@@ -87,6 +87,7 @@ void SenialIntcmbResolvedor::operacion() {
 		// No se pudo crear sesion, lo mas comun es porque se encontro usuario con mismo nombre
 		// envia señal para que finaliza el proceso
 		gestorSen.enviarSenialAProceso(info.pid, SIGNUM_CONFIRMACION_NEGATIVA);
+		gestorSen.enviarSenialAProceso(info.pid, SIGNUM_CONFIRMACION);
 	}
 
 	Logger::instance().debug(TAG, "Habilitando semaforos del resolvedor.");
