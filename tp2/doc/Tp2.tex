@@ -1,97 +1,144 @@
-\documentclass[a4paper,11pt]{article}
+% Facultad de Ingenier\'ia, Universidad de Buenos Aires
+% 75.59 Técnicas de Programación Concurrente I
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Paquetes utilizados
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Gráficos complejos
-\usepackage{graphicx}
-%\usepackage{caption}
-%\usepackage{subcaption}
-%\usepackage{placeins}
-
-% Soporte para el lenguaje español
-\usepackage{textcomp}
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\DeclareUnicodeCharacter{B0}{\textdegree}
+\documentclass[a4paper,12pt,titlepage]{article}
+\usepackage[paperwidth=180mm,paperheight=285mm,left=1.5cm,top=4cm,right=1.5cm,bottom=2cm,head=2.0cm,includefoot]{geometry}
 \usepackage[spanish]{babel}
-\usepackage{pdfpages}
+%\usepackage[latin1]{inputenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lscape}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{rotating}
+%\graphicspath{{../}}
 
-% Formato de párrafo
-%\setlength{\parskip}{1ex plus 0.5ex minus 0.2ex}
+\usepackage{listingsutf8}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Título
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{75.59 Técnicas de Programación Concurrente I, Trabajo Práctico 2}
+\author{Torres, Miguel \and Montoya, Diego \and Garay, Ignacio}
 
-% Título principal del documento.
-\title{\textbf{TÍTULO DOCUMENTO}}
+\lhead{\includegraphics[scale=0.06]{./logo_fiuba.pdf}}
+\chead{ 75.59 Técnicas de Programación Concurrente I }
+\rhead{}
 
-% Información sobre los autores.
-\author{
-	NOMBRE AUTOR 1\\
-	NOMBRE AUTOR 2\\
-  \\
-  \normalsize{XX Cuatrimestre de 20XX}							\\
-  \normalsize{XX.XX - NOMBRE MATERIA}							\\
-  \normalsize{Facultad de Ingeniería, Universidad de Buenos Aires}
-}
-\date{FECHA}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Documento
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lfoot{Garay - Montoya - Torres}
+\rfoot{\thepage}
+\cfoot{$2^{do}$ Cuatrimestre 2013}
 
 \begin{document}
 
-	% ------------------------------------------------------------------
-	% Top matter
-	% ------------------------------------------------------------------
-	\thispagestyle{empty}
-	\maketitle
+\thispagestyle{empty}
+% T\'itulo del documento.
+\begin{center}
+\includegraphics{./logo-fiuba.png}\\
+\vspace{1cm}
+\textsc{\LARGE Universidad de Buenos Aires}\\[0.3cm]
+\textsc{\LARGE Facultad de Ingenier\'ia}\\[1.2cm]
+\textsc{\Large 75.59 - Técnicas de Programación Concurrente I}\\[0.3cm]
+\end{center}
 
-	\begin{abstract}
+\begin{flushright}
+{\large
+Montoya, Diego -- 91939\\
+Torres, Miguel -- 91396\\
+Garay, Ignacio -- 92265\\
+\vspace{2cm}
+$2^{do}$ cuatrimestre de 2013}
+\end{flushright}
 
-		\input{abstract.tex}
+\pagestyle{fancy}
+\setcounter{page}{1}
+\newpage
 
-	\end{abstract}
+\tableofcontents
+\newpage
 
-	\clearpage
+\footnotesize
+\section{Análisis}
+En el análisis del trabajo se identificaron las siguientes identidades del dominio:\\
+\begin{itemize}
+\item Cliente
+\item Servidor
+\item Receptor de Clientes
+\item Resolvedor de Paquetes\\
+\end{itemize} 
 
-	% ------------------------------------------------------------------
-	% Tabla de contenidos
-	% ------------------------------------------------------------------
-	\tableofcontents
-	\clearpage
+El Servidor es la clase que inicia todos los recursos necesarios para una tener una conversación, creando además
+al Receptor de Clientes y al Resolvedor de Paquetes. El Servidor además es el encargado de de gestionar las 
+conversaciones, permitiendo agregar nuevas y administrando las ya existentes.
+
+Cuando un Cliente es iniciado, es el Receptor de Clientes el encargado de iniciar la sesión el mismo con el Servidor, 
+dejando todo listo para que el Cliente pueda crear una nueva conversación o unirse a una existente.
+
+Una vez que algunos clientes forman parte de la misma conversación, los mensajes entre ellos enviados son capturados
+por el Resolvedor de Paquetes, el cual se encarga de distribuir dichos mensajes a las conversaciones correspondientes.
+
+Puede verse entonces que el Cliente actúa como productor de mensajes, los cuales son consumidos por el Resolvedor
+de paquetes, de manera tal que cada uno de ellos llegue a los otros clientes que forman parte de la conversación.
+
+\subsection{Casos de Uso}
+Se identificaron además los siguientes casos de uso, desde el punto de vista del usuario:\\
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.6\textwidth]{CasosDeUso.png}
+\caption{Diagrama de casos de uso del Cliente}
+\label{fig:casos_uso}
+\end{figure}
+
+\begin{itemize}
+\item \textbf{Crear conversación}\\ 
+  Es el caso de uso en el cual un Cliente conectado al Servidor decide iniciar una nueva conversación, en la cual inicialmente
+  será el único miembro, hasta que otro Cliente decida unirse para conversar
+\item \textbf{Consultar conversaciones}\\
+  Es el caso de uso en el cual el Cliente conectado al Servidor decide realizar una consulta sobre las conversaciones
+  existentes actualmente en el Servidor
+\item \textbf{Unirse a conversación}\\
+  Es el caso de uso en el cual un Cliente luego de consultar las conversaciones existentes en el Servidor decide además
+  unirse a una de ellas\\
+\end{itemize} 
 
 
-	% ------------------------------------------------------------------
-	% Desarrollo
-	% ------------------------------------------------------------------
-	\part{Informe}
-		\section{Introducción}
-		\input{intro.tex}
-			\subsection{Análisis}
-			\input{analisis.tex} 
-			\subsection{Hipótesis}
-			\input{hipotesis.tex} 
+\newpage
+\section{Diseño}
 
-		\newpage
-		\section{Desarrollo}
-		\input{desarrollo.tex} 
-			\subsection{Diseño}
-			\input{disenio.tex} 
-	\newpage
+Para la resolución de la concurrencia en la aplicacion se implementaron varias herramientas como Fifo, Pipe, Lock , 
+Memoria Compartida, Señales y Sockets.
 
-	\includepdf[scale=0.8,pages=1,pagecommand=\part{Enunciado}]{enunciado.pdf}
-	\includepdf[scale=0.8,pages=2-]{enunciado.pdf}
+Se crearon los siguientes procesos, uno encargado de la generacion de los recursos y administración de las conversaciones, llamado 
+appServidor, este último es el encargado de crear el proceso llamados appResolvedor, encargado de gestionar y resolver la llegada de 
+los mensajes a su destino\\
 
-	% ------------------------------------------------------------------
-	% Bibliografía
-	% ------------------------------------------------------------------
-	\begin{thebibliography}{99}
-		\bibitem{LABEL} BIBLIOGRAFIA.
-	\end{thebibliography}
+Por último existe el proceso llamado appCliente, el cual es creado cuando un usuario inicia un Cliente y le permite interactuar con
+el Servidor para unirse a una conversación o iniciar una nueva\\
+
+
+Se implemento el mismo sistema de log que en primer proyecto, el cual divide los sucesos en diferentes categorías, las cuales son:
+\begin{itemize}
+\item Info: informacion corriente de los pasos de la ejecucion.
+\item Debug: informacion de debug.
+\item Fatal: indica una excepcion lanzada.
+\item Warning: informacion de advertencia sobre algun comportamiento anormal.
+\item Error: indica un error critico en la aplicacion
+\end{itemize}
+El archivo de salida de Log esta resguardado por un Lock para su correcta escritura por los distintos procesos que vuelcan su información.
+
+\newpage
+\section{Diagramas}
+\subsection{Diagramas de estados}
+
+
+\newpage
+\subsection{Diagrama de clases}
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.8\textwidth]{clases.png}
+\caption{Diagrama de clases de dominio más los mecanismos IPCs más representativos}
+\label{fig:clases}
+\end{figure}
+
+\newpage
+\section{Integración}
+
 
 \end{document}
+
