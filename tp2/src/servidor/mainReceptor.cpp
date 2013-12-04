@@ -6,7 +6,7 @@
 
 int main() {
 	int retorno;
-
+	Logger::instance().setLogLevel(LOG_DEBUG);
 	Logger::instance().debug(TAG, "Iniciando main de Receptor de Mensajes.");
 
 	{
