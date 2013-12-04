@@ -59,19 +59,19 @@ En el análisis del trabajo se identificaron las siguientes identidades del domi
 \begin{itemize}
 \item Cliente
 \item Servidor
-\item Receptor de Clientes
+\item Recibidor de Clientes
 \item Resolvedor de Paquetes\\
 \end{itemize} 
 
 El Servidor es la clase que inicia todos los recursos necesarios para una tener una conversación, creando además
-al Receptor de Clientes y al Resolvedor de Paquetes. El Servidor además es el encargado de de gestionar las 
+al Recibidor de Clientes y al Resolvedor de Paquetes. El Servidor además es el encargado de de gestionar las 
 conversaciones, permitiendo agregar nuevas y administrando las ya existentes.
 
 Cuando un Cliente es iniciado, es el Recibidor de Clientes es el encargado de capturar la solicitud de inicio de sesión para luego comunicarsela al Resolvedor, 
 dejando todo listo para que el Cliente pueda crear una nueva conversación o unirse a una existente.
 
 Una vez que algunos clientes forman parte de la misma conversación, los mensajes entre ellos enviados son capturados
-por el Receptor de Mensajes perteneciente a cada cliente, el cual se encarga de enviar dichos mensajes al Resolvedor y este las distribuye a las conversaciones correspondientes.
+por un Receptor de Mensajes perteneciente a cada cliente, el cual se encarga de enviar dichos mensajes al Resolvedor y este los distribuye a las conversaciones correspondientes.
 
 Puede verse entonces que el Cliente actúa como productor de mensajes, los cuales son consumidos por el Receptor de Mensajes y este a la vez es un productor de paquetes que estos son consumidos por el Resolvedor.\\
 
@@ -127,7 +127,7 @@ Se pensaron para que sean de tamanio fijo, de 512 bytes concretamente, conforman
 
 \begin{itemize}
 \item Cabecera: 2 bytes en formato Big Endian para el tamanio del paquete, 1 byte para el tipo de paquete y 1 ultimo byte para la cantidad de atributos.
-\item Datos: 508 bytes disponibles para datos(o tambien llamados atributos).\\
+\item Datos: 508 bytes disponibles para datos, en donde se almacenaran los atributos del paquete.\\
 \end{itemize}
 
 Segun el tipo de paquete que sea se resuelve una solicitud diferente. Los diferentes tipos de paquetes son los siguientes:
