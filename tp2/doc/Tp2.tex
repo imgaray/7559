@@ -67,14 +67,13 @@ El Servidor es la clase que inicia todos los recursos necesarios para una tener 
 al Receptor de Clientes y al Resolvedor de Paquetes. El Servidor además es el encargado de de gestionar las 
 conversaciones, permitiendo agregar nuevas y administrando las ya existentes.
 
-Cuando un Cliente es iniciado, es el Receptor de Clientes el encargado de iniciar la sesión el mismo con el Servidor, 
+Cuando un Cliente es iniciado, es el Recibidor de Clientes es el encargado de capturar la solicitud de inicio de sesión para luego comunicarsela al Resolvedor, 
 dejando todo listo para que el Cliente pueda crear una nueva conversación o unirse a una existente.
 
 Una vez que algunos clientes forman parte de la misma conversación, los mensajes entre ellos enviados son capturados
-por el Resolvedor de Paquetes, el cual se encarga de distribuir dichos mensajes a las conversaciones correspondientes.
+por el Receptor de Mensajes perteneciente a cada cliente, el cual se encarga de enviar dichos mensajes al Resolvedor y este las distribuye a las conversaciones correspondientes.
 
-Puede verse entonces que el Cliente actúa como productor de mensajes, los cuales son consumidos por el Resolvedor
-de paquetes, de manera tal que cada uno de ellos llegue a los otros clientes que forman parte de la conversación.
+Puede verse entonces que el Cliente actúa como productor de mensajes, los cuales son consumidos por el Receptor de Mensajes y este a la vez es un productor de paquetes que estos son consumidos por el Resolvedor.\\
 
 \subsection{Casos de Uso}
 Se identificaron además los siguientes casos de uso, desde el punto de vista del usuario:\\
@@ -86,13 +85,13 @@ Se identificaron además los siguientes casos de uso, desde el punto de vista de
 \end{figure}
 
 \begin{itemize}
-\item \textbf{Crear conversación}\\ 
+\item \textbf{Crear una conversación}\\ 
   Es el caso de uso en el cual un Cliente conectado al Servidor decide iniciar una nueva conversación, en la cual inicialmente
   será el único miembro, hasta que otro Cliente decida unirse para conversar
 \item \textbf{Consultar conversaciones}\\
   Es el caso de uso en el cual el Cliente conectado al Servidor decide realizar una consulta sobre las conversaciones
   existentes actualmente en el Servidor
-\item \textbf{Unirse a conversación}\\
+\item \textbf{Unirse a una conversación}\\
   Es el caso de uso en el cual un Cliente luego de consultar las conversaciones existentes en el Servidor decide además
   unirse a una de ellas\\
 \end{itemize} 
@@ -108,8 +107,11 @@ Se crearon los siguientes procesos, uno encargado de la generacion de los recurs
 appServidor, este último es el encargado de crear el proceso llamados appReceptor, encargado de recibir los paquetes enviados por un cliente.\\
 
 Por último existe el proceso llamado appCliente, el cual es creado cuando un usuario inicia un Cliente y le permite interactuar con
-el Servidor para unirse a una conversación o iniciar una nueva\\
+el Servidor para unirse a una conversación o iniciar una nueva.\\
 
+Para la comunicacion entre cliente y servidor se decidio hacerla mediante Sockets UDP ya que facitilan la comunicaion a un mismo socket desde otros sockets en distintos procesos ya que nunca se mantiene una conexion, en cambio no es asi con Sockets TCP. Se decidio por usar sockets y no otro mecanismo de comunicacion para tener practica sobre metodos de comunicacion para entornos distruibos, ya que la aplicacion puede portada a funcionar en mas de una PC.
+
+\subsection{Servidor}
 
 Dentro del proceso appServidor se crean 2 nuevos procesos llamados Resolvedor y Recibidor que se encargar de resolver todas la solicitudes y recibir nuevos clientes respectivamente.
 El funcionamiento del servidor es el siguiente, cuando un cliente intenta conectarse este le envia un paquete de inicio de sesion(a travez de una conexion UDP), que este paquete es luego captado por el proceso Recibidor que crea un nuevo proceso Receptor para ese cliente, luego se retransmitira el paquete y algunos datos mas de conexion al proceso Resolvedor y al nuevo Receptor (utilizando un area de memoria compartida). Luego el recibidor espera una confirmacion(mediante un semaforo) del proceso Receptor para poder seguir escuchando nuevos usuarios.\\
@@ -118,14 +120,15 @@ La tarea que lleva a cabo el proceso resolvedor es guardar almacenar todos los u
 
 Cuando llega una solicitud de inicio de sesion al Resolvedor, este es informado de la situacion mendiante una señal que es enviada por el proceso Recibidor. La tarea que se lleva a cabo es la siguiente, se lee la informacion de usuario (paquete y datos de conexion) que fueron colocadas por el Recibidor (en un area de memoria compartida). Cuando obtiene el paquete lo procesa(crea el nuevo usuario si no existe) y si no hubo problemas se le envia una señal de confirmación al proceso Receptor para que prosiga con su correcta ejecucion, en cambio si otro usuario habia iniciado sesion con el mismo nombre se emite un error y se le indica al Receptor que finalice, informando sobre este error al usuario. Luego de realizar todo esto el proceso Resolvedor finaliza el tratamiento de la señal y continua con su normal ejecución.\\
 
+\subsection{Paquete}
 
 Los paquetes utilizados en toda la aplicacion se diseñaron para resolver varios problemas (como iniciar y finalizar sesion, crear y unirse a una conversacion, mensajes, etc) y asi resolverlos todos contenidos en una misma estructura.
 Se pensaron para que sean de tamanio fijo, de 512 bytes concretamente, conformando la siguiente estructura:
 
 \begin{itemize}
 \item Cabecera: 2 bytes en formato Big Endian para el tamanio del paquete, 1 byte para el tipo de paquete y 1 ultimo byte para la cantidad de atributos.
-\item Datos: 508 bytes disponibles para datos(o tambien llamados atributos).
-\end{itemize}\\
+\item Datos: 508 bytes disponibles para datos(o tambien llamados atributos).\\
+\end{itemize}
 
 Segun el tipo de paquete que sea se resuelve una solicitud diferente. Los diferentes tipos de paquetes son los siguientes:
 \begin{itemize}
@@ -139,8 +142,9 @@ Segun el tipo de paquete que sea se resuelve una solicitud diferente. Los difere
 \item ERROR: indica un error ocurrido cuando se proceso una solitud de un usuario.
 \item DESCONOCIDO: identifica al paquete como desconocido y no se lo puede procesar.
 
-\end{itemize}\\
-S
+\end{itemize}
+
+\subsection{Sistema de Log}
 
 Se implemento el mismo sistema de log que en primer proyecto, el cual divide los sucesos en diferentes categorías, las cuales son:
 \begin{itemize}
@@ -154,21 +158,46 @@ El archivo de salida de Log esta resguardado por un Lock para su correcta escrit
 
 \newpage
 \section{Diagramas}
-\subsection{Diagramas de estados}
-
-
-\newpage
-\subsection{Diagrama de clases}
+\subsection{Diagrama de Comunicacion}
+En el siguiente diagrama se puede ver como es la forma comunicaion de un usuario con la ya dentro de una conversacion, enviando y recibiendo mensajes.
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.8\textwidth]{clases.png}
-\caption{Diagrama de clases de dominio más los mecanismos IPCs más representativos}
+\includegraphics[width=0.8\textwidth]{dia_comunicacion.png}
+\caption{Diagrama de comunicacion entre procesos}
+\label{fig:comunicacion}
+\end{figure}
+
+\newpage
+\subsection{Diagrama de Clases}
+Diagrama de clases con Objetos mas importantes del Servidor, solo hay un objeto Singleton por proceso, describiendo la relacion con los otros objetos utilizados para la comunicacion entre ellos. 
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.8\textwidth]{dia_clases-servidor.png}
+\caption{Diagrama de clases del Servidor con los mecanismos IPCs más representativos}
 \label{fig:clases}
+\end{figure}
+
+El diagrama de clases de un cliente no es relevante ya que solo constaria de una unica clase.
+
+\subsection{Diagrama de Estados}
+Diagrama de transcion de estados para un cliente.
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.7\textwidth]{dia_estados_cliente.png}
+\caption{Diagrama de Estados de un cliente.}
+\label{fig:estados}
 \end{figure}
 
 \newpage
 \section{Integración}
 
+Para la recibir los mensajes de los distintos usuarios se implemento una Cola de Paquetes que utiliza internamente un segmento de Memoria Compartida y 3 semaforos (uno para sacar, otro para insertar y otro para leer/escribir del segmento de memoria). Esta Cola es instanciada por el proceso Resolvedor y por todos los procesos Receptor (1 por cada usuario en conectado).\\
+
+Para enviar la informacion de un nuevo usuario a los otros procesos por parte del Recibidor se implemento una clase llamada AreaDeIntercambio que utiliza un segmento de memoria compartida en donde se guarda informacion del nuevo usuario, como el nombre del nuevo usuario, el PID del proceso Receptor que gestionara los paquetes enviados por ese usuario y datos sobre la direccion UDP del socket del cliente.\\
+
+Para sincronizar entre todos los procesos involucrados en el inicio de sesion de un nuevo usuario se utilizaron semaforos. Un semaforo es utilizado por el Resolvedor cuando este modifica sus estrucutas internas y al momento de enviar los paquetes de respuesta a los distintos usuarios, por lo que antes de enviar la señal de un nuevo usuario el recibidor hace un wait() del semaforo para asegurar que no pongo en riesgo nunca elemento interno del resolvedor. Otro semaforo es utilizado por el un receptor y el resolvedor al momento de crear un nuevo usuario donde el wait() lo hace el resolvedor esperando que inicie correctamente el Recepetor y se que en estado de espera para la confirmacion de continuar(en caso de positivo o negativo del inicio de sesion del usuario). Cuando el Receptor recibe la confirmacion de continuar, para ambos escenarios(inicio correctamente sesion o se produjo un error), este envia un signal() al Recibidor, que previamente realizo un wait() luego de enviar la señal al Resolvedor, para que continue en la escucha de nuevos usuarios.\\
+
+Un cliente solo consta de dos procesos(una vez establecida la conexion con el servidor) donde uno se encargar de enviar paquetes y el otro recibir las respuestas. El emisor envia paquetes segun lo ingresado por entrada estandar y el receptor imprime por salida estadar los paquetes que le llegan.
 
 \end{document}
 
