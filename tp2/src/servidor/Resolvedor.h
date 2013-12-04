@@ -19,7 +19,7 @@
 
 class Resolvedor {
 public:
-	static Resolvedor& instanacia();
+	static Resolvedor& instancia();
 	static bool instanciado();
 	static void liberar();
 

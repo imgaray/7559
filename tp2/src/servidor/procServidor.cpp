@@ -52,7 +52,7 @@ int main() {
 	pidResolvedor = fork();
 
 	if (pidResolvedor == 0) {
-		Logger::instance().debug(TAG, "Iniciando proceso Resolverdor");
+		Logger::instance().debug(TAG, "Iniciando proceso Resolvedor");
 		return mainResolvedor();
 	}
 
@@ -130,7 +130,7 @@ int mainResolvedor() {
 	int retorno;
 
 	try {
-		Resolvedor& resolvedor = Resolvedor::instanacia();
+		Resolvedor& resolvedor = Resolvedor::instancia();
 
 		retorno = resolvedor.comenzar();
 	}

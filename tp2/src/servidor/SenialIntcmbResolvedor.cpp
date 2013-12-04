@@ -36,11 +36,11 @@ void SenialIntcmbResolvedor::operacion() {
 	SemaforoPSX semConfirmacion(SEM_CONFIRMACION_RECEPTOR, 0);
 	semConfirmacion.inicializar();
 
-	Logger::instance().debug(TAG, "Iniciando tramtamiento de intercambio.");
+	Logger::instance().debug(TAG, "Iniciando tratamiento de intercambio.");
 
 	AreaIntercambio intercambio;
 
-	Resolvedor& resolvedor = Resolvedor::instanacia();
+	Resolvedor& resolvedor = Resolvedor::instancia();
 	GestorDeSeniales& gestorSen = GestorDeSeniales::instancia();
 
 	NuevoUsuario nuevoUsr;
@@ -53,12 +53,12 @@ void SenialIntcmbResolvedor::operacion() {
 	std::string nombreUsuario = nuevoUsr.nombre;
 	Logger::instance().debug(TAG, nuevoUsr.nombre);
 
-	Logger::instance().debug(TAG, "Creando paquete de incio de sesion..");
+	Logger::instance().debug(TAG, "Creando paquete de inicio de sesion..");
 	emp.iniciarSesion(nombreUsuario);
 
 	Destinatarios dest;
 
-	Logger::instance().debug(TAG, "Desabilitando semaforos del resolvedor.");
+	Logger::instance().debug(TAG, "Deshabilitando semaforos del resolvedor.");
 	resolvedor.usarSemaforos(false);
 
 
@@ -74,18 +74,18 @@ void SenialIntcmbResolvedor::operacion() {
 	info.pid = nuevoUsr.pid_receptor;
 	info.id_conv = 0;
 
-	Logger::instance().debug(TAG, "Esperando que inicie Receptor y se detenga para esperer confirmacion.");
+	Logger::instance().debug(TAG, "Esperando que inicie Receptor y se detenga para esperar confirmacion.");
 	semConfirmacion.wait();
 
 	if (emp.PAQ_confirmacionRecibida()) {
-		Logger::instance().debug(TAG, "Enviando señal de confimacion al receptor de Mensajes.");
-		// se confirma al proceso que continue que se confirmo el inicio sesion
+		Logger::instance().debug(TAG, "Enviando señal de confirmacion al receptor de Mensajes.");
+		// se confirma al proceso que continue ya que se confirmo el inicio sesion
 		gestorSen.enviarSenialAProceso(info.pid, SIGNUM_CONFIRMACION);
 	}
 	else {
 		Logger::instance().debug(TAG, "Enviando señal de finalizacion al receptor de Mensajes.");
 		// No se pudo crear sesion, lo mas comun es porque se encontro usuario con mismo nombre
-		// envia señal para que finaliza el proceso
+		// envia señal que finaliza el proceso
 		gestorSen.enviarSenialAProceso(info.pid, SIGNUM_CONFIRMACION_NEGATIVA);
 		gestorSen.enviarSenialAProceso(info.pid, SIGNUM_CONFIRMACION);
 	}

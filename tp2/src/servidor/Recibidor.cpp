@@ -96,7 +96,7 @@ int Recibidor::comenzar(int pid) {
 
 	}
 
-	Logger::instance().debug(TAG, "Finalizando la \"escuchar\" de nuevos usuarios.");
+	Logger::instance().debug(TAG, "Finalizando la \"escucha\" de nuevos usuarios.");
 
 	return 0;
 }
@@ -159,6 +159,6 @@ void Recibidor::transmitirAResolvedor() {
 	Logger::instance().debug(TAG, "Esperando que receptor lanzado confirme la sesion.");
 	_semIntercambio->wait();
 
-	Logger::instance().debug(TAG, "Confimacion Recibida y liberando al resolvedor para que continue.");
+	Logger::instance().debug(TAG, "Confirmacion Recibida y liberando al resolvedor para que continue.");
 	_semResolvedor->signal();
 }

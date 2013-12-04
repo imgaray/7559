@@ -29,10 +29,10 @@ int SenialFinalizar::numeroSenial() {
 
 void SenialFinalizar::operacion() {
 
-	Logger::instance().debug(TAG, "Llamado a tramiento de senial");
+	Logger::instance().debug(TAG, "Llamado a tratamiento de senial");
 
 	if (Resolvedor::instanciado())
-		Resolvedor::instanacia().dejarDeResponder();
+		Resolvedor::instancia().dejarDeResponder();
 
 	if (Recibidor::instanciado())
 		Recibidor::instancia().dejarDeEscuchar();

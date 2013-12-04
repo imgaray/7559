@@ -34,7 +34,7 @@ Resolvedor::Resolvedor() :_emisor() , _semResolvedor(SEM_RESOLVEDOR, 1), _seguir
 	GestorDeSeniales::instancia().agregarSenial(_senial);
 	GestorDeSeniales::instancia().agregarSenial(_senialFin);
 
-	Logger::instance().debug(TAG, "INTANCIADO");
+	Logger::instance().debug(TAG, "Instanciado");
 
 	_conversaciones.clear();
 	_usrXConv.clear();
@@ -61,7 +61,7 @@ void Resolvedor::signal() {
 	}
 }
 
-Resolvedor& Resolvedor::instanacia() {
+Resolvedor& Resolvedor::instancia() {
 	if (_instancia == NULL)
 		_instancia = new Resolvedor();
 	return *_instancia;
