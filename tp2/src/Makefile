@@ -91,7 +91,7 @@ CLEANSUB%: %
 
 
 clean: $(CLEANSUB)
-	rm -f app* common/*.o logger/.o cliente/*.o servidor/*.o
+	rm -f app* common/*.o logger/*.o cliente/*.o servidor/*.o
 
 doc:
 	cd doc/ &&  rm -f *.aux *log && pdflatex tp.tex
