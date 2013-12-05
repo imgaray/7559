@@ -29,7 +29,7 @@ Recibidor::Recibidor() : _areaIntcmb() {
 
 	_procesos = new Procesos();
 
-	_semResolvedor = new SemaforoPSX(SEM_RESOLVEDOR, 1);
+	//_semResolvedor = new SemaforoPSX(SEM_RESOLVEDOR, 1);
 
 	_semIntercambio = new SemaforoPSX(SEM_INTERCAMBIO_RYR, 0);
 
@@ -39,8 +39,8 @@ Recibidor::Recibidor() : _areaIntcmb() {
 }
 
 Recibidor::~Recibidor() {
-	if (_semResolvedor != NULL)
-		delete _semResolvedor;
+//	if (_semResolvedor != NULL)
+//		delete _semResolvedor;
 
 	if (_semIntercambio != NULL)
 		delete _semIntercambio;
@@ -119,17 +119,21 @@ void Recibidor::iniciarProcesoCliente(const Empaquetador& emp, const DirSocket& 
 
 	Logger::instance().debug(TAG, "Lanzando proceso ReceptorMensajes");
 
+
+	_semIntercambio->inicializar();
+
 	std::string rutaProceso = "./appReceptor";
 	_ultimoProceso = new Process(rutaProceso);
+
+	// esperar hasta que inicie el proceso Receptor
+
 
 	//std::cout << "Proceso receptor, pid: " << _ultimoProceso->getId() << std::endl;
 
 	std::string nomUsr = emp.PAQ_nombreDeUsuario();
 
-
 	std::string msj = std::string("Nuevo Usuario: ") + nomUsr;
 	Logger::instance().debug(TAG, msj);
-
 
 	NuevoUsuario info;
 	info.pid_receptor = _ultimoProceso->getId();
@@ -137,8 +141,16 @@ void Recibidor::iniciarProcesoCliente(const Empaquetador& emp, const DirSocket& 
 	info._dirSck = dirCliente;
 
 
-	_areaIntcmb.escribir(info);
 	Logger::instance().debug(TAG, "Escrita Info de Usuario en area de intercambio.");
+	_areaIntcmb.escribir(info);
+
+	_semIntercambio->wait();
+
+	Empaquetador emp2;
+	emp2.protoInicio(info);
+	Logger::instance().debug(TAG, "Se esta por colocar paquete de inicio de sesion en la cola.");
+	_cola.insertar(emp2.paquete());
+	Logger::instance().debug(TAG, "Se coloco paquete de inicio de sesion en al cola.");
 
 	_procesos->push_back(_ultimoProceso);
 
@@ -150,15 +162,15 @@ void Recibidor::dejarDeEscuchar() {
 }
 
 void Recibidor::transmitirAResolvedor() {
-	Logger::instance().debug(TAG, "Esperando que resolvedor se libere");
-	_semResolvedor->wait();
+	//Logger::instance().debug(TAG, "Esperando que resolvedor se libere");
+	//_semResolvedor->wait();
 
-	Logger::instance().debug(TAG, "Enviando señal a resolvedor por nuevo usuario.");
-	GestorDeSeniales::instancia().enviarSenialAProceso(_pidResolvedor, SIGNUM_INTERCAMBIO_RESOLVEDOR);
+	//Logger::instance().debug(TAG, "Enviando señal a resolvedor por nuevo usuario.");
+	//GestorDeSeniales::instancia().enviarSenialAProceso(_pidResolvedor, SIGNUM_INTERCAMBIO_RESOLVEDOR);
 
-	Logger::instance().debug(TAG, "Esperando que receptor lanzado confirme la sesion.");
-	_semIntercambio->wait();
+	//Logger::instance().debug(TAG, "Esperando que receptor lanzado confirme la sesion.");
+	//_semIntercambio->wait();
 
-	Logger::instance().debug(TAG, "Confirmacion Recibida y liberando al resolvedor para que continue.");
-	_semResolvedor->signal();
+	//Logger::instance().debug(TAG, "Confirmacion Recibida y liberando al resolvedor para que continue.");
+	//_semResolvedor->signal();
 }

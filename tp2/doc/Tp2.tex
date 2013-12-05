@@ -103,34 +103,44 @@ Se identificaron además los siguientes casos de uso, desde el punto de vista de
 Para la resolución de la concurrencia en la aplicacion se implementaron varias herramientas como Fifo, Pipe, Lock , 
 Memoria Compartida, Señales y Sockets.
 
-Se crearon los siguientes procesos, uno encargado de la generacion de los recursos y administración de las conversaciones, llamado 
-appServidor, este último es el encargado de crear el proceso llamados appReceptor, encargado de recibir los paquetes enviados por un cliente.\\
+Se creó un proceso encargado de la generacion de los recursos y administración de las conversaciones, llamado 
+appServidor, el cual es el punto de inicio de la aplicación\\
 
-Por último existe el proceso llamado appCliente, el cual es creado cuando un usuario inicia un Cliente y le permite interactuar con
-el Servidor para unirse a una conversación o iniciar una nueva.\\
-
-Para la comunicacion entre cliente y servidor se decidio hacerla mediante Sockets UDP ya que facitilan la comunicaion a un mismo socket desde otros sockets en distintos procesos ya que nunca se mantiene una conexion, en cambio no es asi con Sockets TCP. Se decidio por usar sockets y no otro mecanismo de comunicacion para tener practica sobre metodos de comunicacion para entornos distruibos, ya que la aplicacion puede portada a funcionar en mas de una PC.
+También existe el proceso llamado appCliente, el cual es creado cuando un usuario inicia un Cliente y le permite interactuar con
+el Servidor para unirse a una conversación o iniciar una nueva\\
 
 \subsection{Servidor}
+Dentro del proceso appServidor se crean 2 nuevos procesos llamados Resolvedor y Recibidor que se encargar de resolver todas la solicitudes 
+y recibir nuevos clientes respectivamente.
+El funcionamiento del servidor es el siguiente, cuando un cliente intenta conectarse, éste le envia un paquete de inicio de sesión (a traves 
+de una conexion UDP), este paquete es captado por el proceso Recibidor, quien crea un nuevo proceso Receptor para ese cliente, luego 
+se retransmitirá el paquete y algunos datos más de conexión al proceso Resolvedor y al nuevo Receptor (utilizando un area de memoria compartida). 
+Luego el recibidor espera una confirmacion (mediante un semáforo) del proceso Receptor para poder seguir escuchando nuevos usuarios.\\
 
-Dentro del proceso appServidor se crean 2 nuevos procesos llamados Resolvedor y Recibidor que se encargar de resolver todas la solicitudes y recibir nuevos clientes respectivamente.
-El funcionamiento del servidor es el siguiente, cuando un cliente intenta conectarse este le envia un paquete de inicio de sesion(a travez de una conexion UDP), que este paquete es luego captado por el proceso Recibidor que crea un nuevo proceso Receptor para ese cliente, luego se retransmitira el paquete y algunos datos mas de conexion al proceso Resolvedor y al nuevo Receptor (utilizando un area de memoria compartida). Luego el recibidor espera una confirmacion(mediante un semaforo) del proceso Receptor para poder seguir escuchando nuevos usuarios.\\
+La tarea que lleva a cabo el proceso resolvedor es almacenar todos los usuarios en linea, todas las conversaciones abiertas y de reenviar 
+todos los mensajes que se envien entre si. Para ello cuando arriba un paquete a la Cola de Paquetes (un area de memoria compartida para colocar 
+los paquetes de los usuarios que iniciaron sesión) éste lo retira de allí, verifica qué tipo de paquete es, resuelve la petición correspondiente y 
+le envía la respuesta al usuario o a todos los integrantes dentro de una conversación si se tratase de un mensaje. Este procedimiento se repite 
+hasta que el proceso padre le envie una señal de finalización.\\
 
-La tarea que lleva a cabo el proceso resolvedor es guardar almacenar todos los usuarios en linea, todas las conversaciones abiertas y de reenviar todos los mensajes que se envien entre si. Para ello cuando arriba un paquete a la Cola de Paquetes (un area de memoria compartida para colocar los paquetes de los usuarios que iniciaron sesion) este lo retira de alli, mira que tipo de paquete es, resuelve la peticion correspondiente y le envia la respuesta al usuario o a todos los integrantes dentro de una conversacion si se tratase de un mensaje. Este procedimiento se repite hasta que el proceso padre le envie una señal de finalización.\\
-
-Cuando llega una solicitud de inicio de sesion al Resolvedor, este es informado de la situacion mendiante una señal que es enviada por el proceso Recibidor. La tarea que se lleva a cabo es la siguiente, se lee la informacion de usuario (paquete y datos de conexion) que fueron colocadas por el Recibidor (en un area de memoria compartida). Cuando obtiene el paquete lo procesa(crea el nuevo usuario si no existe) y si no hubo problemas se le envia una señal de confirmación al proceso Receptor para que prosiga con su correcta ejecucion, en cambio si otro usuario habia iniciado sesion con el mismo nombre se emite un error y se le indica al Receptor que finalice, informando sobre este error al usuario. Luego de realizar todo esto el proceso Resolvedor finaliza el tratamiento de la señal y continua con su normal ejecución.\\
+Cuando llega una solicitud de inicio de sesión al Resolvedor, éste es informado de la situación mediante una señal que es enviada por el proceso 
+Recibidor. La tarea que se lleva a cabo es la siguiente, se lee la información de usuario (paquete y datos de conexion) que fueron colocadas por 
+el Recibidor (en un área de memoria compartida). Cuando obtiene el paquete lo procesa (crea el nuevo usuario si no existe) y si no hubo problemas 
+se le envía una señal de confirmación al proceso Receptor para que prosiga con su correcta ejecución. En cambio, si otro usuario había iniciado 
+sesión con el mismo nombre anteriormente, se emite un error y se le indica al Receptor que finalice, informando sobre este error al usuario. Luego 
+de realizar todo esto el proceso Resolvedor finaliza el tratamiento de la señal y continua con su normal ejecución.\\
 
 \subsection{Paquete}
-
-Los paquetes utilizados en toda la aplicacion se diseñaron para resolver varios problemas (como iniciar y finalizar sesion, crear y unirse a una conversacion, mensajes, etc) y asi resolverlos todos contenidos en una misma estructura.
-Se pensaron para que sean de tamanio fijo, de 512 bytes concretamente, conformando la siguiente estructura:
+Los paquetes utilizados en toda la aplicación se diseñaron para resolver varios problemas (como iniciar y finalizar sesión, crear y unirse a una 
+conversación, mensajes, etc) y así resolverlos todos contenidos en una misma estructura.
+Se pensaron para que sean de tamaño fijo, de 512 bytes concretamente, conformando la siguiente estructura:
 
 \begin{itemize}
 \item Cabecera: 2 bytes en formato Big Endian para el tamanio del paquete, 1 byte para el tipo de paquete y 1 ultimo byte para la cantidad de atributos.
 \item Datos: 508 bytes disponibles para datos, en donde se almacenaran los atributos del paquete.\\
 \end{itemize}
 
-Segun el tipo de paquete que sea se resuelve una solicitud diferente. Los diferentes tipos de paquetes son los siguientes:
+Según el tipo de paquete que sea se resuelve una solicitud diferente. Los diferentes tipos de paquetes son los siguientes:
 \begin{itemize}
 \item INICIO\_SESION: indica que un usuario intenta inciar sesion.
 \item FIN\_SESION: indica que un usuario desea finalizar su sesion.
@@ -138,10 +148,9 @@ Segun el tipo de paquete que sea se resuelve una solicitud diferente. Los difere
 \item CREAR\_CONVERSACION: indica que un usuario quiere crear una converasacion.
 \item UNIRSE\_CONVERSACION indica que un usuario desea unirse a una conversacion ya creada.
 \item CONVERSACIONES: indica una solicitud para que ver las conversaciones disponibles.
-\item OK: indica una confirmacion sobre algun evento por parte del servidor ( inicio y fin de sesion, etc).
+\item OK: indica una confirmación sobre algún evento por parte del servidor (inicio y fin de sesion, etc).
 \item ERROR: indica un error ocurrido cuando se proceso una solitud de un usuario.
-\item DESCONOCIDO: identifica al paquete como desconocido y no se lo puede procesar.
-
+\item DESCONOCIDO: identifica al paquete como desconocido y no se lo puede procesar.\\
 \end{itemize}
 
 \subsection{Sistema de Log}
@@ -191,13 +200,24 @@ Diagrama de transcion de estados para un cliente.
 \newpage
 \section{Integración}
 
-Para la recibir los mensajes de los distintos usuarios se implemento una Cola de Paquetes que utiliza internamente un segmento de Memoria Compartida y 3 semaforos (uno para sacar, otro para insertar y otro para leer/escribir del segmento de memoria). Esta Cola es instanciada por el proceso Resolvedor y por todos los procesos Receptor (1 por cada usuario en conectado).\\
+Para la recibir los mensajes de los distintos usuarios se implemento una Cola de Paquetes que utiliza internamente un segmento de 
+Memoria Compartida y 3 semaforos (uno para sacar, otro para insertar y otro para leer/escribir del segmento de memoria). Esta Cola es 
+instanciada por el proceso Resolvedor y por todos los procesos Receptor (1 por cada usuario en conectado).\\
 
-Para enviar la informacion de un nuevo usuario a los otros procesos por parte del Recibidor se implemento una clase llamada AreaDeIntercambio que utiliza un segmento de memoria compartida en donde se guarda informacion del nuevo usuario, como el nombre del nuevo usuario, el PID del proceso Receptor que gestionara los paquetes enviados por ese usuario y datos sobre la direccion UDP del socket del cliente.\\
+Para enviar la informacion de un nuevo usuario a los otros procesos por parte del Recibidor se implemento una clase llamada AreaDeIntercambio 
+que utiliza un segmento de memoria compartida en donde se guarda informacion del nuevo usuario, como el nombre del nuevo usuario, el PID del 
+proceso Receptor que gestionara los paquetes enviados por ese usuario y datos sobre la direccion UDP del socket del cliente.\\
 
-Para sincronizar entre todos los procesos involucrados en el inicio de sesion de un nuevo usuario se utilizaron semaforos. Un semaforo es utilizado por el Resolvedor cuando este modifica sus estrucutas internas y al momento de enviar los paquetes de respuesta a los distintos usuarios, por lo que antes de enviar la señal de un nuevo usuario el recibidor hace un wait() del semaforo para asegurar que no pongo en riesgo nunca elemento interno del resolvedor. Otro semaforo es utilizado por el un receptor y el resolvedor al momento de crear un nuevo usuario donde el wait() lo hace el resolvedor esperando que inicie correctamente el Recepetor y se que en estado de espera para la confirmacion de continuar(en caso de positivo o negativo del inicio de sesion del usuario). Cuando el Receptor recibe la confirmacion de continuar, para ambos escenarios(inicio correctamente sesion o se produjo un error), este envia un signal() al Recibidor, que previamente realizo un wait() luego de enviar la señal al Resolvedor, para que continue en la escucha de nuevos usuarios.\\
+Para sincronizar entre todos los procesos involucrados en el inicio de sesion de un nuevo usuario se utilizaron semaforos. Un semaforo es utilizado 
+por el Resolvedor cuando este modifica sus estrucutas internas y al momento de enviar los paquetes de respuesta a los distintos usuarios, por lo 
+que antes de enviar la señal de un nuevo usuario el recibidor hace un wait() del semaforo para asegurar que no pongo en riesgo nunca elemento interno 
+del resolvedor. Otro semaforo es utilizado por el un receptor y el resolvedor al momento de crear un nuevo usuario donde el wait() lo hace el resolvedor 
+esperando que inicie correctamente el Recepetor y se que en estado de espera para la confirmacion de continuar(en caso de positivo o negativo del inicio 
+de sesion del usuario). Cuando el Receptor recibe la confirmacion de continuar, para ambos escenarios(inicio correctamente sesion o se produjo un error), 
+este envia un signal() al Recibidor, que previamente realizo un wait() luego de enviar la señal al Resolvedor, para que continue en la escucha de nuevos usuarios.\\
 
-Un cliente solo consta de dos procesos(una vez establecida la conexion con el servidor) donde uno se encargar de enviar paquetes y el otro recibir las respuestas. El emisor envia paquetes segun lo ingresado por entrada estandar y el receptor imprime por salida estadar los paquetes que le llegan.
+Un cliente solo consta de dos procesos(una vez establecida la conexion con el servidor) donde uno se encargar de enviar paquetes y el otro recibir las respuestas. 
+El emisor envia paquetes segun lo ingresado por entrada estandar y el receptor imprime por salida estadar los paquetes que le llegan.
 
 \end{document}
 

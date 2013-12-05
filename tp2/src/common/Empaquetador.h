@@ -9,7 +9,8 @@
  *
  * TAM || INICIO_SESION || nombreUsuario
  *
- * TAM || CONVERSACIONES || #Listado de Conversaciones (tamString || nombre)
+ * TAM || CONVERSACIONES || Nombre de Conversacion								(SOLICITUD)
+ * TAM || CONVERSACIONES || #Listado de Conversaciones (tamString || nombre)	(RESPUESTA)
  *
  * TAM || CREAR_CONVERSACION || nombreUSuario || NombreNuevaConversacion
  *
@@ -21,6 +22,14 @@
  *
  */
 
+/**
+ * Nuevos tipos de paquetes.
+ *
+ * TAM || PROTO_INICIO_SESION || 1 || (struct de nuevo Usuario
+ *
+ * TAM || USUARIOS_CONVERSACION || 2 || Nombre Usuario | Nombre de Conversacion	 (SOLICITUD)
+ * TAM || USUARIOS_CONVERSACION || N || Nombre de Conversacion || # Usuarios(tamString || string)	 (Respuesta)
+ */
 
 /**
  * Se debe utilizar siempre esta clase para crear y modificar paquetes.
@@ -33,6 +42,7 @@
 
 
 #include "Paquete.h"
+#include "Definiciones.h"
 #include <vector>
 
 
@@ -48,6 +58,7 @@ public:
 	enum TipoPaquete {
 			DESCONOCIDO = 0,
 
+			PROTO_INICIO_SESION,
 			INICIO_SESION,
 			FIN_SESION,
 
@@ -58,6 +69,8 @@ public:
 
 			CONVERSACIONES,
 
+			USUARIOS_CONVERSACION,
+
 			OK,
 			ERROR
 		};
@@ -66,6 +79,8 @@ public:
 	/*****************************************************************************
 	 * Metodos que utilizara el emisor
 	 *****************************************************************************/
+
+	void protoInicio(const NuevoUsuario& nuevoUsr);
 
 	/**
 	 * Define el paquete como inicio de sesion, adjuntando el nombre del usuario que inicia.
@@ -96,6 +111,8 @@ public:
 	 * Agrega un nombre de conversacion al paquete y lo define con el tipo de CREAR_CONVERSACION
 	 */
 	void crearConversacion(const std::string& nomUsuario,const std::string& nombreNuevaConversacion);
+
+	void usuariosEnConversacion(const std::string& nomUsuario, const std::string& nombreConversacion);
 
 	/**
 	 * Define el paquete como una respuesta de confirmacion (OK)
@@ -166,6 +183,12 @@ public:
 	 * Retorna un bool indicando si el paquete posee un error.
 	 */
 	const std::string PAQ_mensajeDeError() const;
+
+
+	const std::vector<std::string> PAQ_usuariosEnConversacion() const;
+
+
+	void PAQ_protoInicio(NuevoUsuario& nuevoUsr) const;
 
 	/***************************************************************************/
 

@@ -60,6 +60,7 @@ private:
 
 	const Paquete finalizarSesion(const Empaquetador& empaquetador, Destinatarios& destinos);
 
+	const Paquete protoInicio(const Empaquetador& empaquetador, Destinatarios& destinos);
 
 	void eliminarUsuarioDeConversacion(const IdConversacion& idConv, const IdUsuario& idUsr);
 

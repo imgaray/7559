@@ -14,6 +14,7 @@
 #include "../common/Process.h"
 #include "../common/SocketUDP.h"
 #include "SenialFinalizar.h"
+#include "ColaDePaquetes.h"
 
 #include "AreaIntercambio.h"
 
@@ -46,8 +47,9 @@ private:
 
 	SocketUDP _receptor;
 	SemaforoPSX *_semIntercambio;
-	SemaforoPSX *_semResolvedor;
+	//SemaforoPSX *_semResolvedor;
 
+	ColaDePaquetes _cola;
 
 	AreaIntercambio _areaIntcmb;
 

@@ -54,20 +54,18 @@ int ReceptorMensajes::comenzar() {
 
 	Logger::instance().debug(TAG, "Iniciando receptor y esperando señal de continuacion.");
 
-	SemaforoPSX semConfimacion(SEM_CONFIRMACION_RECEPTOR, 0);
+	Logger::instance().debug(TAG, "Por leer desde area de Intercambio.");
+	NuevoUsuario info = areaIntcmb.leer();
 
-	Logger::instance().debug(TAG, "Enviando señal de semaforo de confirmacion de incio.");
-	semConfimacion.signal();
+	Logger::instance().debug(TAG, "Por enviar un signal() al recibidor para confirmacion inicio.");
+	_semReceptor->signal();
 
 
+	Logger::instance().debug(TAG, "Por esperar señal de confirmacion.");
 	// ver si poner semaforo para sincronizar con resolvedor...
 	GestorDeSeniales::instancia().enviarmeSenial(SIGNUM_ESPERA_CONFIRMACION);
 
-	_semReceptor->signal();
-
 	Logger::instance().debug(TAG, "Se recibio señal de confimacion");
-
-	NuevoUsuario info = areaIntcmb.leer();
 
 	{
 		Empaquetador emp;

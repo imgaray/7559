@@ -120,7 +120,6 @@ int Resolvedor::comenzar() {
 		}
 	}
 
-
 	this->enviarMensajesDeCierre();
 
 	Logger::instance().debug(TAG, "Finalizando Resolvedor.");
@@ -136,7 +135,11 @@ const Paquete Resolvedor::resolver(const Paquete& origen, Destinatarios& destino
 	Empaquetador respuesta;
 	destinos.clear();
 
-	if (emp.tipoActual() == Empaquetador::MENSAJE) {
+
+	if (emp.tipoActual() == Empaquetador::PROTO_INICIO_SESION){
+		respuesta.asociar(this->protoInicio(emp, destinos));
+	}
+	else if (emp.tipoActual() == Empaquetador::MENSAJE) {
 		respuesta.asociar(this->reenviarMensaje(origen, destinos));
 	}
 	else if (emp.tipoActual() == Empaquetador::INICIO_SESION) {
@@ -553,4 +556,44 @@ void Resolvedor::enviarMensajesDeCierre() {
 	}
 
 	this->enviar(emp.paquete(), dest);
+}
+
+
+const Paquete Resolvedor::protoInicio(const Empaquetador& empaquetador, Destinatarios& destinos) {
+	NuevoUsuario info;
+	empaquetador.PAQ_protoInicio(info);
+
+	Logger::instance().debug(TAG, "Por agregar info de nuevo USUARIO");
+
+	std::string nombreUsr = info.nombre;
+
+	Empaquetador emp;
+	emp.iniciarSesion(nombreUsr);
+	Destinatarios dest;
+
+	Paquete res = this->agregarUsuario(emp.paquete());
+
+	emp.asociar(res);
+
+	if (emp.PAQ_confirmacionRecibida()) {
+		itUsuarios it = _usuarios.find(nombreUsr);
+		it->second._dirSock = info._dirSck;
+		it->second.id_conv = 0;
+		it->second.pid = info.pid_receptor;
+
+		Logger::instance().debug(TAG, "Info de nuevo USUARIO agregada.");
+
+		Logger::instance().debug(TAG, "Enviando señal de confirmacion al receptor de Mensajes.");
+		GestorDeSeniales::instancia().enviarSenialAProceso(info.pid_receptor, SIGNUM_CONFIRMACION);
+	}
+	else {
+		Logger::instance().debug(TAG, "Enviando señal de finalizacion al receptor de Mensajes.");
+		GestorDeSeniales::instancia().enviarSenialAProceso(info.pid_receptor, SIGNUM_CONFIRMACION_NEGATIVA);
+		GestorDeSeniales::instancia().enviarSenialAProceso(info.pid_receptor, SIGNUM_CONFIRMACION);
+	}
+
+	destinos.clear();
+
+	return emp.paquete();
+
 }

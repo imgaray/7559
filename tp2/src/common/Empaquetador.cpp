@@ -6,6 +6,7 @@
  */
 
 #include "Empaquetador.h"
+#include <string.h>
 
 Empaquetador::Empaquetador() : _paquete() {
 
@@ -221,4 +222,58 @@ const Paquete& Empaquetador::paquete() const {
 
 void Empaquetador::limpiar() {
 	_paquete.limpiar();
+}
+
+/**
+ * Nuevos metodos
+ */
+
+void Empaquetador::protoInicio(const NuevoUsuario& nuevoUsr) {
+	_paquete.limpiar();
+
+	_paquete.definirTipo(Empaquetador::PROTO_INICIO_SESION);
+
+	_paquete.agregarAtributo((void*) &nuevoUsr, sizeof(nuevoUsr));
+}
+
+void Empaquetador::PAQ_protoInicio(NuevoUsuario& nuevoUsr) const {
+	char* cUsr = NULL;
+
+	if (Empaquetador::PROTO_INICIO_SESION == _paquete.tipo()) {
+		cUsr = _paquete.atributo(0);
+		memcpy((void*)&nuevoUsr, (void*)cUsr, sizeof(nuevoUsr));
+	}else {
+		memset((void*)&nuevoUsr, 0 , sizeof(nuevoUsr));
+	}
+}
+
+void Empaquetador::usuariosEnConversacion(const std::string& nomUsuario, const std::string& nombreConversacion) {
+	_paquete.limpiar();
+
+	_paquete.definirTipo(Empaquetador::USUARIOS_CONVERSACION);
+
+	_paquete.agregarAtributo((void*) nomUsuario.c_str(), nomUsuario.size());
+	_paquete.agregarAtributo((void*) nombreConversacion.c_str(), nombreConversacion.size());
+}
+
+const std::vector<std::string> Empaquetador::PAQ_usuariosEnConversacion() const {
+	std::vector<std::string> conj;
+	conj.clear();
+	int ind = 0;
+
+	if (_paquete.tipo() == Empaquetador::USUARIOS_CONVERSACION) {
+
+		char* conv = _paquete.atributo(0);
+
+		while (conv != NULL) {
+			ind++;
+			conj.push_back(std::string(conv));
+
+			delete conv;
+
+			conv = _paquete.atributo(ind);
+		}
+	}
+
+	return conj;
 }
