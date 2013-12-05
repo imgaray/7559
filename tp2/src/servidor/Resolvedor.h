@@ -33,8 +33,6 @@ public:
 
 	const Paquete agregarNuevoUsuario(const NuevoUsuario& info);
 
-	void usarSemaforos(bool usar);
-
 	void senialTratada();
 
 	virtual ~Resolvedor();
@@ -81,7 +79,6 @@ private:
 	void wait();
 	void signal();
 
-	bool _senialTratada;
 
 	SenialFinalizar _senialFin;
 
@@ -95,7 +92,6 @@ private:
 	int _ultimoIDLibre;
 
 	SemaforoPSX _semResolvedor;
-	bool _usarSemaforo;
 
 	ColaDePaquetes _colaPaquetes;
 	bool _seguirEnviando;

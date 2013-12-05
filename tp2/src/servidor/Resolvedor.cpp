@@ -21,17 +21,11 @@
 
 Resolvedor* Resolvedor::_instancia = NULL;
 
-SenialIntcmbResolvedor _senial;
-
 Resolvedor::Resolvedor() :_emisor() , _semResolvedor(SEM_RESOLVEDOR, 1), _seguirEnviando(true) {
 
 	_emisor.enlazar(0);
 	_ultimoIDLibre = 1;
-	_usarSemaforo = true;
 
-	_senialTratada = false;
-
-	GestorDeSeniales::instancia().agregarSenial(_senial);
 	GestorDeSeniales::instancia().agregarSenial(_senialFin);
 
 	Logger::instance().debug(TAG, "Instanciado");
@@ -40,25 +34,17 @@ Resolvedor::Resolvedor() :_emisor() , _semResolvedor(SEM_RESOLVEDOR, 1), _seguir
 	_usrXConv.clear();
 	_usuarios.clear();
 
-	_colaPaquetes.inicializarIndices();
-}
-
-void Resolvedor::usarSemaforos(bool usar) {
-	_usarSemaforo = usar;
+	//_colaPaquetes.inicializarIndices();
 }
 
 void Resolvedor::wait() {
-	if (_usarSemaforo == true){
-		Logger::instance().debug(TAG, "Por realizar WAIT() de recursos de RESOLVEDOR");
-		_semResolvedor.wait();
-	}
+	Logger::instance().debug(TAG, "Por realizar WAIT() de recursos de RESOLVEDOR");
+	_semResolvedor.wait();
 }
 
 void Resolvedor::signal() {
-	if (_usarSemaforo == true) {
-		Logger::instance().debug(TAG, "Por realizar SIGNAL() de recursos de RESOLVEDOR");
-		_semResolvedor.signal();
-	}
+	Logger::instance().debug(TAG, "Por realizar SIGNAL() de recursos de RESOLVEDOR");
+	_semResolvedor.signal();
 }
 
 Resolvedor& Resolvedor::instancia() {
@@ -73,10 +59,6 @@ bool Resolvedor::instanciado() {
 
 Resolvedor::~Resolvedor() {
 
-}
-
-void Resolvedor::senialTratada() {
-	_senialTratada = true;
 }
 
 void Resolvedor::liberar() {
@@ -104,20 +86,13 @@ int Resolvedor::comenzar() {
 
 		Logger::instance().debug(TAG, "Se intenta sacar paquete de la cola");
 		solicitud = _colaPaquetes.sacar();
+		Logger::instance().debug(TAG, "Se saco paquete de la Cola");
 
-		if (_senialTratada == false) {
-			Logger::instance().debug(TAG, "Se saco paquete de la Cola");
+		respuesta = resolver(solicitud, destinos);
+		Logger::instance().debug(TAG, "Se resolvio la solicitud del paquete.");
 
-			respuesta = resolver(solicitud, destinos);
+		enviar(respuesta, destinos);
 
-			Logger::instance().debug(TAG, "Se resolvio la solicitud del paquete.");
-
-			enviar(respuesta, destinos);
-		}
-		else {
-			Logger::instance().debug(TAG, "NO se saco paquete de la cola.");
-			_senialTratada = false;
-		}
 	}
 
 	this->enviarMensajesDeCierre();

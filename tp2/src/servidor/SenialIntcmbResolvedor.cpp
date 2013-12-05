@@ -33,6 +33,7 @@ int SenialIntcmbResolvedor::numeroSenial() {
 
 void SenialIntcmbResolvedor::operacion() {
 
+	/*
 	SemaforoPSX semConfirmacion(SEM_CONFIRMACION_RECEPTOR, 0);
 	semConfirmacion.inicializar();
 
@@ -94,5 +95,6 @@ void SenialIntcmbResolvedor::operacion() {
 
 	resolvedor.senialTratada();
 	resolvedor.usarSemaforos(true);
+	*/
 }
 
