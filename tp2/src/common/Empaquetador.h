@@ -71,6 +71,7 @@ public:
 
 			USUARIOS_CONVERSACION,
 
+			SERVIDOR_CERRADO,
 			OK,
 			ERROR
 		};
@@ -112,7 +113,12 @@ public:
 	 */
 	void crearConversacion(const std::string& nomUsuario,const std::string& nombreNuevaConversacion);
 
+
+	// Solicitud
 	void usuariosEnConversacion(const std::string& nomUsuario, const std::string& nombreConversacion);
+
+	// Respuesta
+	void usuariosEnConversacion(const std::vector<std::string>& usuarios);
 
 	/**
 	 * Define el paquete como una respuesta de confirmacion (OK)
@@ -132,6 +138,7 @@ public:
 
 	void verConversaciones(const std::string& nombreUsuario);
 
+	void cerrandoServidor();
 
 	/*************************************************************************
 	 * Metodos que usar el receptor
@@ -189,6 +196,8 @@ public:
 
 
 	void PAQ_protoInicio(NuevoUsuario& nuevoUsr) const;
+
+	bool PAQ_sevidorCerrado() const;
 
 	/***************************************************************************/
 

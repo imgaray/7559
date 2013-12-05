@@ -54,8 +54,20 @@ void imprimir(const Empaquetador& emp) {
 			std::cout << i+1 << ": " << conv[i] << std::endl;
 		}
 	}
+	else if (emp.tipoActual() == Empaquetador::USUARIOS_CONVERSACION) {
+
+		const std::vector<std::string> &conv = emp.PAQ_usuariosEnConversacion();
+
+		std::cout << "Conversacion \"" << conv[0] << "\":" << std::endl;
+		for (unsigned i = 1 ; i < conv.size() ; i++)
+			std::cout << "\t - " << conv[i] << std::endl;
+
+	}
 	else if (emp.tipoActual() == Empaquetador::FIN_SESION) {
 		std::cout << emp.PAQ_nombreDeUsuario() << std::endl;
+	}
+	else if (emp.tipoActual() == Empaquetador::SERVIDOR_CERRADO) {
+		std::cout << "<<< El servidor se ha apagado >>> " << std::endl;
 	}
 	else if (emp.tipoActual() == Empaquetador::ERROR) {
 		std::cout << emp.PAQ_mensajeDeError() << std::endl;
@@ -65,7 +77,7 @@ void imprimir(const Empaquetador& emp) {
 		imprimirPaquete(emp.paquete());
 	}
 
-	std::cout << ">> ";
+	std::cout << std::endl << ">> ";
 	std::cout.flush();
 }
 
@@ -74,7 +86,9 @@ void imprimirOpciones() {
 	std::cout << ".1 : Elegir conversaciones." << std::endl;
 	std::cout << ".2 : Unirse a una conversacion." << std::endl;
 	std::cout << ".3 : Crear conversaciones." << std::endl;
-	std::cout << ".4 : Finalizar sesion." << std::endl;
+	std::cout << ".4 : Ver usuarios en conversacion (inngrese nombre vacio para consultar en conversacion actual)." << std::endl;
+	std::cout << std::endl;
+	std::cout << ".0 : Finalizar sesion." << std::endl;
 }
 
 int main() {
@@ -113,8 +127,6 @@ int main() {
 				if (_sock.enviar(emp.paquete(), dirServidor) == true)
 					std::cout << "Solicitud de conexion enviada." << std::endl;
 
-					sleep(1);
-
 				emp.limpiar();
 
 				if (_sock.recibir(paqRecibido, dirRealServ) == true)
@@ -123,15 +135,10 @@ int main() {
 				imprimir(emp);
 
 				if (emp.PAQ_confirmacionRecibida()) {
-					//std::cout << "Conexion Establecida" << std::endl;
-					//imprimir(emp);
 					_conectado = true;
 				}
 				else if (emp.PAQ_errorRecibido()) {
-					//std::cout << emp.PAQ_mensajeDeUsuario() << std::endl;
-					//imprimir(emp);
 					std::cout << "(Ingrese otro nombre de usuario o \".salir\" para finalizar.)" << std::endl;
-					sleep(1);
 				}
 				else {
 					intentos--;
@@ -168,43 +175,53 @@ int main() {
 	bool enviar = false;
 	while (_seguirRecibiendo_) {
 
-		std::cout << ">> ";
-		//std::cin >> mensaje;
+		std::cout << std::endl << ">> ";
 		std::cin.getline(buffer, TAM_BUFFER);
 		mensaje = buffer;
 
-		//std::cout << "Ingreso: \"" <<mensaje <<"\". Tamanio:" << mensaje.size()  << std::endl;
-
 		if (mensaje.size() >= 2 && mensaje[0] == '.') {
+			int tamanio = mensaje.size();
 
-			if (mensaje[1] == '1') {
-				emp.verConversaciones(usuario);
-				enviar = true;
-			}
-			else if (mensaje[1] == '2') {
-				std::cout << "ingrese nombre de la conversacion a unirse: ";
-				std::cin.getline(buffer, TAM_BUFFER);
-				mensaje = buffer;
-				if (mensaje.size() > 0) {
-					//std::cout << "por enviar: " << mensaje << std::endl;
-					emp.unirseConversacion(usuario, mensaje);
+			if (tamanio == 2) {
+
+				if ( mensaje[1] == '1' ) {
+					emp.verConversaciones(usuario);
 					enviar = true;
 				}
-			}
-			else if (mensaje[1] == '3') {
-				std::cout << "ingrese nombre de nueva conversacion: ";
-				std::cin.getline(buffer, TAM_BUFFER);
-				mensaje = buffer;
-				if (mensaje.size() > 0) {
-					//std::cout << "por enviar: " << mensaje << std::endl;
-					emp.crearConversacion(usuario, mensaje);
-					enviar = true;
+				else if ( mensaje[1] == '2' ) {
+					std::cout << "ingrese nombre de la conversacion a unirse: ";
+					std::cin.getline(buffer, TAM_BUFFER);
+					mensaje = buffer;
+					if (mensaje.size() > 0) {
+						//std::cout << "por enviar: " << mensaje << std::endl;
+						emp.unirseConversacion(usuario, mensaje);
+						enviar = true;
+					}
 				}
-			}
-			else if (mensaje[1] == '4') {
-				enviar = true;
-				emp.finalizarSesion(usuario);
-				_seguirRecibiendo_ = false;
+				else if (mensaje[1] == '3') {
+					std::cout << "ingrese nombre de nueva conversacion: ";
+					std::cin.getline(buffer, TAM_BUFFER);
+					mensaje = buffer;
+					if (mensaje.size() > 0) {
+						//std::cout << "por enviar: " << mensaje << std::endl;
+						emp.crearConversacion(usuario, mensaje);
+						enviar = true;
+					}
+				}
+				else if (mensaje[1] == '4') {
+					std::cout << "ingrese nombre de conversacion a consultar: ";
+					std::cin.getline(buffer, TAM_BUFFER);
+					mensaje = buffer;
+
+					emp.usuariosEnConversacion(usuario, mensaje);
+					enviar = true;
+
+				}
+				else if (mensaje[1] == '0') {
+					enviar = true;
+					emp.finalizarSesion(usuario);
+					_seguirRecibiendo_ = false;
+				}
 			}
 			else if (mensaje.size() == 3 && mensaje[0] == '.' && mensaje[1] == 'o' && mensaje[2] == 'p') {
 				imprimirOpciones();
@@ -235,11 +252,10 @@ int main() {
 		std::cout << "Esperando finalizacion..." << std::endl;
 		waitpid(pid, &estadoSalida, 0);
 
-		sleep(1);
 		intentosSalida--;
 		if (WIFEXITED(estadoSalida) == false && intentosSalida == 0)
 			GestorDeSeniales::instancia().enviarSenialAProceso(pid, SIGNUM_FINALIZACION);
-	} while (WIFEXITED(estadoSalida) == false);
+	} while (WIFEXITED(estadoSalida) == false && intentosSalida > 0);
 
 	return 0;
 }
@@ -253,24 +269,29 @@ int mainReceptor(SocketUDP &receptor) {
 	Paquete paq;
 	DirSocket aux;
 
+	bool servidorAbierto = true;
+
 	while (_seguirRecibiendo_) {
-		//std::cout << "::::Por esperar respuesta." << std::endl;
-		if (receptor.recibir(paq, aux) == true) {
+		if (servidorAbierto && receptor.recibir(paq, aux) == true) {
 			emp.asociar(paq);
-			//std::cout << "::::Respuesta recibida." << std::endl;
+
+			if (emp.PAQ_sevidorCerrado()) {
+				servidorAbierto = false;
+			}
+
 			imprimir(emp);
 		}
 	}
 
-	// paquete de finalizacion
-	if (receptor.recibir(paq, aux) == true) {
-		emp.asociar(paq);
-		imprimir(emp);
+	if (servidorAbierto) {
+		if (receptor.recibir(paq, aux) == true) {
+			emp.asociar(paq);
+			imprimir(emp);
+		}
+		else {
+			std::cout << "Error: no se recibio confirmacion de finalizacion." << std::endl;
+		}
 	}
-	else {
-		std::cout << "Error: no se recibio confirmacion de finalizacion." << std::endl;
-	}
-
 	return 0;
 }
 

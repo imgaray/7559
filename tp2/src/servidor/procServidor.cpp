@@ -30,10 +30,11 @@ bool _seguirProcesando = true;
 
 SemaforoPSX** semaforos;
 const int canti_sem = 4;
+ColaDePaquetes* colaPaquetes;
 
 
 int mainResolvedor();
-int mainRecibidor(int pidResolvedor);
+int mainRecibidor();
 
 void inicializarRecursos();
 void liberarRecursos();
@@ -60,7 +61,7 @@ int main() {
 
 	if (pidRecibidor == 0) {
 		Logger::instance().debug(TAG, "Iniciando proceso Recibidor");
-		return mainRecibidor(pidResolvedor);
+		return mainRecibidor();
 	}
 
 	cout << "Servidor corriendo ..." << endl;
@@ -81,27 +82,11 @@ int main() {
 
 	Logger::instance().debug(TAG, "Esperando que finalicen procesos.");
 
-//	std::cout << "PID RESOLVEDOR:" << pidResolvedor << std::endl;
-//	std::cout << "PID RECIBIDOR:" << pidRecibidor<< std::endl;
-
 	int estado;
 	do {
 		waitpid(pidResolvedor, &estado, 0);
 	}while(WIFEXITED(estado) == false);
 
-	/*
-	if (WIFEXITED(estado))
-		std::cout << "Proceso termino correctamente." << std::endl;
-
-	if (WIFSIGNALED(estado))
-		std::cout << "Termino por una señal" << std::endl;
-
-	if (WIFSTOPPED(estado))
-		std::cout << "El proceso fue parado" << std::endl;
-
-	if (WSTOPSIG(estado))
-		std::cout << "Senial que paro al proceso:" << WSTOPSIG(estado) << std::endl;
-	*/
 	do {
 		waitpid(pidRecibidor, &estado, 0);
 	} while(WIFEXITED(estado) == false);
@@ -146,13 +131,13 @@ int mainResolvedor() {
 }
 
 
-int mainRecibidor(int pidResolvedor) {
+int mainRecibidor() {
 	int retorno;
 	try
 	{
 		Recibidor& recibidor = Recibidor::instancia();
 
-		retorno = recibidor.comenzar(pidResolvedor);
+		retorno = recibidor.comenzar();
 	}
 	catch(std::string& e) {
 		std::cout << e << std::endl;
@@ -213,10 +198,13 @@ void inicializarRecursos() {
 	semaforos[5]->inicializar();
 
 
-//	ColaDePaquetes cola;
-//	cola.inicializarIndices();
+	colaPaquetes = new ColaDePaquetes();
+	colaPaquetes->inicializarIndices();
 }
 void liberarRecursos() {
+
+	delete colaPaquetes;
+
 	unlink(MEM_COMP_COLA_PAQ);
 	unlink(MC_INTCMB_RECIBIDOR);
 

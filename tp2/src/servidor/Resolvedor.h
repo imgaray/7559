@@ -62,11 +62,16 @@ private:
 
 	const Paquete protoInicio(const Empaquetador& empaquetador, Destinatarios& destinos);
 
+	const Paquete usuariosEnConversacion(const Empaquetador& empaquetador, Destinatarios& destinos);
+
 	void eliminarUsuarioDeConversacion(const IdConversacion& idConv, const IdUsuario& idUsr);
 
 	void agregarDestinos(IdConversacion id, Destinatarios& destinos);
 
 	void enviarPaquete(IdUsuario id, const Paquete& paq);
+
+
+	void agregarUsuariosDeConversacion(const IdConversacion& idConv, std::vector<IdUsuario>& usuarios);
 
 
 	void enviarMensajesDeCierre();

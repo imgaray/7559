@@ -26,7 +26,7 @@ public:
 	static bool instanciado();
 	static void liberar();
 
-	int comenzar(int pidResolvedor);
+	int comenzar();
 
 	void dejarDeEscuchar();
 
@@ -38,26 +38,20 @@ private:
 
 	int escuchar(Paquete& paq, DirSocket& dir);
 
-	void transmitirAResolvedor();
-
-	void iniciarProcesoCliente(const Empaquetador& emp, const DirSocket& dir);
+	void procesarSolicitud(const Empaquetador& emp, const DirSocket& dir);
 
 	Procesos* _procesos;
 	Process* _ultimoProceso;
 
 	SocketUDP _receptor;
 	SemaforoPSX *_semIntercambio;
-	//SemaforoPSX *_semResolvedor;
 
 	ColaDePaquetes _cola;
-
 	AreaIntercambio _areaIntcmb;
 
 	bool _escuchando;
 
 	static Recibidor *_instancia;
-
-	int _pidResolvedor;
 
 	SenialFinalizar _senialFin;
 };

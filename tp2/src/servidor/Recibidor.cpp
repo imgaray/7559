@@ -72,11 +72,9 @@ void Recibidor::liberar() {
 	}
 }
 
-int Recibidor::comenzar(int pid) {
+int Recibidor::comenzar() {
 
 	Logger::instance().debug(TAG, "Iniciando.");
-
-	_pidResolvedor = pid;
 
 	Empaquetador emp;
 	Paquete paq;
@@ -89,9 +87,8 @@ int Recibidor::comenzar(int pid) {
 
 			Logger::instance().debug(TAG, "Nuevo Usuario escuchado");
 
-			iniciarProcesoCliente(emp, dirCliente);
+			procesarSolicitud(emp, dirCliente);
 
-			transmitirAResolvedor();
 		}
 
 	}
@@ -115,7 +112,7 @@ int Recibidor::escuchar(Paquete& paq, DirSocket& dir) {
 }
 
 
-void Recibidor::iniciarProcesoCliente(const Empaquetador& emp, const DirSocket& dirCliente) {
+void Recibidor::procesarSolicitud(const Empaquetador& emp, const DirSocket& dirCliente) {
 
 	Logger::instance().debug(TAG, "Lanzando proceso ReceptorMensajes");
 
@@ -159,18 +156,4 @@ void Recibidor::iniciarProcesoCliente(const Empaquetador& emp, const DirSocket& 
 void Recibidor::dejarDeEscuchar() {
 	Logger::instance().debug(TAG, "Senial de finalizacion recibida");
 	_escuchando = false;
-}
-
-void Recibidor::transmitirAResolvedor() {
-	//Logger::instance().debug(TAG, "Esperando que resolvedor se libere");
-	//_semResolvedor->wait();
-
-	//Logger::instance().debug(TAG, "Enviando señal a resolvedor por nuevo usuario.");
-	//GestorDeSeniales::instancia().enviarSenialAProceso(_pidResolvedor, SIGNUM_INTERCAMBIO_RESOLVEDOR);
-
-	//Logger::instance().debug(TAG, "Esperando que receptor lanzado confirme la sesion.");
-	//_semIntercambio->wait();
-
-	//Logger::instance().debug(TAG, "Confirmacion Recibida y liberando al resolvedor para que continue.");
-	//_semResolvedor->signal();
 }

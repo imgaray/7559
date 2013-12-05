@@ -160,6 +160,9 @@ const Paquete Resolvedor::resolver(const Paquete& origen, Destinatarios& destino
 	else if (emp.tipoActual() == Empaquetador::CONVERSACIONES) {
 		respuesta.asociar(this->conversaciones(emp, destinos));
 	}
+	else if (emp.tipoActual() == Empaquetador::USUARIOS_CONVERSACION) {
+		respuesta.asociar(this->usuariosEnConversacion(emp, destinos));
+	}
 	else  {
 		respuesta.asociar(this->paqueteNoValido(emp, destinos));
 	}
@@ -545,7 +548,8 @@ void Resolvedor::eliminarUsuariosFinalizados() {
 
 void Resolvedor::enviarMensajesDeCierre() {
 	Empaquetador emp;
-	emp.agregarMensajeError(" <***> Servidor Cerrandose. <***>");
+	//emp.agregarMensajeError(" <***> Servidor Cerrandose. <***>");
+	emp.cerrandoServidor();
 
 	Destinatarios dest;
 
@@ -596,4 +600,65 @@ const Paquete Resolvedor::protoInicio(const Empaquetador& empaquetador, Destinat
 
 	return emp.paquete();
 
+}
+
+const Paquete Resolvedor::usuariosEnConversacion(const Empaquetador& empaquetador, Destinatarios& destinos) {
+	Empaquetador res;
+
+	std::string nombConv = empaquetador.PAQ_nombreConversacion();
+	itConversaciones itConv = _conversaciones.find(nombConv);
+	itUsuarios itUsr = _usuarios.find(empaquetador.PAQ_nombreDeUsuario());
+	std::vector<IdUsuario> usrs;
+
+	if (itUsr != _usuarios.end()) {
+
+		if (itConv != _conversaciones.end()) {
+			agregarUsuariosDeConversacion(itConv->second, usrs);
+			res.usuariosEnConversacion(usrs);
+		}
+		else if (nombConv.size() == 0) {
+			if (itUsr->second.id_conv != 0) {
+				agregarUsuariosDeConversacion(itUsr->second.id_conv, usrs);
+				res.usuariosEnConversacion(usrs);
+			}
+			else {
+				res.agregarMensajeError("Error: No se encuentra en una conversacion para consultar.");
+			}
+		}
+		else {
+			res.agregarMensajeError("Error: La Conversacion consultada no existe.");
+		}
+
+		// agrego como unico destino al usuario que realizo la solicitud
+		destinos.push_back(itUsr->first);
+	}
+
+	return res.paquete();
+}
+
+void Resolvedor::agregarUsuariosDeConversacion(const IdConversacion& idConv, std::vector<IdUsuario>& usuarios) {
+	itConvUsuarios it = _usrXConv.find(idConv);
+	std::string nomConv;
+
+	if (it != _usrXConv.end()) {
+
+		itConversaciones itConv = _conversaciones.begin();
+		bool convEncontrado = false;
+
+
+		while (convEncontrado == false && itConv != _conversaciones.end()) {
+			if (itConv->second == idConv) {
+				convEncontrado = true;
+			}
+			else {
+				itConv++;
+			}
+		}
+
+		usuarios.push_back(itConv->first);
+
+		for (unsigned i = 0; i < it->second.size() ; i++) {
+			usuarios.push_back(it->second[i]);
+		}
+	}
 }

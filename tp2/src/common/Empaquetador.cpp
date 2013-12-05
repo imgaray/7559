@@ -95,7 +95,8 @@ const std::string Empaquetador::PAQ_nombreDeUsuario() const {
 			|| _paquete.tipo() == Empaquetador::UNIRSE_CONVERSACION
 			|| _paquete.tipo() == Empaquetador::CONVERSACIONES
 			|| _paquete.tipo() == Empaquetador::FIN_SESION
-			|| _paquete.tipo() == Empaquetador::INICIO_SESION){
+			|| _paquete.tipo() == Empaquetador::INICIO_SESION
+			|| _paquete.tipo() == Empaquetador::USUARIOS_CONVERSACION){
 		char* cres = _paquete.atributo(0);
 
 		if (cres != NULL) {
@@ -152,7 +153,9 @@ void Empaquetador::verConversaciones(const std::string& nombreUsuario) {
 const std::string Empaquetador::PAQ_nombreConversacion() const {
 	std::string res;
 
-	if (_paquete.tipo() == Empaquetador::CREAR_CONVERSACION || _paquete.tipo() == Empaquetador::UNIRSE_CONVERSACION) {
+	if (_paquete.tipo() == Empaquetador::CREAR_CONVERSACION
+			|| _paquete.tipo() == Empaquetador::UNIRSE_CONVERSACION
+			|| _paquete.tipo() == Empaquetador::USUARIOS_CONVERSACION) {
 		char* cres = _paquete.atributo(1);
 
 		if (cres != NULL) {
@@ -256,6 +259,15 @@ void Empaquetador::usuariosEnConversacion(const std::string& nomUsuario, const s
 	_paquete.agregarAtributo((void*) nombreConversacion.c_str(), nombreConversacion.size());
 }
 
+void Empaquetador::usuariosEnConversacion(const std::vector<std::string>& usuarios) {
+	_paquete.limpiar();
+	_paquete.definirTipo(Empaquetador::USUARIOS_CONVERSACION);
+
+	for (unsigned i = 0; i < usuarios.size(); i++) {
+		_paquete.agregarAtributo((void*) usuarios[i].c_str(), usuarios[i].size());
+	}
+}
+
 const std::vector<std::string> Empaquetador::PAQ_usuariosEnConversacion() const {
 	std::vector<std::string> conj;
 	conj.clear();
@@ -276,4 +288,14 @@ const std::vector<std::string> Empaquetador::PAQ_usuariosEnConversacion() const 
 	}
 
 	return conj;
+}
+
+void Empaquetador::cerrandoServidor() {
+	_paquete.limpiar();
+	_paquete.definirTipo(SERVIDOR_CERRADO);
+}
+
+
+bool Empaquetador::PAQ_sevidorCerrado() const {
+	return (_paquete.tipo() == Empaquetador::SERVIDOR_CERRADO);
 }
