@@ -124,9 +124,6 @@ void Recibidor::procesarSolicitud(const Empaquetador& emp, const DirSocket& dirC
 
 	// esperar hasta que inicie el proceso Receptor
 
-
-	//std::cout << "Proceso receptor, pid: " << _ultimoProceso->getId() << std::endl;
-
 	std::string nomUsr = emp.PAQ_nombreDeUsuario();
 
 	std::string msj = std::string("Nuevo Usuario: ") + nomUsr;

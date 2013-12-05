@@ -15,8 +15,6 @@
 
 #include "../logger/Logger.h"
 
-#include "SenialIntcmbResolvedor.h"
-
 #define TAG "RESOLVEDOR"
 
 Resolvedor* Resolvedor::_instancia = NULL;
@@ -34,7 +32,6 @@ Resolvedor::Resolvedor() :_emisor() , _semResolvedor(SEM_RESOLVEDOR, 1), _seguir
 	_usrXConv.clear();
 	_usuarios.clear();
 
-	//_colaPaquetes.inicializarIndices();
 }
 
 void Resolvedor::wait() {

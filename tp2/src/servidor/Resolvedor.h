@@ -11,7 +11,6 @@
 #include "../common/Definiciones.h"
 #include "../common/Empaquetador.h"
 #include "../common/SemaforoPSX.h"
-#include "SenialIntcmbResolvedor.h"
 #include "SenialFinalizar.h"
 
 #include "ColaDePaquetes.h"
