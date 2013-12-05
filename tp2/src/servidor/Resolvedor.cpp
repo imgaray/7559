@@ -135,10 +135,12 @@ const Paquete Resolvedor::resolver(const Paquete& origen, Destinatarios& destino
 	else if (emp.tipoActual() == Empaquetador::USUARIOS_CONVERSACION) {
 		respuesta.asociar(this->usuariosEnConversacion(emp, destinos));
 	}
+	else if (emp.tipoActual() == Empaquetador::USUARIOS_EN_LINEA) {
+		respuesta.asociar(this->usuariosEnLinea(emp, destinos));
+	}
 	else  {
 		respuesta.asociar(this->paqueteNoValido(emp, destinos));
 	}
-
 
 	signal();
 	return respuesta.paquete();
@@ -633,4 +635,31 @@ void Resolvedor::agregarUsuariosDeConversacion(const IdConversacion& idConv, std
 			usuarios.push_back(it->second[i]);
 		}
 	}
+}
+
+
+
+const Paquete Resolvedor::usuariosEnLinea(const Empaquetador& empaquetador, Destinatarios& destinos) {
+	Empaquetador res;
+	std::vector<IdUsuario> usuariosEnLinea;
+	usuariosEnLinea.clear();
+
+	itUsuarios it = _usuarios.find(empaquetador.PAQ_nombreDeUsuario());
+
+	if (it != _usuarios.end()) {
+		// agrego como unico destino al usuario que solicto el pedido
+		destinos.push_back(it->first);
+
+		// agrego todos los usuarios en linea.
+		for (it = _usuarios.begin() ; it != _usuarios.end() ; it++)
+			usuariosEnLinea.push_back(it->first);
+
+		res.usuariosEnLinea(usuariosEnLinea);
+	}
+	else {
+		res.agregarMensajeError("Error: usuario no existe.");
+	}
+
+
+	return res.paquete();
 }

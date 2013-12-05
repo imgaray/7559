@@ -70,6 +70,8 @@ public:
 			CONVERSACIONES,
 
 			USUARIOS_CONVERSACION,
+			USUARIOS_EN_LINEA,
+
 
 			SERVIDOR_CERRADO,
 			OK,
@@ -119,6 +121,11 @@ public:
 
 	// Respuesta
 	void usuariosEnConversacion(const std::vector<std::string>& usuarios);
+
+
+	void solicitarUsuariosEnLinea(const std::string& nombreUsuario);
+
+	void usuariosEnLinea(const std::vector<std::string>& usuarios );
 
 	/**
 	 * Define el paquete como una respuesta de confirmacion (OK)
@@ -194,6 +201,8 @@ public:
 
 	const std::vector<std::string> PAQ_usuariosEnConversacion() const;
 
+	const std::vector<std::string> PAQ_usuariosEnLinea() const;
+
 
 	void PAQ_protoInicio(NuevoUsuario& nuevoUsr) const;
 
@@ -217,6 +226,12 @@ public:
 	void limpiar();
 
 private:
+
+	void agregarAtributos(const std::vector<std::string>& atributos);
+
+	void sacarAtributos(std::vector<std::string>& atributos) const;
+
+
 	Paquete _paquete;
 };
 

@@ -63,6 +63,14 @@ void imprimir(const Empaquetador& emp) {
 			std::cout << "\t - " << conv[i] << std::endl;
 
 	}
+	else if (emp.tipoActual() == Empaquetador::USUARIOS_EN_LINEA) {
+		const std::vector<std::string> &usuarios = emp.PAQ_usuariosEnLinea();
+
+		std::cout << "Usuarios en linea: "<< std::endl;
+		for (unsigned i = 1 ; i < usuarios.size() ; i++)
+			std::cout << "\t- " << usuarios[i] << std::endl;
+
+	}
 	else if (emp.tipoActual() == Empaquetador::FIN_SESION) {
 		std::cout << emp.PAQ_nombreDeUsuario() << std::endl;
 	}
@@ -87,6 +95,7 @@ void imprimirOpciones() {
 	std::cout << ".2 : Unirse a una conversacion." << std::endl;
 	std::cout << ".3 : Crear conversaciones." << std::endl;
 	std::cout << ".4 : Ver usuarios en conversacion (inngrese nombre vacio para consultar en conversacion actual)." << std::endl;
+	std::cout << ".5 : Ver todos los usuarios en linea." << std::endl;
 	std::cout << std::endl;
 	std::cout << ".0 : Finalizar sesion." << std::endl;
 }
@@ -214,6 +223,11 @@ int main() {
 					mensaje = buffer;
 
 					emp.usuariosEnConversacion(usuario, mensaje);
+					enviar = true;
+
+				}
+				else if (mensaje[1] == '5') {
+					emp.solicitarUsuariosEnLinea(usuario);
 					enviar = true;
 
 				}

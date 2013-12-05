@@ -61,6 +61,8 @@ private:
 
 	const Paquete usuariosEnConversacion(const Empaquetador& empaquetador, Destinatarios& destinos);
 
+	const Paquete usuariosEnLinea(const Empaquetador& empaquetador, Destinatarios& destinos);
+
 	void eliminarUsuarioDeConversacion(const IdConversacion& idConv, const IdUsuario& idUsr);
 
 	void agregarDestinos(IdConversacion id, Destinatarios& destinos);

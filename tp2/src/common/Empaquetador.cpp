@@ -96,7 +96,8 @@ const std::string Empaquetador::PAQ_nombreDeUsuario() const {
 			|| _paquete.tipo() == Empaquetador::CONVERSACIONES
 			|| _paquete.tipo() == Empaquetador::FIN_SESION
 			|| _paquete.tipo() == Empaquetador::INICIO_SESION
-			|| _paquete.tipo() == Empaquetador::USUARIOS_CONVERSACION){
+			|| _paquete.tipo() == Empaquetador::USUARIOS_CONVERSACION
+			|| _paquete.tipo() == Empaquetador::USUARIOS_EN_LINEA){
 		char* cres = _paquete.atributo(0);
 
 		if (cres != NULL) {
@@ -125,18 +126,7 @@ const std::vector<std::string> Empaquetador::PAQ_conversaciones() const {
 	int ind = 0;
 
 	if (_paquete.tipo() == Empaquetador::CONVERSACIONES) {
-
-		char* conv = _paquete.atributo(0);
-
-		while (conv != NULL) {
-			ind++;
-			//conj[ind]=std::string(conv);
-			conj.push_back(std::string(conv));
-
-			delete conv;
-
-			conv = _paquete.atributo(ind);
-		}
+		sacarAtributos(conj);
 	}
 
 	return conj;
@@ -263,28 +253,16 @@ void Empaquetador::usuariosEnConversacion(const std::vector<std::string>& usuari
 	_paquete.limpiar();
 	_paquete.definirTipo(Empaquetador::USUARIOS_CONVERSACION);
 
-	for (unsigned i = 0; i < usuarios.size(); i++) {
-		_paquete.agregarAtributo((void*) usuarios[i].c_str(), usuarios[i].size());
-	}
+	agregarAtributos(usuarios);
+
 }
 
 const std::vector<std::string> Empaquetador::PAQ_usuariosEnConversacion() const {
 	std::vector<std::string> conj;
 	conj.clear();
-	int ind = 0;
 
 	if (_paquete.tipo() == Empaquetador::USUARIOS_CONVERSACION) {
-
-		char* conv = _paquete.atributo(0);
-
-		while (conv != NULL) {
-			ind++;
-			conj.push_back(std::string(conv));
-
-			delete conv;
-
-			conv = _paquete.atributo(ind);
-		}
+		sacarAtributos(conj);
 	}
 
 	return conj;
@@ -299,3 +277,48 @@ void Empaquetador::cerrandoServidor() {
 bool Empaquetador::PAQ_sevidorCerrado() const {
 	return (_paquete.tipo() == Empaquetador::SERVIDOR_CERRADO);
 }
+
+
+void Empaquetador::solicitarUsuariosEnLinea(const std::string& nombreUsuario) {
+	_paquete.limpiar();
+	_paquete.definirTipo(Empaquetador::USUARIOS_EN_LINEA);
+	_paquete.agregarAtributo((void*) nombreUsuario.c_str(), nombreUsuario.size());
+}
+
+void Empaquetador::usuariosEnLinea(const std::vector<std::string>& usuarios) {
+	_paquete.limpiar();
+	_paquete.definirTipo(Empaquetador::USUARIOS_EN_LINEA);
+	agregarAtributos(usuarios);
+}
+
+
+const std::vector<std::string> Empaquetador::PAQ_usuariosEnLinea() const {
+	std::vector<std::string> conj;
+	conj.clear();
+
+	if (_paquete.tipo() == Empaquetador::USUARIOS_EN_LINEA) {
+		sacarAtributos(conj);
+	}
+
+	return conj;
+}
+
+
+void Empaquetador::agregarAtributos(const std::vector<std::string>& atributos) {
+	for (unsigned i = 0; i < atributos.size() ; i++) {
+		_paquete.agregarAtributo((void*)atributos[i].c_str(), atributos[i].size());
+	}
+}
+
+void Empaquetador::sacarAtributos(std::vector<std::string>& atributos) const {
+	int ind = 0;
+	char* atrib = _paquete.atributo(0);
+
+	while (atrib != NULL) {
+		ind++;
+		atributos.push_back(std::string(atrib));
+		delete atrib;
+		atrib = _paquete.atributo(ind);
+	}
+}
+
