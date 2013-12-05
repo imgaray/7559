@@ -291,7 +291,6 @@ void Empaquetador::usuariosEnLinea(const std::vector<std::string>& usuarios) {
 	agregarAtributos(usuarios);
 }
 
-
 const std::vector<std::string> Empaquetador::PAQ_usuariosEnLinea() const {
 	std::vector<std::string> conj;
 	conj.clear();

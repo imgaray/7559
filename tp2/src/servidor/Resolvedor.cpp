@@ -637,8 +637,6 @@ void Resolvedor::agregarUsuariosDeConversacion(const IdConversacion& idConv, std
 	}
 }
 
-
-
 const Paquete Resolvedor::usuariosEnLinea(const Empaquetador& empaquetador, Destinatarios& destinos) {
 	Empaquetador res;
 	std::vector<IdUsuario> usuariosEnLinea;
@@ -649,17 +647,16 @@ const Paquete Resolvedor::usuariosEnLinea(const Empaquetador& empaquetador, Dest
 	if (it != _usuarios.end()) {
 		// agrego como unico destino al usuario que solicto el pedido
 		destinos.push_back(it->first);
-
+		itUsuarios it2 = _usuarios.begin();
 		// agrego todos los usuarios en linea.
-		for (it = _usuarios.begin() ; it != _usuarios.end() ; it++)
-			usuariosEnLinea.push_back(it->first);
+		for (; it2 != _usuarios.end() ; it2++)
+			usuariosEnLinea.push_back(it2->first);
 
 		res.usuariosEnLinea(usuariosEnLinea);
 	}
 	else {
 		res.agregarMensajeError("Error: usuario no existe.");
 	}
-
 
 	return res.paquete();
 }

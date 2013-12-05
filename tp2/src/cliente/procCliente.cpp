@@ -67,7 +67,7 @@ void imprimir(const Empaquetador& emp) {
 		const std::vector<std::string> &usuarios = emp.PAQ_usuariosEnLinea();
 
 		std::cout << "Usuarios en linea: "<< std::endl;
-		for (unsigned i = 1 ; i < usuarios.size() ; i++)
+		for (unsigned i = 0 ; i < usuarios.size() ; i++)
 			std::cout << "\t- " << usuarios[i] << std::endl;
 
 	}
