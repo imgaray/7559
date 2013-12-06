@@ -29,9 +29,8 @@ Recibidor::Recibidor() : _areaIntcmb() {
 
 	_procesos = new Procesos();
 
-	//_semResolvedor = new SemaforoPSX(SEM_RESOLVEDOR, 1);
-
 	_semIntercambio = new SemaforoPSX(SEM_INTERCAMBIO_RYR, 0);
+	_semRecibidor = new SemaforoPSX(SEM_RECIBIDOR, 1);
 
 	Logger::instance().debug(TAG, "Instanciando");
 
@@ -39,11 +38,11 @@ Recibidor::Recibidor() : _areaIntcmb() {
 }
 
 Recibidor::~Recibidor() {
-//	if (_semResolvedor != NULL)
-//		delete _semResolvedor;
-
 	if (_semIntercambio != NULL)
 		delete _semIntercambio;
+
+	if (_semRecibidor != NULL)
+		delete _semRecibidor;
 
 	Utilitario u;
 	std::string msj;
@@ -113,6 +112,7 @@ int Recibidor::escuchar(Paquete& paq, DirSocket& dir) {
 
 
 void Recibidor::procesarSolicitud(const Empaquetador& emp, const DirSocket& dirCliente) {
+	_semRecibidor->wait();
 
 	Logger::instance().debug(TAG, "Lanzando proceso ReceptorMensajes");
 
@@ -148,6 +148,7 @@ void Recibidor::procesarSolicitud(const Empaquetador& emp, const DirSocket& dirC
 
 	_procesos->push_back(_ultimoProceso);
 
+	_semRecibidor->signal();
 }
 
 void Recibidor::dejarDeEscuchar() {

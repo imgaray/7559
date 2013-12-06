@@ -13,6 +13,9 @@
 
 #include "Semaforo.h"
 
+/**
+ * Clase "Adpater" de Semaforo
+ */
 
 class SemaforoPSX {
 public:
@@ -31,7 +34,6 @@ public:
 	virtual ~SemaforoPSX();
 private:
 	std::string _nombre;
-	//sem_t *_semaforo;
 	Semaforo *_semaforo;
 };
 

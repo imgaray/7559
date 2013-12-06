@@ -28,7 +28,7 @@ const Puerto PUERTO_SERVIDOR = 9091;
 
 #define SEM_RESOLVEDOR					"/tmp/sem_resolvedor" // semaforo para una exclusion mutua del las estructuras del resolvedor
 #define SEM_INTERCAMBIO_RYR 			"/tmp/sem_int_ryr"	// semaforo para sincronizar recibidor con y receptor
-#define SEM_CONFIRMACION_RECEPTOR		"/tmp/sem_confirmacion_receptor"
+#define SEM_RECIBIDOR					"/tmp/sem_recibidor"
 
 
 #define SEM_COLA_PAQ_SACAR			"/tmp/sem_cola_paq_sacar"

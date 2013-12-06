@@ -29,6 +29,9 @@ using namespace std;
 bool _seguirProcesando = true;
 
 SemaforoPSX** semaforos;
+SemaforoPSX* semResolvedor;
+SemaforoPSX* semRecibidor;
+
 const int canti_sem = 4;
 ColaDePaquetes* colaPaquetes;
 
@@ -77,8 +80,14 @@ int main() {
 
 	Logger::instance().debug(TAG, "Enviando señales de finalizacion a procesos (Resolvedor y Recibidor).");
 
+	Logger::instance().debug(TAG, "Esperando que servidor se libere para enviar señal de finalizacion.");
+	semResolvedor->wait();
 	GestorDeSeniales::instancia().enviarSenialAProceso(pidResolvedor, SIGNUM_FINALIZACION);
+	semResolvedor->signal();
+
+	semRecibidor->wait();
 	GestorDeSeniales::instancia().enviarSenialAProceso(pidRecibidor, SIGNUM_FINALIZACION);
+	semRecibidor->signal();
 
 	Logger::instance().debug(TAG, "Esperando que finalicen procesos.");
 
@@ -174,8 +183,8 @@ void inicializarRecursos() {
 	if (mknod(SEM_MEM_COMP_COLA_PAQ, 0777, 0) == -1)
 		std::cout << "Error en mknod: " << SEM_MEM_COMP_COLA_PAQ << ": " << strerror(errno) << std::endl;
 
-	if (mknod(SEM_CONFIRMACION_RECEPTOR, 0777, 0) == -1)
-		std::cout << "Error en mknod: " << SEM_CONFIRMACION_RECEPTOR << ": " << strerror(errno) << std::endl;
+	if (mknod(SEM_RECIBIDOR, 0777, 0) == -1)
+		std::cout << "Error en mknod: " << SEM_RECIBIDOR << ": " << strerror(errno) << std::endl;
 
 	semaforos = new SemaforoPSX*[6];
 
@@ -187,6 +196,7 @@ void inicializarRecursos() {
 
 	semaforos[2] = new SemaforoPSX(SEM_RESOLVEDOR, 1);
 	semaforos[2]->inicializar();
+	semResolvedor = semaforos[2];
 
 	semaforos[3] = new SemaforoPSX(SEM_INTERCAMBIO_RYR, 0);
 	semaforos[3]->inicializar();
@@ -194,8 +204,9 @@ void inicializarRecursos() {
 	semaforos[4] = new SemaforoPSX(SEM_MEM_COMP_COLA_PAQ, 1);
 	semaforos[4]->inicializar();
 
-	semaforos[5] = new SemaforoPSX(SEM_CONFIRMACION_RECEPTOR, 0);
+	semaforos[5] = new SemaforoPSX(SEM_RECIBIDOR, 1);
 	semaforos[5]->inicializar();
+	semRecibidor = semaforos[5];
 
 
 	colaPaquetes = new ColaDePaquetes();
@@ -207,7 +218,6 @@ void liberarRecursos() {
 
 	unlink(MEM_COMP_COLA_PAQ);
 	unlink(MC_INTCMB_RECIBIDOR);
-
 
 	for (int i = 0; i < 6 ; i++) {
 		semaforos[i]->destruir();
@@ -223,6 +233,6 @@ void liberarRecursos() {
 	unlink(SEM_INTERCAMBIO_RYR);
 
 	unlink(SEM_MEM_COMP_COLA_PAQ);
-	unlink(SEM_CONFIRMACION_RECEPTOR);
+	unlink(SEM_RECIBIDOR);
 
 }

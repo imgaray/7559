@@ -45,6 +45,7 @@ private:
 
 	SocketUDP _receptor;
 	SemaforoPSX *_semIntercambio;
+	SemaforoPSX *_semRecibidor;
 
 	ColaDePaquetes _cola;
 	AreaIntercambio _areaIntcmb;

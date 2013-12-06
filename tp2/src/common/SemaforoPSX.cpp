@@ -9,6 +9,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <string>
 #include <string.h>
 
 SemaforoPSX::SemaforoPSX(const char* nombre, int valorInicial) {
@@ -16,18 +17,11 @@ SemaforoPSX::SemaforoPSX(const char* nombre, int valorInicial) {
 
 	if (nombre != NULL) {
 		_nombre = nombre;
-
 		_semaforo = new Semaforo(_nombre, valorInicial);
-
-//		_semaforo = sem_open(_nombre.c_str(), O_CREAT, 0664, valorInicial);
-//
-//		if (_semaforo == SEM_FAILED) {
-//			std::string msj = "Error al crear semaforo: ";
-//			msj += _nombre;
-//			msj += std::string(strerror(errno));
-//
-//			throw msj;
-//		}
+	}
+	else {
+		std::string msj = "Instanciado semaforo desde PATH NULL";
+		throw msj;
 	}
 }
 
@@ -38,7 +32,6 @@ void SemaforoPSX::wait() {
 		throw msj;
 	}
 	else {
-		//sem_wait(_semaforo);
 		this->_semaforo->p();
 	}
 }
@@ -50,7 +43,6 @@ void SemaforoPSX::signal() {
 		throw msj;
 	}
 	else {
-		//sem_post(_semaforo);
 		this->_semaforo->v();
 	}
 }
@@ -61,9 +53,6 @@ void SemaforoPSX::inicializar() {
 
 void SemaforoPSX::destruir() {
 	if (_semaforo != NULL) {
-		//sem_close(_semaforo);
-		//sem_unlink(_nombre.c_str());
-
 		_semaforo->eliminar();
 		delete _semaforo;
 		_semaforo = NULL;
@@ -77,7 +66,6 @@ int SemaforoPSX::valorActual() {
 
 SemaforoPSX::~SemaforoPSX() {
 	if (_semaforo != NULL) {
-		//sem_close(_semaforo);
 		delete _semaforo;
 	}
 }

@@ -306,6 +306,7 @@ int mainReceptor(SocketUDP &receptor) {
 			std::cout << "Error: no se recibio confirmacion de finalizacion." << std::endl;
 		}
 	}
+
 	return 0;
 }
 
