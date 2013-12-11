@@ -104,7 +104,7 @@ Para la resolución de la concurrencia en la aplicacion se implementaron varias 
 Memoria Compartida, Señales y Sockets.
 
 Se creó un proceso encargado de la generacion de los recursos y administración de las conversaciones, llamado 
-appServidor, el cual es el punto de inicio de la aplicación\\
+appServidor, el cual es el punto de inicio de la aplicación.\\
 
 También existe el proceso llamado appCliente, el cual es creado cuando un usuario inicia un Cliente y le permite interactuar con
 el Servidor para unirse a una conversación o iniciar una nueva\\
@@ -117,18 +117,20 @@ de una conexion UDP), este paquete es captado por el proceso Recibidor, quien cr
 se retransmitirá el paquete y algunos datos más de conexión al proceso Resolvedor y al nuevo Receptor (utilizando un area de memoria compartida). 
 Luego el recibidor espera una confirmacion (mediante un semáforo) del proceso Receptor para poder seguir escuchando nuevos usuarios.\\
 
-La tarea que lleva a cabo el proceso resolvedor es almacenar todos los usuarios en linea, todas las conversaciones abiertas y de reenviar 
+La tarea que lleva a cabo el proceso Resolvedor es almacenar todos los usuarios en linea, todas las conversaciones abiertas y de reenviar 
 todos los mensajes que se envien entre si. Para ello cuando arriba un paquete a la Cola de Paquetes (un area de memoria compartida para colocar 
 los paquetes de los usuarios que iniciaron sesión) éste lo retira de allí, verifica qué tipo de paquete es, resuelve la petición correspondiente y 
 le envía la respuesta al usuario o a todos los integrantes dentro de una conversación si se tratase de un mensaje. Este procedimiento se repite 
 hasta que el proceso padre le envie una señal de finalización.\\
 
-Cuando llega una solicitud de inicio de sesión al Resolvedor, éste es informado de la situación mediante una señal que es enviada por el proceso 
-Recibidor. La tarea que se lleva a cabo es la siguiente, se lee la información de usuario (paquete y datos de conexion) que fueron colocadas por 
-el Recibidor (en un área de memoria compartida). Cuando obtiene el paquete lo procesa (crea el nuevo usuario si no existe) y si no hubo problemas 
-se le envía una señal de confirmación al proceso Receptor para que prosiga con su correcta ejecución. En cambio, si otro usuario había iniciado 
-sesión con el mismo nombre anteriormente, se emite un error y se le indica al Receptor que finalice, informando sobre este error al usuario. Luego 
-de realizar todo esto el proceso Resolvedor finaliza el tratamiento de la señal y continua con su normal ejecución.\\
+El proceso Recibidor se encarga de escuchar conexiones entrantes de nuevos usuarios. Cuando un nuevo usuario 
+desea conectarse, el proceso recibe una solicitud de conexion mediante un paquete, lo primero que hace es lanzar un proceso Receptor que atendera los mensajes enviados por ese cliente(al lanzarlo espera que inicie correctamente para continuar), luego crea un nuevo paquete de inicio de sesion con la informacion del usuario y lo inserta en la Cola de Paquete, para que se encargue el Resolvedor.\\
+
+Cuando llega una solicitud de inicio de sesión al Resolvedor, éste es informado cuando retira un paquete de la Cola de Paquetes con el tipo PROTO_INICIO_SESION que es fue insertado por el proceso
+Recibidor. La tarea que se lleva el a cabo el Resolvedor es la siguiente, se lee la información de usuario (direccion de socket, pid del proceso receptor y nombre), se comprueba de que no exista otro usario con el mismo nombre, se lo agrega y se le envia una señal para que continue normalmente al proceso Receptor asociado al cliente, en caso contrario (ya existe otro usuario con el mismo nombre) se le indica al mismo proceso Receptor que le indique la situacion al cliente y finalice.
+ Luego de realizar todo esto el proceso Resolvedor se dispone a retirar otro paquete de la Cola si es que huberia o bloqueandose sino.\\
+
+La tarea basica de cada proceso Receptor instanciado es colocar los paquetes que reciba por parte de un cliente y los coloque dentro de la Cola De Paquetes. Su ejecucion finaliza cuando el usuario a cargo decide finalizar la sesion o si el Servidor decide cerrarse (siendo esta situacion informada por parte del recibidor mediante una señal de finalizacion).
 
 \subsection{Paquete}
 Los paquetes utilizados en toda la aplicación se diseñaron para resolver varios problemas (como iniciar y finalizar sesión, crear y unirse a una 
@@ -142,14 +144,18 @@ Se pensaron para que sean de tamaño fijo, de 512 bytes concretamente, conforman
 
 Según el tipo de paquete que sea se resuelve una solicitud diferente. Los diferentes tipos de paquetes son los siguientes:
 \begin{itemize}
+\item PROTO\_INICIO\_SESION: indica que un usuario intenta iniciar sesion, solo usado dentro del servidor.
 \item INICIO\_SESION: indica que un usuario intenta inciar sesion.
 \item FIN\_SESION: indica que un usuario desea finalizar su sesion.
 \item MENSAJE: contiene el mensaje que envio un usuario, en la conversacion donde se encuentra.
 \item CREAR\_CONVERSACION: indica que un usuario quiere crear una converasacion.
 \item UNIRSE\_CONVERSACION indica que un usuario desea unirse a una conversacion ya creada.
 \item CONVERSACIONES: indica una solicitud para que ver las conversaciones disponibles.
+\item USUARIOS\_CONVERSACION: indica una solicitud para que ver los usuarios dentro de una conversacion.
+\item USUARIOS\_EN\_LINEA: indica una solicitud para que ver todos los usuarios que se encuentran conectados.
 \item OK: indica una confirmación sobre algún evento por parte del servidor (inicio y fin de sesion, etc).
 \item ERROR: indica un error ocurrido cuando se proceso una solitud de un usuario.
+\item SERVIDOR\_CERRADO: indica que el servidor termino su ejecucion o fue cerrado.
 \item DESCONOCIDO: identifica al paquete como desconocido y no se lo puede procesar.\\
 \end{itemize}
 
@@ -210,14 +216,15 @@ proceso Receptor que gestionara los paquetes enviados por ese usuario y datos so
 
 Para sincronizar entre todos los procesos involucrados en el inicio de sesion de un nuevo usuario se utilizaron semaforos. Un semaforo es utilizado 
 por el Resolvedor cuando este modifica sus estrucutas internas y al momento de enviar los paquetes de respuesta a los distintos usuarios, por lo 
-que antes de enviar la señal de un nuevo usuario el recibidor hace un wait() del semaforo para asegurar que no pongo en riesgo nunca elemento interno 
-del resolvedor. Otro semaforo es utilizado por el un receptor y el resolvedor al momento de crear un nuevo usuario donde el wait() lo hace el resolvedor 
-esperando que inicie correctamente el Recepetor y se que en estado de espera para la confirmacion de continuar(en caso de positivo o negativo del inicio 
-de sesion del usuario). Cuando el Receptor recibe la confirmacion de continuar, para ambos escenarios(inicio correctamente sesion o se produjo un error), 
-este envia un signal() al Recibidor, que previamente realizo un wait() luego de enviar la señal al Resolvedor, para que continue en la escucha de nuevos usuarios.\\
+que antes de enviar la señal de un nuevo usuario el recibidor hace un wait() del semaforo para asegurar que no pongo en riesgo ningun elemento interno 
+del resolvedor. Otro semaforo es utilizado por el un Receptor y el Recibidor al momento de crear un nuevo usuario donde el wait() lo hace el Recibidor 
+esperando que inicie correctamente el Receptor y se quede en estado de espera para la confirmacion de continuar(en caso de positivo o negativo del inicio 
+de sesion del usuario). Cuando el Receptor recibe la confirmacion de continuar, para ambos escenarios(inicio correctamente sesion o se produjo un error) se le indica la situacion al usuario y continua a la espere de recibir mensajes del cliente o finaliza segun el caso.\\
 
 Un cliente solo consta de dos procesos(una vez establecida la conexion con el servidor) donde uno se encargar de enviar paquetes y el otro recibir las respuestas. 
 El emisor envia paquetes segun lo ingresado por entrada estandar y el receptor imprime por salida estadar los paquetes que le llegan.
+
+Para sincronizar la correcta finalizacion de todos los procesos se implemento una Señal llamada SenialFinalizar, que establece la condicion de corte del bucle de ejecucion para un proceso. Las condiciones de corte para la mayoria de los procesos se utilizaron booleanos, para el Resolvedor es seguirEnviando, para el Recibidor es seguirEscuchando y para cada Receptor es seguirRecibiendo. Cuando un proceso recibe una señal de finalizar, el manejador de la señal establece en FALSE el booleano de control.
 
 \end{document}
 
