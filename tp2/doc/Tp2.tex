@@ -126,7 +126,7 @@ hasta que el proceso padre le envie una señal de finalización.\\
 El proceso Recibidor se encarga de escuchar conexiones entrantes de nuevos usuarios. Cuando un nuevo usuario 
 desea conectarse, el proceso recibe una solicitud de conexion mediante un paquete, lo primero que hace es lanzar un proceso Receptor que atendera los mensajes enviados por ese cliente(al lanzarlo espera que inicie correctamente para continuar), luego crea un nuevo paquete de inicio de sesion con la informacion del usuario y lo inserta en la Cola de Paquete, para que se encargue el Resolvedor.\\
 
-Cuando llega una solicitud de inicio de sesión al Resolvedor, éste es informado cuando retira un paquete de la Cola de Paquetes con el tipo PROTO_INICIO_SESION que es fue insertado por el proceso
+Cuando llega una solicitud de inicio de sesión al Resolvedor, éste es informado cuando retira un paquete de la Cola de Paquetes con el tipo PROTO\_INICIO\_SESION que es fue insertado por el proceso
 Recibidor. La tarea que se lleva el a cabo el Resolvedor es la siguiente, se lee la información de usuario (direccion de socket, pid del proceso receptor y nombre), se comprueba de que no exista otro usario con el mismo nombre, se lo agrega y se le envia una señal para que continue normalmente al proceso Receptor asociado al cliente, en caso contrario (ya existe otro usuario con el mismo nombre) se le indica al mismo proceso Receptor que le indique la situacion al cliente y finalice.
  Luego de realizar todo esto el proceso Resolvedor se dispone a retirar otro paquete de la Cola si es que huberia o bloqueandose sino.\\
 
@@ -205,6 +205,7 @@ Diagrama de transcion de estados para un cliente.
 
 \newpage
 \section{Integración}
+\subsection{Intercambio de Informacion}
 
 Para la recibir los mensajes de los distintos usuarios se implemento una Cola de Paquetes que utiliza internamente un segmento de 
 Memoria Compartida y 3 semaforos (uno para sacar, otro para insertar y otro para leer/escribir del segmento de memoria). Esta Cola es 
@@ -214,6 +215,8 @@ Para enviar la informacion de un nuevo usuario a los otros procesos por parte de
 que utiliza un segmento de memoria compartida en donde se guarda informacion del nuevo usuario, como el nombre del nuevo usuario, el PID del 
 proceso Receptor que gestionara los paquetes enviados por ese usuario y datos sobre la direccion UDP del socket del cliente.\\
 
+\subsection{Sincronización}
+
 Para sincronizar entre todos los procesos involucrados en el inicio de sesion de un nuevo usuario se utilizaron semaforos. Un semaforo es utilizado 
 por el Resolvedor cuando este modifica sus estrucutas internas y al momento de enviar los paquetes de respuesta a los distintos usuarios, por lo 
 que antes de enviar la señal de un nuevo usuario el recibidor hace un wait() del semaforo para asegurar que no pongo en riesgo ningun elemento interno 
@@ -221,10 +224,11 @@ del resolvedor. Otro semaforo es utilizado por el un Receptor y el Recibidor al 
 esperando que inicie correctamente el Receptor y se quede en estado de espera para la confirmacion de continuar(en caso de positivo o negativo del inicio 
 de sesion del usuario). Cuando el Receptor recibe la confirmacion de continuar, para ambos escenarios(inicio correctamente sesion o se produjo un error) se le indica la situacion al usuario y continua a la espere de recibir mensajes del cliente o finaliza segun el caso.\\
 
+Para sincronizar la correcta finalizacion de todos los procesos se implemento una Señal llamada SenialFinalizar, que establece la condicion de corte del bucle de ejecucion para un proceso. Las condiciones de corte para la mayoria de los procesos se utilizaron booleanos, para el Resolvedor es seguirEnviando, para el Recibidor es seguirEscuchando y para cada Receptor es seguirRecibiendo. Cuando un proceso recibe una señal de finalizar, el manejador de la señal establece en FALSE el booleano de control.
+
+\subsection{Cliente}
 Un cliente solo consta de dos procesos(una vez establecida la conexion con el servidor) donde uno se encargar de enviar paquetes y el otro recibir las respuestas. 
 El emisor envia paquetes segun lo ingresado por entrada estandar y el receptor imprime por salida estadar los paquetes que le llegan.
-
-Para sincronizar la correcta finalizacion de todos los procesos se implemento una Señal llamada SenialFinalizar, que establece la condicion de corte del bucle de ejecucion para un proceso. Las condiciones de corte para la mayoria de los procesos se utilizaron booleanos, para el Resolvedor es seguirEnviando, para el Recibidor es seguirEscuchando y para cada Receptor es seguirRecibiendo. Cuando un proceso recibe una señal de finalizar, el manejador de la señal establece en FALSE el booleano de control.
 
 \end{document}
 
